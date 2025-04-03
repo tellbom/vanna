@@ -1,0 +1,8548 @@
+ceramics
+陶瓷
+synthetic fibre
+合成纤维
+electrochemical corrosion
+电化学腐蚀
+automotive chassis
+车架
+suspension
+悬架
+redirector
+转向器
+speed changer
+变速器
+sheet metal parts
+板料冲压
+spot facing machining
+孔加工
+workshop
+车间
+engineer
+工程技术人员
+pneuma lock
+气动夹紧
+mathematical model
+数学模型
+descriptive geometry
+画法几何
+Mechanical drawing
+机械制图
+projection
+投影
+view
+视图
+profile chart
+剖视图
+standard component
+标准件
+part drawing
+零件图
+assembly drawing
+装配图
+size marking
+尺寸标注
+technical requirements
+技术要求
+rigidity
+刚度
+internal force
+内力
+displacement
+位移
+section
+截面
+fatigue limit
+疲劳极限
+fracture
+断裂
+plastic distortion
+塑性变形
+brittleness material
+脆性材料
+rigidity criterion
+刚度准则
+washer
+垫圈
+spacer
+垫片
+straight toothed spur gear
+直齿圆柱齿轮
+helical-spur gear
+斜齿圆柱齿轮
+straight bevel gear
+直齿锥齿轮
+kinematic sketch
+运动简图
+pinion and rack
+齿轮齿条
+worm and worm gear
+蜗杆蜗轮
+passive constraint
+虚约束
+crank
+曲柄
+racker
+摇杆
+cams
+凸轮
+conjugate curve
+共轭曲线
+generation method
+范成法
+definitional domain
+定义域
+range
+值域
+differential coefficient
+导数\微分
+derivation
+求导
+definite integral
+定积分
+indefinite integral
+不定积分
+curvature
+曲率
+partial differential
+偏微分
+rough
+毛坯
+slide caliper
+游标卡尺
+micrometer calipers
+千分尺
+tap
+攻丝
+second order determinant
+二阶行列式
+inverse matrix
+逆矩阵
+linear equations
+线性方程组
+probability
+概率
+random variable
+随机变量
+permutation and combination
+排列组合
+equation of state of gas
+气体状态方程
+kinetic energy
+动能
+potential energy
+势能
+conservation of mechanical energy
+机械能守恒
+momentum
+动量
+truss
+桁架
+axes
+轴线
+cofactor
+余子式
+logic circuit
+逻辑电路
+flip-flop
+触发器
+pulse shape
+脉冲波形
+digital analogy
+数模
+fluid drive mechanism
+液压传动机构
+mechanical parts
+机械零件
+quench
+淬火冷却
+hardening
+淬火
+tempering
+回火
+hardening and tempering
+调质
+abrasive grain
+磨粒
+bonding agent
+结合剂
+grinding wheel
+砂轮
+clearance angle
+后角
+planing
+龙门刨削
+spindle
+主轴
+headstock
+主轴箱
+chuck
+卡盘
+machining center
+加工中心
+lathe tool
+车刀
+lathe
+车床
+turning
+车削
+grinder
+磨床
+benchmark
+基准
+locksmith
+钳工
+forge
+锻
+stamping
+压模
+weld
+焊
+broaching machine
+拉床
+broaching
+拉孔
+assembling
+装配
+found
+铸造
+fluid dynamics
+流体动力学
+fluid mechanics
+流体力学
+machining
+加工
+hydraulic pressure
+液压
+tangent
+切线
+mechanotronics mechanical-electrical integration
+机电
+air pressure pneumatic pressure
+气压
+stability
+稳定性
+medium
+介质
+fluid clutch
+液压驱动泵
+hydraulic pump
+液压泵
+valve
+阀门
+invalidation
+失效
+intensity
+强度
+load
+载荷
+stress
+应力
+safty factor
+安全系数
+reliability
+可靠性
+thread
+螺纹
+helix
+螺旋
+spline
+键
+pin
+销
+rolling bearing
+滚动轴承
+sliding bearing
+滑动轴承
+spring
+弹簧
+arrester brake
+制动器
+crosshead
+十字结联轴节
+coupling
+联轴器
+chain
+链
+strap
+皮带
+finish machining
+精加工
+rough machining
+粗加工
+gearbox casing
+变速箱体
+rust
+腐蚀
+oxidation
+氧化
+wear
+磨损
+durability
+耐用度
+random signal
+随机信号
+discrete signal
+离散信号
+ultrasonic sensor
+超声传感器
+integrate circuit
+集成电路
+orifice plate
+挡板
+residual stress
+残余应力
+sleeve
+套筒
+torsion
+扭力
+cold machining
+冷加工
+electromotor
+电动机
+cylinder
+汽缸
+interference fit
+过盈配合
+hotwork
+热加工
+CCD camera
+摄像头
+rounding chamfer
+倒角
+optimal design
+优化设计
+industrial moulding design
+工业造型设计
+finite element
+有限元
+hobbing
+滚齿
+gear shaping
+插齿
+actuating motor
+伺服电机
+milling machine
+铣床
+drill machine
+钻床
+boring machine
+镗床
+stepper motor
+步进电机
+screw rod
+丝杠
+lead rail
+导轨
+subassembly
+组件
+Programmable Logic Controller PLC
+可编程序逻辑控
+electric spark machining
+电火花加工
+electrical discharge wire - cutting
+电火花线切割加工
+phase diagram
+相图
+heat treatment
+热处理
+solid state phase changes
+固态相变
+nonferrous metal
+有色金属
+ceramics
+陶瓷
+synthetic fibre
+合成纤维
+electrochemical corrosion
+电化学腐蚀
+automotive chassis
+车架
+suspension
+悬架
+redirector
+转向器
+speed changer
+变速器
+sheet metal parts
+板料冲压
+spot facing machining
+孔加工
+workshop
+车间
+engineer
+工程技术人员
+pneuma lock
+气动夹紧
+mathematical model
+数学模型
+descriptive geometry
+画法几何
+Mechanical drawing
+机械制图
+projection
+投影
+view
+视图
+profile chart
+剖视图
+standard component
+标准件
+part drawing
+零件图
+assembly drawing
+装配图
+size marking
+尺寸标注
+technical requirements
+技术要求
+rigidity
+刚度
+internal force
+内力
+displacement
+位移
+section
+截面
+fatigue limit
+疲劳极限
+fracture
+断裂
+plastic distortion
+塑性变形
+brittleness material
+脆性材料
+rigidity criterion
+刚度准则
+washer
+垫圈
+spacer
+垫片
+straight toothed spur gear
+直齿圆柱齿轮
+helical-spur gear
+斜齿圆柱齿轮
+straight bevel gear
+直齿锥齿轮
+kinematic sketch
+运动简图
+pinion and rack
+齿轮齿条
+worm and worm gear
+蜗杆蜗轮
+passive constraint
+虚约束
+crank
+曲柄
+racker
+摇杆
+cams
+凸轮
+conjugate curve
+共轭曲线
+generation method
+范成法
+definitional domain
+定义域
+range
+值域
+differential coefficient
+导数\微分
+derivation
+求导
+definite integral
+定积分
+indefinite integral
+不定积分
+curvature
+曲率
+partial differential
+偏微分
+rough
+毛坯
+slide caliper
+游标卡尺
+micrometer calipers
+千分尺
+tap
+攻丝
+second order determinant
+二阶行列式
+inverse matrix
+逆矩阵
+linear equations
+线性方程组
+probability
+概率
+random variable
+随机变量
+permutation and combination
+排列组合
+equation of state of gas
+气体状态方程
+kinetic energy
+动能
+potential energy
+势能
+conservation of mechanical energy
+机械能守恒
+momentum
+动量
+truss
+桁架
+axes
+轴线
+cofactor
+余子式
+logic circuit
+逻辑电路
+flip-flop
+触发器
+pulse shape
+脉冲波形
+digital analogy
+数模
+fluid drive mechanism
+液压传动机构
+mechanical parts
+机械零件
+quench
+淬火冷却
+hardening
+淬火
+tempering
+回火
+hardening and tempering
+调质
+abrasive grain
+磨粒
+bonding agent
+结合剂
+grinding wheel
+砂轮
+Assembly line
+组装线
+Layout
+布置图
+Conveyer
+流水线物料板
+Rivet table
+拉钉机
+Rivet gun
+拉钉枪
+Screw driver
+起子
+Pneumatic screw driver
+气动起子
+worktable
+工作桌
+OOBA
+开箱检查
+fit together
+组装在一起
+fasten
+锁紧(螺丝)
+fixture
+夹具(治具)
+pallet
+栈板
+barcode
+条码
+barcode scanner
+条码扫描器
+fuse together
+熔合
+fuse machine
+热熔机
+repair
+修理
+operator
+作业员
+QC
+品管
+supervisor
+课长
+ME
+制造工程师
+MT
+制造生技
+cosmetic inspect
+外观检查
+inner parts inspect
+内部检查
+thumb screw
+大头螺丝
+lbs. inch
+镑、英寸
+EMI gasket
+导电条
+front plate
+前板
+rear plate
+后板
+chassis
+基座
+bezel panel
+面板
+power button
+电源按键
+reset button
+重置键
+Hi pot test of SPS
+高源高压测试
+Voltage switch of SPS
+电源电压接拉键
+sheet metal parts
+冲件
+plastic parts
+塑胶件
+SOP
+制造作业程序
+material check list
+物料检查表
+work cell
+工作间
+trolley
+台车
+carton
+纸箱
+sub line
+支线
+left fork
+叉车
+personnel resource department
+人力资源部
+production department
+生产部门
+planning department
+企划部
+QC Section
+品管科
+stamping factory
+冲压厂
+painting factory
+烤漆厂
+molding factory
+成型厂
+common equipment
+常用设备
+uncoiler and straightener
+整平机
+punching machine
+冲床
+robot
+机械手
+hydraulic machine
+油压机
+lathe
+车床
+miller
+铣床
+grinder
+磨床
+linear cutting
+线切割
+electrical sparkle
+电火花
+welder
+电焊机
+staker=reviting machine
+铆合机
+position
+职务
+president
+董事长
+general manager
+总经理
+special assistant manager
+特助
+factory director
+厂长
+department director
+部长
+section supervisor
+课长
+deputy section supervisor =vice section superisor
+副课长
+group leader/supervisor
+组长
+line supervisor
+线长
+assistant manager
+助理
+to move, to carry, to handle
+搬运
+be put in storage
+入库
+pack packing
+包装
+to apply oil
+擦油
+to file burr
+锉毛刺
+final inspection
+终检
+to connect material
+接料
+to reverse material
+翻料
+wet station
+沾湿台
+Tiana
+天那水
+cleaning cloth
+抹布
+to load material
+上料
+to unload material
+卸料
+to return material/stock to
+退料
+scraped
+报废
+deficient purchase
+来料不良
+manufacture procedure
+制程
+deficient manufacturing procedure
+制程不良
+oxidation
+氧化
+scratch
+刮伤
+dents
+压痕
+defective upsiding down
+抽芽不良
+defective to staking
+铆合不良
+embedded lump
+镶块
+feeding is not in place
+送料不到位
+stamping missing
+漏冲
+production capacity
+生产力
+education and training
+教育与训练
+proposal improvement
+提案改善
+spare parts=buffer
+备件
+forklift
+叉车
+trailer=long vehicle
+拖板车
+compound die
+合模
+die locker
+锁模器
+pressure plate=plate pinch
+压板
+bolt
+螺栓
+administration/general affairs dept
+总务部
+automatic screwdriver
+电动启子
+thickness gauge
+厚薄规
+power wire
+电源线
+buzzle
+蜂鸣器
+defective product label
+不良标签
+identifying sheet list
+标示单
+location
+地点
+present members
+出席人员
+subject
+主题
+conclusion
+结论
+decision items
+决议事项
+responsible department
+负责单位
+pre fixed finishing date
+预定完成日
+approved by / checked by / prepared by
+核准/审核/承办
+PCE assembly production schedule sheet PCE
+组装厂生
+model
+机锺
+work order
+工令
+revision
+版次
+remark
+备注
+production control confirmation
+生产确认
+checked by
+初审
+approved by
+核准
+department
+部门
+stock age analysis sheet
+库存货龄分析表
+on hand inventory
+现有库存
+available material
+良品可使用
+obsolete material
+良品已呆滞
+to be inspected or reworked
+待验或重工
+total
+合计
+cause description
+原因说明
+part number/ P/N
+料号
+type
+形态
+item/group/class
+类别
+quality
+品质
+prepared by
+制表 notes 说明
+year end physical inventory difference analysis sheet
+年
+physical inventory
+盘点数量
+physical count quantity
+帐面数量
+difference quantity
+差异量
+cause analysis
+原因分析
+raw materials
+原料
+materials
+物料
+finished product
+成品
+semi finished product
+半成品
+packing materials
+包材
+defective product/non good parts
+不良品
+disposed goods
+处理品
+warehouse/hub
+仓库
+on way location
+在途仓
+oversea location
+海外仓
+spare parts physical inventory list
+备品盘点清单
+spare molds location
+模具备品仓
+skid/pallet
+栈板
+tox machine
+自铆机
+wire EDM
+线割
+EDM
+放电机
+coil stock
+卷料
+sheet stock
+片料
+tolerance
+工差
+score=groove
+压线
+cam block
+滑块
+pilot
+导正筒
+trim
+剪外边
+pierce
+剪内边
+drag form
+压锻差
+pocket for the punch head
+挂钩槽
+slug hole
+废料孔
+feature die
+公母模
+expansion dwg
+展开图
+radius
+半径
+torch flame cut
+火焰切割
+set screw
+止付螺丝
+form block
+折刀
+stop pin
+定位销
+round pierce punch=die button
+圆冲子
+shape punch=die insert
+异形子
+stock locater block
+定位块
+under cut=scrap chopper
+清角
+active plate
+活动板
+baffle plate
+挡块
+cover plate
+盖板
+male die
+公模
+female die
+母模
+groove punch
+压线冲子
+air cushion eject rod
+气垫顶杆
+spring box eject plate
+弹簧箱顶板
+bushing block
+衬套
+insert
+入块
+club car
+高尔夫球车
+capability
+能力
+parameter
+参数
+factor
+系数
+phosphate
+皮膜化成
+viscosity
+涂料粘度
+alkalidipping
+脱脂
+main manifold
+主集流脉
+bezel
+斜视规
+blanking
+穿落模
+dejecting
+顶固模
+demagnetization
+去磁;消磁
+high speed transmission
+高速传递
+heat dissipation
+热传
+rack
+上料
+degrease
+脱脂
+rinse
+水洗
+alkaline etch
+龄咬
+desmut
+剥黑膜
+D.I. rinse
+纯水次
+Chromate
+铬酸处理
+Anodize
+阳性处理
+seal
+封孔
+revision
+版次
+part number/P/N
+料号
+good products
+良品
+scraped products
+报放心品
+defective products
+不良品
+finished products
+成品
+disposed products
+处理品
+barcode
+条码
+flow chart
+流程表单
+assembly
+组装
+stamping
+冲压
+molding
+成型
+spare parts=buffer
+备品
+coordinate
+座标
+dismantle the die
+折模
+auxiliary fuction
+辅助功能
+poly line
+多义线
+heater band
+加热片
+thermocouple
+热电偶
+sand blasting
+喷沙
+grit
+砂砾
+derusting machine
+除锈机
+degate
+打浇口
+dryer
+烘干机
+induction
+感应
+induction light
+感应光
+response=reaction=interaction
+感应
+ram
+连杆
+edge finder
+巡边器
+concave
+凸
+convex
+凹
+short
+射料不足
+nick
+缺口
+speck
+瑕??
+shine
+亮班
+splay
+银纹
+gas mark
+焦痕
+delamination
+起鳞
+cold slug
+冷块
+blush
+导色
+gouge
+沟槽;凿槽
+satin texture
+段面咬花
+witness line
+证示线
+patent
+专利
+grit
+沙砾
+granule=peuet=grain
+细粒
+grit maker
+抽粒机
+cushion
+缓冲
+magnalium
+镁铝合金
+magnesium
+镁金
+metal plate
+钣金
+lathe
+车 mill 锉
+plane
+刨
+grind
+磨
+drill
+铝
+boring
+镗
+blinster
+气泡
+fillet
+镶;嵌边
+through hole form
+通孔形式
+voller pin formality
+滚针形式
+cam driver
+铡楔
+shank
+摸柄
+crank shaft
+曲柄轴
+augular offset
+角度偏差
+velocity
+速度
+production tempo
+生产进度现状
+torque
+扭矩
+spline=the multiple keys
+花键
+quenching
+淬火
+tempering
+回火
+annealing
+退火
+carbonization
+碳化
+tungsten high speed steel
+钨高速的
+moly high speed steel
+钼高速的
+organic solvent
+有机溶剂
+bracket
+小磁导
+liaison
+联络单
+volatile
+挥发性
+resistance
+电阻
+ion
+离子
+titrator
+滴定仪
+beacon
+警示灯
+coolant
+冷却液
+crusher
+破碎机
+Archimedes worm
+阿基米德蜗杆
+safe load
+安全载荷
+concavity
+凹面、凹度
+wrench
+扳手
+flat leaf spring
+板簧
+woodruff key
+半圆键
+deformation
+变形
+oscillating bar
+摆杆
+oscillating follower
+摆动从动件
+cam with oscillating follower
+摆动从动件凸轮机构
+oscillating guide bar mechanism
+摆动导杆机构
+cycloidal gear
+摆线齿轮
+cycloidal tooth profile
+摆线齿形
+cycloidal motion
+摆线运动规律
+cycloidal pin wheel
+摆线针轮
+angle of contact
+包角
+cage
+保持架
+back to back arrangement
+背对背安装
+back angle
+背锥角
+back cone distance
+背锥距
+scale
+比例尺
+specific heat capacity
+比热容
+closed kinematic chain
+闭式链
+closed chain mechanism
+闭链机构
+arm
+臂部
+frequency converters
+变频器
+frequency control of motor speed
+变频调速
+speed change
+变速
+change gear change wheel
+变速齿轮
+modified gear
+变位齿轮
+modification coefficient
+变位系数
+standard gear
+标准齿轮
+standard spur gear
+标准直齿轮
+superficial mass factor
+表面质量系数
+surface coefficient of heat transfer
+表面传热系数
+surface roughness
+表面粗糙度
+combination in parallel
+并联式组合
+parallel mechanism
+并联机构
+parallel combined mechanism
+并联组合机构
+concurrent engineering
+并行工程
+concurred design, CD
+并行设计
+phase angle of unbalance
+不平衡相位
+imbalance (or unbalance)
+不平衡
+amount of unbalance
+不平衡量
+intermittent gearing
+不完全齿轮机构
+wave generator
+波发生器
+number of waves
+波数
+compensation
+补偿
+parameterization design, PD
+参数化设计
+residual stress
+残余应力
+operation control device
+操纵及控制装置
+Geneva wheel
+槽轮
+Maltese cross
+槽轮机构
+Geneva numerate
+槽数
+groove cam
+槽凸轮
+backlash
+侧隙
+differential gear train
+差动轮系
+differential screw mechanism
+差动螺旋机构
+differential
+差速器
+lathe
+车床
+bearing capacity factor
+承载量系数
+bearing capacity
+承载能力
+paired mounting
+成对安装
+dimension series
+尺寸系列
+tooth space
+齿槽
+spacewidth
+齿槽宽
+backlash
+齿侧间隙
+addendum
+齿顶高
+addendum circle
+齿顶圆
+dedendum
+齿根高
+dedendum circle
+齿根圆
+tooth thickness
+齿厚
+circular pitch
+齿距
+face width
+齿宽
+tooth profile
+齿廓
+tooth curve
+齿廓曲线
+gear
+齿轮
+speed changing gear boxes
+齿轮变速箱
+pinion and rack
+齿轮齿条机构
+hob ,hobbing cutter
+齿轮滚刀
+gear
+齿轮机构
+blank
+齿轮轮坯
+pinion unit
+齿轮传动系
+gear coupling
+齿轮联轴器
+rack gear
+齿条传动
+tooth number
+齿数
+gear ratio
+齿数比
+rack
+齿条
+silent chain
+齿形链、无声链
+form factor
+齿形系数
+tooth ratchet mechanism
+齿式棘轮机构
+gear shaper
+插齿机
+coincident points
+重合点
+contact ratio
+重合度
+punch
+冲床
+transmission ratio, speed ratio
+传动比
+driven system
+传动系统
+transmission angle
+传动角
+transmission shaft
+传动轴
+combination in series
+串联式组合
+series combined mechanism
+串联式组合机构
+cascade speed control
+串级调速
+innovation creation
+创新
+creation design
+创新设计
+normal load
+垂直载荷、法向载荷
+lip rubber seal
+唇形橡胶密封
+magnetic fluid bearing
+磁流体轴承
+driven pulley
+从动带轮
+driven link, follower
+从动件
+width of flat face
+从动件平底宽度
+follower dwell
+从动件停歇
+follower motion
+从动件运动规律
+driven gear
+从动轮
+bold line
+粗线
+coarse thread
+粗牙螺纹
+gear wheel
+大齿轮
+packer
+打包机
+slipping
+打滑
+belt driving
+带传动
+belt pulley
+带轮
+band brake
+带式制动器
+single row bearing
+单列轴承
+single direction thrust bearing
+单向推力轴承
+single universal joint
+单万向联轴节
+unit vector
+单位矢量
+equivalent coefficient of friction
+当量摩擦系数
+equivalent load
+当量载荷
+cutter
+刀具
+derivative
+导数
+chamfer
+倒角
+conduction of heat
+导热性
+lead
+导程
+lead angle
+导程角
+motion
+等加等减速运动规律
+conjugate yoke radial cam
+等径凸轮
+constant breadth cam
+等宽凸轮
+equivalent link
+等效构件
+equivalent force
+等效力
+equivalent moment of force
+等效力矩
+equivalent
+等效量
+equivalent mass
+等效质量
+equivalent moment of inertia
+等效转动惯量
+dynamically equivalent model
+等效动力学模型
+chassis
+底座
+lower pair
+低副
+chain dotted line
+点划线
+gasket
+垫圈
+gasket seal
+垫片密封
+belleville spring
+碟形弹簧
+bottom clearance
+顶隙
+dynamics
+动力学
+kinematical seal
+动密封
+dynamic energy
+动能
+dynamic viscosity
+动力粘度
+dynamic lubrication
+动力润滑
+dynamic balance
+动平衡
+dynamic balancing machine
+动平衡机
+dynamic characteristics
+动态特性
+dynamic analysis design
+动态分析设计
+dynamic reaction
+动压力
+dynamic load
+动载荷
+transverse plane
+端面
+transverse parameters
+端面参数
+transverse circular pitch
+端面齿距
+transverse tooth profile
+端面齿廓
+transverse contact ratio
+端面重合度
+transverse module
+端面模数
+transverse pressure angle
+端面压力角
+forge
+锻造
+symmetry circulating stress
+对称循环应力
+radial (or in line ) roller follower
+对心滚子从动件
+radial (or in line ) translating follower
+对心直动从动件
+radial reciprocating follower
+对心移动从动件
+in line slider crank (or crank slider) mechanism
+对心曲
+multi row bearing
+多列轴承
+poly V belt
+多楔带
+polynomial motion
+多项式运动规律
+rotor with several masses
+多质量转子
+idle gear
+惰轮
+rating life
+额定寿命
+load rating
+额定载荷
+generating line
+发生线
+generating plane
+发生面
+normal plane
+法面
+normal parameters
+法面参数
+normal circular pitch
+法面齿距
+normal module
+法面模数
+normal pressure angle
+法面压力角
+normal pitch
+法向齿距
+normal tooth profile
+法向齿廓
+straight sided normal worm
+法向直廓蜗杆
+normal force
+法向力
+feedback combining
+反馈式组合
+inverse ( or backward) kinematics
+反向运动学
+kinematic inversion
+反转法
+Arctan
+反正切
+generating cutting
+范成法
+form cutting
+仿形法
+concept design, CD
+方案设计、概念设计
+shockproof device
+防振装置
+flywheel
+飞轮
+moment of flywheel
+飞轮矩
+nonstandard gear
+非标准齿轮
+non contact seal
+非接触式密封
+aperiodic speed fluctuation
+非周期性速度波动
+non circular gear
+非圆齿轮
+powder metallurgy
+粉末合金
+lead angle at reference cylinder
+分度圆柱导程角
+helix angle at reference cylinder
+分度圆柱螺旋角
+denominator
+分母
+numerator
+分子
+analytical method
+分析法
+planetary differential
+封闭差动轮系
+compound hinge
+复合铰链
+compound combining
+复合式组合
+compound (or combined) gear train
+复合轮系
+compound flat belt
+复合平带
+combined stress
+复合应力
+Compound screw mechanism
+复式螺旋机构
+mechanism
+复杂机构 complex
+Assur group
+杆组
+interference
+干涉
+stiffness coefficient
+刚度系数
+rigid circular spline
+刚轮
+wire soft shaft
+钢丝软轴
+body guidance mechanism
+刚体导引机构
+rigid impulse (shock)
+刚性冲击
+rigid rotor
+刚性转子
+rigid bearing
+刚性轴承
+rigid coupling
+刚性联轴器
+height series
+高度系列
+high speed belt
+高速带
+higher pair
+高副
+undercutting
+根切
+nominal diameter
+公称直径
+height series
+高度系列
+work
+功
+application factor
+工况系数
+technological design
+工艺设计
+working cycle diagram
+工作循环图
+operation mechanism
+工作机构
+external loads
+工作载荷
+working space
+工作空间
+working stress
+工作应力
+effective resistance
+工作阻力
+effective resistance moment
+工作阻力矩
+common normal line
+公法线
+general constraint
+公共约束
+metric gears
+公制齿轮
+power
+功率
+function analyses design
+功能分析设计
+conjugate profiles
+共轭齿廓
+conjugate cam
+共轭凸轮
+link
+构件
+blower
+鼓风机
+solid lubricant
+固体润滑剂
+jointed manipulator
+关节型操作器
+inertia force
+惯性力
+moment of inertia ,shaking moment
+惯性力矩
+balance of shaking force
+惯性力平衡
+full balance of shaking force
+惯性力完全平衡
+partial balance of shaking force
+惯性力部分平衡
+resultant moment of inertia
+惯性主矩
+resultant vector of inertia
+惯性主失
+crown gear
+冠轮
+generation mechanism
+广义机构
+generalized coordinate
+广义坐标
+path generation
+轨迹生成
+path generator
+轨迹发生器
+hob
+滚刀
+raceway
+滚道
+rolling element
+滚动体
+rolling bearing
+滚动轴承
+rolling bearing identification code
+滚动轴承代号
+needle roller
+滚针
+needle roller bearing
+滚针轴承
+roller
+滚子
+roller bearing
+滚子轴承
+radius of roller
+滚子半径
+roller follower
+滚子从动件
+roller chain
+滚子链
+double roller chain coupling
+滚子链联轴器
+ball screw
+滚珠丝杆
+roller clutch
+滚柱式单向超越离合器
+undercutting
+过度切割
+function generator
+函数发生器
+function generation
+函数生成
+oil bearing
+含油轴承
+oil consumption
+耗油量
+oil consumption factor
+耗油量系数
+H. Hertz equation
+赫兹公式
+resultant bending moment
+合成弯矩
+resultant force
+合力
+resultant moment of force
+合力矩
+black box
+黑箱
+abscissa
+横坐标
+interchangeable gears
+互换性齿轮
+spline
+花键
+feather key
+滑键、导键
+sliding bearing
+滑动轴承
+sliding ratio
+滑动率
+slider
+滑块
+toroid helicoids worm
+环面蜗杆
+annular spring
+环形弹簧
+grey cast iron
+灰铸铁
+return
+回程
+balance of rotors
+回转体平衡
+gear train
+混合轮系 compound
+integrate
+积分
+mechanical electrical integration system design
+机电一
+mechanism
+机构
+analysis of mechanism
+机构分析
+balance of mechanism
+机构平衡
+mechanism
+机构学
+kinematic design of mechanism
+机构运动设计
+kinematic sketch of mechanism
+机构运动简图
+synthesis of mechanism
+机构综合
+constitution of mechanism
+机构组成
+frame, fixed link
+机架
+kinematic inversion
+机架变换
+machine
+机器
+robot
+机器人
+manipulator
+机器人操作器
+robotics
+机器人学
+technique process
+技术过程
+technical and economic evaluation
+技术经济评价
+technique system
+技术系统
+machinery
+机械
+mechanical creation design, MCD
+机械创新设计
+mechanical system design, MSD
+机械系统设计
+dynamic analysis of machinery
+机械动力分析
+dynamic design of machinery
+机械动力设计
+dynamics of machinery
+机械动力学
+modern machine design
+机械的现代设计
+mechanical system
+机械系统
+mechanical advantage
+机械利益
+balance of machinery
+机械平衡
+manipulator
+机械手
+mechanical behavior
+机械特性
+mechanical speed governors
+机械调速
+mechanical efficiency
+机械效率
+theory of machines and mechanisms
+机械原理
+coefficient of speed fluctuation
+机械运转不均匀系数
+mechanical stepless speed changes
+机械无级变速
+fundamental mechanism
+基础机构
+basic rating life
+基本额定寿命
+case based design,CBD
+基于实例设计
+base circle
+基圆
+radius of base circle
+基圆半径
+base pitch
+基圆齿距
+pressure angle of base circle
+基圆压力角
+base cylinder
+基圆柱
+base cone
+基圆锥
+quick return mechanism
+急回机构
+quick return characteristics
+急回特性
+advance to return time ratio
+急回系数
+quick return motion
+急回运动
+ratchet
+棘轮
+ratchet mechanism
+棘轮机构
+pawl
+棘爪
+extreme (or limiting) position
+极限位置
+crank angle between extreme (or limiting) positions
+极
+computer aided design, CAD
+计算机辅助设计
+computer aided manufacturing, CAM
+计算机辅助制造
+computer integrated manufacturing system, CIMS
+计算
+calculated bending moment
+计算弯矩
+weighting efficient
+加权系数
+acceleration
+加速度
+acceleration analysis
+加速度分析
+acceleration diagram
+加速度曲线
+knife edge follower
+尖底从动件
+backlash
+间隙
+intermittent motion mechanism
+间歇运动机构
+reduction ratio
+减速比
+reduction gear
+减速齿轮、减速装置
+speed reducer
+减速器
+anti friction quality
+减摩性
+involute helicoid
+渐开螺旋面
+involute
+渐开线
+involute profile
+渐开线齿廓
+involute gear
+渐开线齿轮
+generating line of involute
+渐开线发生线
+involute equation
+渐开线方程
+involute function
+渐开线函数
+involute worm
+渐开线蜗杆
+pressure angle of involute
+渐开线压力角
+involute spline
+渐开线花键
+simple harmonic motion
+简谐运动
+key
+键
+keyway
+键槽
+repeated stress
+交变应力
+repeated fluctuating load
+交变载荷
+cross belt drive
+交叉带传动
+crossed helical gears
+交错轴斜齿轮
+scoring
+胶合
+angular acceleration
+角加速度
+angular velocity
+角速度
+angular velocity ratio
+角速比
+angular contact ball bearing
+角接触球轴承
+angular contact thrust bearing
+角接触推力轴承
+angular contact radial bearing
+角接触向心轴承
+angular contact bearing
+角接触轴承
+hinge
+铰链、枢纽
+correcting plane
+校正平面
+contact stress
+接触应力
+contact seal
+接触式密封
+multi diameter shaft
+阶梯轴
+structure
+结构
+structural design
+结构设计
+section
+截面
+pitch point
+节点
+pitch line
+节线
+pitch circle
+节圆
+thickness on pitch circle
+节圆齿厚
+pitch diameter
+节圆直径
+pitch cone
+节圆锥
+pitch cone angle
+节圆锥角
+analytical design
+解析设计
+tight side
+紧边
+fastener
+紧固件
+diametral pitch
+径节
+radial direction
+径向
+dynamic equivalent radial load
+径向当量动载荷
+static equivalent radial load
+径向当量静载荷
+basic dynamic radial load rating
+径向基本额定动载荷
+basic static radial load tating
+径向基本额定静载荷
+radial contact bearing
+径向接触轴承
+radial plane
+径向平面
+radial internal clearance
+径向游隙
+radial load
+径向载荷
+radial load factor
+径向载荷系数
+clearance
+径向间隙
+static force
+静力
+static balance
+静平衡
+static load
+静载荷
+static seal
+静密封
+passive degree of freedom
+局部自由度
+matrix
+矩阵
+square threaded form
+矩形螺纹
+buttress thread form
+锯齿形螺纹
+square jaw positive contact clutch
+矩形牙嵌式离合器
+absolute dimensional factor
+绝对尺寸系数
+absolute motion
+绝对运动
+absolute velocity
+绝对速度
+load balancing mechanism
+均衡装置
+compression strength
+抗压强度
+open belt drive
+开口传动
+open kinematic chain
+开式链
+open chain mechanism
+开链机构
+degree of reliability
+可靠度
+reliability
+可靠性
+reliability design, RD
+可靠性设计
+air spring
+空气弹簧
+spatial mechanism
+空间机构
+spatial linkage
+空间连杆机构
+spatial cam
+空间凸轮机构
+spatial kinematic pair
+空间运动副
+spatial kinematic chain
+空间运动链
+idle
+空转
+width series
+宽度系列
+block diagram
+框图
+centrifugal force
+离心力
+centrifugal stress
+离心应力
+clutch
+离合器
+centrifugal seal
+离心密封
+pitch curve
+理论廓线
+theoretical line of action
+理论啮合线
+membership
+隶属度
+force
+力
+force polygon
+力多边形
+force drive (or force closed) cam mechanism
+力封闭型
+moment
+力矩
+equilibrium
+力平衡
+couple
+力偶
+moment of couple
+力偶矩
+connecting rod, coupler
+连杆
+linkage
+连杆机构
+coupler curve
+连杆曲线
+line of centers
+连心线
+chain
+链
+chain gearing
+链传动装置
+sprocket sprocket wheel sprocket gear chain wheel
+链轮
+V
+带 tight up V belt 联组
+coupling shaft coupling
+联轴器
+two dimensional cam
+两维凸轮
+critical speed
+临界转速
+six bar linkage
+六杆机构
+double Haas planer
+龙门刨床
+blank
+轮坯
+gear train
+轮系
+screw
+螺杆
+thread pitch
+螺距
+screw nut
+螺母
+helical bevel gear
+螺旋锥齿轮
+screws
+螺钉
+bolts
+螺栓
+lead
+螺纹导程
+screw efficiency
+螺纹效率
+power screw
+螺旋传动
+spiral seal
+螺旋密封
+thread (of a screw)
+螺纹
+helical pair
+螺旋副
+screw mechanism
+螺旋机构
+helix angle
+螺旋角
+helix ,helical line
+螺旋线
+green design design for environment
+绿色设计
+Geneva wheel Geneva gear
+马耳他机构
+Maltese cross
+马耳他十字
+pulsating stepless speed changes
+脉动无级变速
+fluctuating circulating stress
+脉动循环应力
+fluctuating load
+脉动载荷
+rivet
+铆钉
+labyrinth seal
+迷宫密封
+seal
+密封
+seal belt
+密封带
+seal gum
+密封胶
+potted component
+密封元件
+sealing arrangement
+密封装置
+face to face arrangement
+面对面安装
+nominal stress
+名义应力、公称应力
+modular design, MD
+模块化设计
+modular system
+模块式传动系统
+morphology box
+模幅箱
+fuzzy set
+模糊集
+fuzzy evaluation
+模糊评价
+module
+模数
+friction
+摩擦
+friction angle
+摩擦角
+friction force
+摩擦力
+tribology design, TD
+摩擦学设计
+frictional resistance
+摩擦阻力
+friction moment
+摩擦力矩
+coefficient of friction
+摩擦系数
+friction circle
+摩擦圆
+end effector
+末端执行器
+objective function
+目标函数
+corrosion resistance
+耐腐蚀性
+wear resistance
+耐磨性
+mechanism with flexible elements
+挠性机构
+flexible rotor
+挠性转子
+internal gear
+内齿轮
+ring gear
+内齿圈
+internal force
+内力
+inner ring
+内圈
+energy
+能量
+viscosity
+能量指示图
+counterclockwise (or anticlockwise)
+逆时针
+engaging out
+啮出
+engagement, mesh, gearing
+啮合
+contact points
+啮合点
+working pressure angle
+啮合角
+line of action
+啮合线
+length of line of action
+啮合线长度
+engaging in
+啮入
+shaper
+牛头刨床
+torsion stress
+扭转应力
+moment of torque
+扭矩
+helical torsion spring
+扭簧
+Nomogram
+诺模图
+O ring seal O
+形密封圈密封
+disk cam
+盘形凸轮
+disk like rotor
+盘形转子
+parabolic motion
+抛物线运动
+fatigue limit
+疲劳极限
+fatigue strength
+疲劳强度
+offset
+偏置式
+offset distance
+偏(心) 距
+eccentricity ratio
+偏心率
+eccentric mass
+偏心质量
+offset circle
+偏距圆
+eccentric
+偏心盘
+offset roller follower
+偏置滚子从动件
+offset knife edge follower
+偏置尖底从动件
+offset slider crank mechanism
+偏置曲柄滑块机构
+matching
+拼接
+evaluation and decision
+评价与决策
+frequency
+频率
+flat belt
+平带
+flat belt driving
+平带传动
+flat face follower
+平底从动件
+face width
+平底宽度
+bisector
+平分线
+average stress
+平均应力
+mean screw diameter
+平均中径
+average velocity
+平均速度
+balance
+平衡
+balancing machine
+平衡机
+balancing quality
+平衡品质
+correcting plane
+平衡平面
+balancing mass
+平衡质量
+counterweight
+平衡重
+balancing speed
+平衡转速
+planar pair, flat pair
+平面副
+planar mechanism
+平面机构
+planar kinematic pair
+平面运动副
+planar linkage
+平面连杆机构
+planar cam
+平面凸轮
+planar cam mechanism
+平面凸轮机构
+parallel helical gears
+平面轴斜齿轮
+parallel key
+普通平键
+other mechanism in common use
+其他常用机构
+starting period
+起动阶段
+starting torque
+启动力矩
+pneumatic mechanism
+气动机构
+singular position
+奇异位置
+initial contact , beginning of contact
+起始啮合点
+gas bearing
+气体轴承
+jack
+千斤顶
+sunk key
+嵌入键
+forced vibration
+强迫振动
+depth of cut
+切齿深度
+crank
+曲柄
+crank shaper (guide bar) mechanism
+曲柄导杆机构
+slider crank (or crank slider) mechanism
+曲柄滑块机构
+crank rocker mechanism
+曲柄摇杆机构
+spiral bevel gear
+曲齿锥齿轮
+curvature
+曲率
+radius of curvature
+曲率半径
+curved shoe follower
+曲面从动件
+curve matching
+曲线拼接
+curvilinear motion
+曲线运动
+crank shaft
+曲轴
+driving force
+驱动力
+driving moment (torque)
+驱动力矩
+whole depth
+全齿高
+weight sets
+权重集
+ball
+球
+convex roller
+球面滚子
+ball bearing
+球轴承
+spheric pair
+球面副
+spherical involute
+球面渐开线
+spherical motion
+球面运动
+sphere pin pair
+球销副
+polar coordinate manipulator
+球坐标操作器
+spontaneous ignition
+燃点
+herringbone gear
+人字齿轮
+redundant degree of freedom
+冗余自由度
+flexspline
+柔轮
+flexible automation
+柔性自动化
+lubricant film
+润滑油膜
+lubrication device
+润滑装置
+lubrication
+润滑
+lubricant
+润滑剂
+serration spline
+三角形花键
+V thread screw
+三角形螺纹
+three dimensional cam
+三维凸轮
+grinding wheel groove
+砂轮越程槽
+hour glass
+砂漏
+planetary drive with small teeth difference
+少齿差行星
+design methodology
+设计方法学
+design variable
+设计变量
+design constraints
+设计约束
+deep groove ball bearing
+深沟球轴承
+productive resistance
+生产阻力
+rise
+升程
+lift
+升距
+cam profile
+实际廓线
+vector
+矢量
+output work
+输出功
+output link
+输出构件
+output mechanism
+输出机构
+output torque
+输出力矩
+output shaft
+输出轴
+input link
+输入构件
+mathematic model
+数学模型
+actual line of action
+实际啮合线
+double slider mechanism, ellipsograph
+双滑块机构
+double crank mechanism
+双曲柄机构
+hyperboloid gear
+双曲面齿轮
+studs
+双头螺柱
+constant velocity (or double) universal joint
+双万向联轴
+double rocker mechanism
+双摇杆机构
+Oldham coupling
+双转块机构
+double row bearing
+双列轴承
+double direction thrust bearing
+双向推力轴承
+slack side
+松边
+clockwise
+顺时针
+instantaneous center
+瞬心
+dead point
+死点
+four bar linkage
+四杆机构
+velocity
+速度
+coefficient of speed fluctuation
+速度不均匀(波动)系数
+speed fluctuation
+速度波动
+velocity diagram
+速度曲线
+instantaneous center of velocity
+速度瞬心
+step pulley
+塔轮
+pedal
+踏板
+vice
+台钳、虎钳
+sun gear
+太阳轮
+elasticity sliding motion
+弹性滑动
+elastic coupling flexible coupling
+弹性联轴器
+rubber cushioned sleeve bearing coupling
+弹性套柱销
+sleeve
+套筒
+acme thread form
+梯形螺纹
+special kinematic chain
+特殊运动链
+characteristics
+特性
+equivalent mechanism
+替代机构
+modulation, regulation
+调节
+self aligning roller bearing
+调心滚子轴承
+self aligning ball bearing
+调心球轴承
+self aligning bearing
+调心轴承
+speed governing
+调速
+adjustable speed motors
+调速电动机
+speed control system
+调速系统
+variable voltage control
+调压调速
+regulator, governor
+调速器
+ferrofluid seal
+铁磁流体密封
+stopping phase
+停车阶段
+dwell
+停歇
+synchronous belt
+同步带
+synchronous belt drive
+同步带传动
+convex
+凸的，凸面体
+cam
+凸轮
+inverse cam mechanism
+凸轮倒置机构
+cam , cam mechanism
+凸轮机构
+cam profile
+凸轮廓线
+layout of cam profile
+凸轮廓线绘制
+pitch curve
+凸轮理论廓线
+flange coupling
+凸缘联轴器
+atlas
+图册、图谱
+graphical method
+图解法
+rise
+推程
+thrust ball bearing
+推力球轴承
+thrust bearing
+推力轴承
+tool withdrawal groove
+退刀槽
+anneal
+退火
+gyroscope
+陀螺仪
+V belt V
+带
+external force
+外力
+outer ring
+外圈
+boundary dimension
+外形尺寸
+Hooks coupling universal coupling
+万向联轴器
+external gear
+外齿轮
+beading stress
+弯曲应力
+bending moment
+弯矩
+wrist
+腕部
+reciprocating motion
+往复移动
+reciprocating seal
+往复式密封
+on net design, OND
+网上设计
+differential screw mechanism
+微动螺旋机构
+displacement
+位移
+displacement diagram
+位移曲线
+pose , position and orientation
+位姿
+steady motion period
+稳定运转阶段
+robust design
+稳健设计
+worm
+蜗杆
+worm gearing
+蜗杆传动机构
+number of threads
+蜗杆头数
+diametral quotient
+蜗杆直径系数
+worm and worm gear
+蜗杆蜗轮机构
+worm cam interval mechanism
+蜗杆形凸轮步进机构
+hands of worm
+蜗杆旋向
+worm gear
+蜗轮
+power spring
+涡圈形盘簧
+stepless speed changes devices
+无级变速装置
+infinite
+无穷大
+crank arm, planet carrier
+系杆
+field balancing
+现场平衡
+radial bearing
+向心轴承
+centrifugal force
+向心力
+relative velocity
+相对速度
+relative motion
+相对运动
+relative gap
+相对间隙
+quadrant
+象限
+plasticine
+橡皮泥
+fine threads
+细牙螺纹
+pin
+销
+consumption
+消耗
+pinion
+小齿轮
+minor diameter
+小径
+balata spring
+橡胶弹簧
+modified trapezoidal acceleration motion
+修正梯形加速
+modified sine acceleration motion
+修正正弦加速度运
+helical gear
+斜齿圆柱齿轮
+taper key
+斜键、钩头楔键
+leakage
+泄漏
+harmonic gear
+谐波齿轮
+harmonic driving
+谐波传动
+harmonic generator
+谐波发生器
+equivalent spur gear of the helical gear
+斜齿轮的当量直
+spindle
+心轴
+coefficient of travel speed variation
+行程速度变化系数
+advance to return time ratio
+行程速比系数
+planetary transmission
+行星齿轮装置
+planet gear
+行星轮
+planetary speed changing devices
+行星轮变速装置
+planetary gear train
+行星轮系
+positive drive (or form closed) cam mechanism
+形封闭
+virtual reality
+虚拟现实
+virtual reality technology, VRT
+虚拟现实技术
+virtual reality design, VRD
+虚拟现实设计
+redundant (or passive) constraint
+虚约束
+allowable amount of unbalance
+许用不平衡量
+allowable pressure angle
+许用压力角
+cantilever structure
+悬臂结构
+cantilever beam
+悬臂梁
+circulating power load
+循环功率流
+running torque
+旋转力矩
+rotating seal
+旋转式密封
+rotary motion
+旋转运动
+type selection
+选型
+pressure
+压力
+center of pressure
+压力中心
+compressor
+压缩机
+compressive stress
+压应力
+pressure angle
+压力角
+jaw (teeth) positive contact coupling
+牙嵌式联轴器
+Jacobi matrix
+雅可比矩阵
+rocker
+摇杆
+hydrodynamic drive
+液力传动
+hydraulic couplers
+液力耦合器
+liquid spring
+液体弹簧
+hydraulic stepless speed changes
+液压无级变速
+hydraulic mechanism
+液压机构
+generalized kinematic chain
+一般化运动链
+reciprocating follower
+移动从动件
+prismatic pair, sliding pair
+移动副
+prismatic joint
+移动关节
+wedge cam
+移动凸轮
+increment or decrement work
+盈亏功
+stress amplitude
+应力幅
+stress concentration
+应力集中
+factor of stress concentration
+应力集中系数
+stress diagram
+应力图
+stress strain diagram
+应力-应变图
+optimal design
+优化设计
+oil bottle
+油杯
+oil can
+油壶
+oily ditch seal
+油沟密封
+useless resistance
+有害阻力
+useful resistance
+有益阻力
+effective tension
+有效拉力
+effective circle force
+有效圆周力
+detrimental resistance
+有害阻力
+cosine acceleration (or simple harmonic) motion
+余弦加
+preload
+预紧力
+primer mover
+原动机
+round belt
+圆带
+round belt drive
+圆带传动
+circular thickness
+圆弧齿厚
+hollow flank worm
+圆弧圆柱蜗杆
+fillet radius
+圆角半径
+disc friction clutch
+圆盘摩擦离合器
+disc brake
+圆盘制动器
+prime mover
+原动机
+original mechanism
+原始机构
+circular gear
+圆形齿轮
+cylindrical roller
+圆柱滚子
+cylindrical roller bearing
+圆柱滚子轴承
+cylindric pair
+圆柱副
+barrel (cylindric) cam
+圆柱式凸轮步进运动机构
+cylindroid helical coil extension spring
+圆柱螺旋拉伸
+cylindroid helical coil torsion spring
+圆柱螺旋扭转弹簧
+cylindroid helical coil compression spring
+圆柱螺旋压
+cylindrical cam
+圆柱凸轮
+cylindrical worm
+圆柱蜗杆
+cylindrical coordinate manipulator
+圆柱坐标操作器
+conoid helical coil compression spring
+圆锥螺旋扭转弹
+tapered roller
+圆锥滚子
+tapered roller bearing
+圆锥滚子轴承
+bevel gears
+圆锥齿轮机构
+cone angle
+圆锥角
+driving link
+原动件
+constraint
+约束
+constraint condition
+约束条件
+constraining force
+约束反力
+jerk
+跃度
+jerk diagram
+跃度曲线
+kinematic inversion
+运动倒置
+kinematic precept design
+运动方案设计
+kinematic analysis
+运动分析
+kinematic pair
+运动副
+moving link
+运动构件
+kinematic sketch
+运动简图
+kinematic chain
+运动链
+undercutting
+运动失真
+kinematic design
+运动设计
+cycle of motion
+运动周期
+kinematic synthesis
+运动综合
+coefficient of velocity fluctuation
+运转不均匀系数
+kenematic viscosity
+运动粘度
+load
+载荷
+narrow V belt
+窄 V 带
+felt ring seal
+毡圈密封
+generating
+展成法
+tension
+张紧力
+tension pulley
+张紧轮
+vibration
+振动
+shaking couple
+振动力矩
+frequency of vibration
+振动频率
+amplitude of vibration
+振幅
+tangent mechanism
+正切机构
+direct (forward) kinematics
+正向运动学
+sine generator, scotch yoke
+正弦机构
+loom
+织布机
+normal stress
+正应力、法向应力
+brake
+制动器
+spur gear
+直齿圆柱齿轮
+straight bevel gear
+直齿锥齿轮
+right triangle
+直角三角形
+Cartesian coordinate manipulator
+直角坐标操作器
+diametral quotient
+直径系数
+diameter series
+直径系列
+hindley worm
+直廓环面蜗杆
+linear motion
+直线运动
+straight shaft
+直轴
+mass
+质量
+center of mass
+质心
+mass radius product
+质径积
+intelligent design, ID
+智能化设计
+mid plane
+中间平面
+center distance
+中心距
+center distance change
+中心距变动
+central gear
+中心轮
+mean diameter
+中径
+final contact, end of contact
+终止啮合点
+pitch
+周节
+periodic speed fluctuation
+周期性速度波动
+epicyclic gear train
+周转轮系
+toggle mechanism
+肘形机构
+shaft
+轴
+bearing cup
+轴承盖
+bearing alloy
+轴承合金
+bearing block
+轴承座
+bearing height
+轴承高度
+bearing width
+轴承宽度
+bearing bore diameter
+轴承内径
+bearing life
+轴承寿命
+bearing ring
+轴承套圈
+bearing outside diameter
+轴承外径
+journal
+轴颈
+bearing bush
+轴瓦、轴承衬
+shaft end ring
+轴端挡圈
+shaft collar
+轴环
+shaft shoulder
+轴肩
+shaft angle
+轴角
+axial direction
+轴向
+axial tooth profile
+轴向齿廓
+dynamic equivalent axial load
+轴向当量动载荷
+static equivalent axial load
+轴向当量静载荷
+basic dynamic axial load rating
+轴向基本额定动载荷
+basic static axial load rating
+轴向基本额定静载荷
+axial contact bearing
+轴向接触轴承
+axial plane
+轴向平面
+axial internal clearance
+轴向游隙
+axial load
+轴向载荷
+axial load factor
+轴向载荷系数
+axial thrust load
+轴向分力
+driving link
+主动件
+driving gear
+主动齿轮
+driving pulley
+主动带轮
+whitworth mechanism
+转动导杆机构
+revolute (turning) pair
+转动副
+swiveling speed rotating speed
+转速
+revolute joint
+转动关节
+revolving shaft
+转轴
+rotor
+转子
+balance of rotor
+转子平衡
+assembly condition
+装配条件
+bevel gear
+锥齿轮
+common apex of cone
+锥顶
+cone distance
+锥距
+equivalent spur gear of the bevel gear
+锥齿轮的当量直
+milled helicoids worm
+锥面包络圆柱蜗杆
+hypoid gear
+准双曲面齿轮
+subroutine
+子程序
+sub mechanism
+子机构
+automation
+自动化
+self locking
+自锁
+condition of self locking
+自锁条件
+degree of freedom, mobility
+自由度
+total contact ratio
+总重合度
+resultant force
+总反力
+theory of constitution
+组成原理
+composite tooth form
+组合齿形
+stack mounting
+组合安装
+combined mechanism
+组合机构
+resistance
+阻抗力
+overlap contact ratio
+纵向重合度
+ordinate
+纵坐标
+combined mechanism
+组合机构
+minimum teeth number
+最少齿数
+minimum radius
+最小向径
+applied force
+作用力
+coordinate frame
+坐标系
+3D coordinate measurement
+三次元量床
+boring machine
+搪孔机
+cnc milling machine CNC
+铣床
+contouring machine
+轮廓锯床
+copy grinding machine
+仿形磨床
+copy lathe
+仿形车床
+copy milling machine
+仿形铣床
+copy shaping machine
+仿形刨床
+cylindrical grinding machine
+外圆磨床
+die spotting machine
+合模机
+engraving machine
+雕刻机
+engraving E.D.M.
+雕模放置加工机
+form grinding machine
+成形磨床
+graphite machine
+石墨加工机
+horizontal boring machine
+卧式镗床
+horizontal machine center
+卧式加工中心
+internal cylindrical machine
+内圆磨床
+jig boring machine
+坐标镗床
+jig grinding machine
+坐标磨床
+lap machine
+研磨
+machine center
+加工中心
+multi model miller
+靠磨铣床
+NC drilling machine NC
+钻床
+NC grinding machine NC
+磨床
+NC lathe NC
+车床
+NC programming system NC
+程式制作系统
+planer
+龙门刨床
+profile grinding machine
+投影磨床
+projection grinder
+投影磨床
+radial drilling machine
+旋臂钻床
+shaper
+牛头刨床
+surface grinder
+平面磨床
+try machine
+试模机
+turret lathe
+转塔车床
+universal tool grinding machine
+万能工具磨床
+vertical machine center
+立式加工中心
+wire E.D.M.
+线割放电加工机
+barrel
+滚筒(加工)
+bending
+折弯机
+broaching
+拉床
+centering
+定中心
+cutting
+切削
+cylindrical lathe cutting
+外圆车削
+electric discharge machine
+放电加工
+electrolytic grinding
+电解研磨
+embossing
+压花加工
+facing
+面车削
+filing
+锉刀修润
+hand finishing
+手工修润
+hemming
+卷边加工
+hobbing
+滚齿加工
+joggling
+摇动加工
+lapping
+抛光/研磨修润
+laser beam machining
+雷射加工
+lathe cutting
+车床车削
+planning
+刨削加工
+polishing
+抛亮光
+reaming
+铰孔修润
+rough machining
+粗切削
+rounding
+圆形加工
+sawing
+锯削
+scaling
+清除钢锭缺陷
+shaping
+成形加工
+skiving
+表面研磨
+slotting
+切缝切削
+taper turning
+锥度车削
+thread cutting
+螺纹切削
+ultrasonic machining
+超音波加工
+up cut milling
+逆铣加工
+alloy tool steel
+合金工具钢
+aluminium alloy
+铝合金钢
+bearing alloy
+轴承合金
+blister steel
+浸碳钢
+bonderized steel sheet
+邦德防蚀钢板
+carbon tool steel
+碳素工具钢
+clad sheet
+被覆板
+clod work die steel
+冷锻模用钢
+emery
+金钢砂
+ferrostatic pressure
+钢铁水静压力
+forging die steel
+锻造模用钢
+galvanized steel sheet
+镀锌铁板
+hard alloy steel
+超硬合金钢
+high speed tool steel
+高速度工具钢
+hot work die steel
+热锻模用钢
+low alloy tool steel
+特殊工具钢
+low manganese casting steel
+低锰铸钢
+marging steel
+马式体高强度热处理钢
+martrix alloy
+马特里斯合金
+meehanite cast iron
+米汉纳铸钢
+meehanite metal
+米汉纳铁
+merchant iron
+市售钢材
+molybdenum high speed steel
+钼系高速钢
+molybdenum steel
+钼钢
+nickel chromium steel
+镍铬钢
+prehardened steel
+顶硬钢
+silicon steel sheet
+矽钢板
+stainless steel
+不锈钢
+tin plated steel sheet
+镀锡铁板
+tough pitch copper
+韧铜
+troostite
+屈氏体
+tungsten steel
+钨钢
+vinyl tapped steel sheet
+塑胶覆面钢板
+acetylene
+乙炔
+ampere
+电流安培
+angle welding
+角焊
+arc
+电弧
+argon arc welding
+氩弧焊接
+bare electrode
+光熔接条
+butt welding
+对接焊接
+camber
+电弧弯曲
+cascade
+阶叠熔接法
+clad weld
+被覆熔接
+crator
+焊疤
+excess metal
+多余金属
+filler rod
+焊条
+fillet weld
+填角焊接
+gas shield
+气体遮蔽
+groove welding
+起槽熔接
+hand face shield
+手握面罩
+hard facing
+硬表面堆焊
+jig welding
+工模焊接
+laser beam welding
+雷射光焊接
+metal electrode insert gas welding MIG
+熔接
+nugget
+点焊熔核
+overlaying
+堆焊
+peening of welding
+珠击熔接法
+plug welding
+塞孔熔接
+positioned welding
+正向熔接
+pressure welding
+压焊
+propane gas cutting
+丙烷气切割
+pure nickel electrode
+纯镍熔接条
+reinforcement of weld
+加强焊接
+resist
+抗蚀护膜
+root running
+背面熔接
+seam
+焊缝
+seaming
+接合
+seam welding
+流缝熔接
+series seam welding
+串联缝熔接
+skip welding process
+跳焊法
+spark
+火花
+spot welding
+点焊接
+stitch welding
+针角焊接
+stud arc welding
+电弧焊接
+under laying
+下部焊层
+void
+焊接空隙
+weld flow mark
+焊接流痕
+weld flush
+焊缝凸起
+weld line
+焊接纹
+weld mark
+焊接痕
+weld penetration
+熔接透入
+weld zone
+焊接区
+welding
+焊接
+welding bead
+焊接泡
+welding direction
+焊接方向
+welding distortion
+焊接变形
+welding flux
+焊剂
+welding ground
+电熔接地
+welding interval
+焊接周期
+welding stress
+熔接应变
+welding torch
+熔接气炬
+molding
+成型
+spare parts=buffer
+备品
+coordinate
+座标
+dismantle the die
+折模
+auxiliary fuction
+辅助功能
+poly line
+多义线
+heater band
+加热片
+thermocouple
+热电偶
+sand blasting
+喷沙
+grit
+砂砾
+derusting machine
+除锈机
+degate
+打浇口
+dryer
+烘干机
+induction
+感应
+induction light
+感应光
+response=reaction=interaction
+感应
+ram
+连杆
+edge finder
+巡边器
+concave
+凸
+convex
+凹
+short
+射料不足
+nick
+缺口
+speck
+瑕疵
+shine
+亮班
+splay
+银纹
+gas mark
+焦痕
+delamination
+起鳞
+cold slug
+冷块
+blush
+导色
+gouge
+沟槽;凿槽
+satin texture
+段面咬花
+witness line
+界线
+patent
+专利
+grit
+沙砾
+granule=peuet=grain
+细粒
+grit maker
+抽粒机
+cushion
+缓冲
+magnalium
+镁铝合金
+magnesium
+镁金
+metal plate
+钣金
+lathe
+车
+mill
+锉
+plane
+刨
+grind
+磨
+drill
+铝
+boring
+镗
+blinster
+气泡
+fillet
+镶;嵌边
+through hole form
+通孔形式
+voller pin formality
+滚针形式
+cam driver
+铡楔
+shank
+摸柄
+crank shaft
+曲柄轴
+augular offset
+角度偏差
+velocity
+速度
+production tempo
+生产进度现状
+torque
+扭矩
+spline=the multiple keys
+花键
+quenching
+淬火
+tempering
+回火
+annealing
+退火
+carbonization
+碳化
+tungsten high speed steel
+钨高速的
+moly high speed steel
+钼高速的
+organic solvent
+有机溶剂
+bracket
+小磁导
+liaison
+联络单
+volatile
+挥发性
+resistance
+电阻
+ion
+离子
+titrator
+滴定仪
+beacon
+警示灯
+coolant
+冷却液
+crusher
+破碎机
+dot
+点
+lattice-spacing
+点阵间距；点阵间隔
+spot-welding
+点焊接
+ureaformaldehyde-(UF)
+醛树脂；电玉
+cross-hatching-line
+断面线
+fracture
+断裂
+miniature-circuit-breaker-(MCB)
+断路掣
+carcase
+柜
+bench-holdfast
+台夹；固定夹
+bench-stop
+台阻
+bench-hook
+台垫；垫板
+spring
+簧片
+simple-gear-train
+简单齿轮系
+fibre
+纤维
+fibre-board
+纤维板
+cellulose-acetate-(CA)
+纤维素醋酸酯
+distortion
+变形；扭曲
+speed-control-system
+变速系统
+transformer
+变压器；火牛
+logic-state
+逻辑状态
+logic-gate
+逻辑门
+medullary-ray
+髓线
+volume
+体积
+snipe-nose-pliers
+鹬嘴钳
+sensitivity
+灵敏度
+lipping
+镶边
+drill
+钻
+drilling-machine
+钻床
+bit
+钻嘴
+drill-chuck
+钻头夹盘
+drill-chuck-key
+钻头扳手
+chisel
+凿
+chiselling
+凿切
+chisel-blade
+凿身
+G-clamp G
+字夹
+G-code G
+码
+M-code M
+码
+PN-junction PN
+结
+polyvinyl-chloride-(PVC) PVC
+胶；聚氯乙烯
+tee-square T
+尺；丁字尺
+tee-bridle-joint T
+字叉榫
+tee-angle-joint T
+角榫
+tee-joint T
+型接合
+V-board V
+字板
+vee-belt-and-pulley V
+形坑带和滑轮
+V-block V
+形枕
+vee-block-&-clamp V
+型槽座与钳
+Assembly line
+组装线
+Layout
+布置图
+Conveyer
+流水线物料板
+Rivet table
+拉钉机
+Rivet gun
+拉钉枪
+Screw driver
+起子
+Electric screw driver
+电动起子
+Pneumatic screw driver
+气动起子
+worktable
+工作桌
+OOBA
+开箱检查
+fit together
+组装在一起
+fasten
+锁紧(螺丝)
+fixture
+夹具(治具)
+pallet
+栈板
+barcode
+条码
+barcode scanner
+条码扫描器
+fuse together
+熔合
+fuse machine
+热熔机
+repair
+修理
+operator
+作业员
+QC
+品管
+supervisor
+课长
+ME
+制造工程师
+MT
+制造生技
+cosmetic inspect
+外观检查
+inner parts inspect
+内部检查
+thumb screw
+大头螺丝
+lbs. inch
+镑、英寸
+EMI gasket
+导电条
+front plate
+前板
+rear plate
+后板
+chassis
+基座
+bezel panel
+面板
+power button
+电源按键
+reset button
+重置键
+Hi pot test of SPS
+高源高压测试
+sheet metal parts
+冲件
+plastic parts
+塑胶件
+SOP
+制造作业程序
+material check list
+物料检查表
+work cell
+工作间
+trolley
+台车
+carton
+纸箱
+sub line
+支线
+left fork
+叉车
+production department
+生产部门
+planning department
+企划部
+QC Section
+品管科
+stamping factory
+冲压厂
+painting factory
+烤漆厂
+molding factory
+成型厂
+common equipment
+常用设备
+uncoiler and straightener
+整平机
+punching machine
+冲床
+robot
+机械手
+hydraulic machine
+油压机
+lathe
+车床
+miller
+铣床
+grinder
+磨床
+driller
+铣床
+linear cutting
+线切割
+electrical sparkle
+电火花
+welder
+电焊机
+staker=reviting machine
+铆合机
+position
+职务
+president
+董事长
+general manager
+总经理
+special assistant manager
+特助
+factory director
+厂长
+department director
+部长
+section supervisor
+课长
+deputy section supervisor
+副课长
+vice section superisor
+副课长
+group leader/supervisor
+组长
+line supervisor
+线长
+assistant manager
+助理
+to move, to carry, to handle
+搬运
+be put in storage
+入库
+pack packing
+包装
+to apply oil
+擦油
+to file burr
+锉毛刺
+final inspection
+终检
+to connect material
+接料
+to reverse material
+翻料
+wet station
+沾湿台
+Tiana
+天那水
+cleaning cloth
+抹布
+to load material
+上料
+to unload material
+卸料
+to return material/stock to
+退料
+deficient purchase
+来料不良
+manufacture procedure
+制程
+deficient manufacturing procedure
+制程不良
+scratch
+刮伤
+dents
+压痕
+defective upsiding down
+抽芽不良
+defective to staking
+铆合不良
+embedded lump
+镶块
+feeding is not in place
+送料不到位
+stamping missing
+漏冲
+production capacity
+生产力
+education and training
+教育与训练
+proposal improvement
+提案改善
+spare parts=buffer
+备件
+forklift
+叉车
+trailer=long vehicle
+拖板车
+compound die
+合模
+die locker
+锁模器
+pressure plate=plate pinch
+压板
+bolt
+螺栓
+name of a department
+部门名称
+administration/general affairs dept
+总务部
+automatic screwdriver
+电动启子
+thickness gauge
+厚薄规
+power wire
+电源线
+buzzle
+蜂鸣器
+defective product label
+不良标签
+identifying sheet list
+标示单
+screwdriver holder
+起子插座
+pedal
+踩踏板
+stopper
+阻挡器
+flow board
+流水板
+hydraulic handjack
+油压板车
+forklift
+叉车
+pallet
+栈板
+glove(s) with exposed fingers
+割手套
+thumb
+大拇指
+forefinger
+食指
+midfinger
+中指
+ring finger
+无名指
+little finger
+小指
+band aid
+创可贴
+iudustrial alcohol
+工业酒精
+alcohol container
+沾湿台
+head of screwdriver
+起子头
+sweeper
+扫把
+mop
+拖把
+vaccum cleaner
+吸尘器
+rag
+抹布
+garbage container
+灰箕
+garbage can
+垃圾箱
+garbage bag
+垃圾袋
+chain
+链条
+jack
+升降机
+production line
+流水线
+chain
+链条槽
+magnetizer
+加磁器
+lamp holder
+灯架
+to mop the floor
+拖地
+to clean the floor
+扫地
+to clean a table
+擦桌子
+air pipe
+气管
+packaging tool
+打包机
+packaging
+打包
+missing part
+漏件
+wrong part
+错件
+excessive defects
+过多的缺陷
+critical defect
+极严重缺陷
+major defect
+主要缺陷
+minor defect
+次要缺陷
+not up to standard
+不合规格
+dimension/size is a little bigger
+尺寸偏大(小)
+cosmetic defect
+外观不良
+slipped screwhead/slippery screw head
+螺丝滑头
+slipped screwhead/shippery screw thread
+滑手
+speckle
+斑点
+mildewed=moldy=mouldy
+发霉
+rust
+生锈
+deformation
+变形
+poor staking
+铆合不良
+excesssive gap
+间隙过大
+grease/oil stains
+油污
+inclusion
+杂质
+painting peel off
+脏污
+shrinking/shrinkage
+缩水
+mixed color
+杂色
+scratch
+划伤
+poor processing
+制程不良
+poor incoming part
+事件不良
+fold of pakaging belt
+打包带折皱
+painting make up
+补漆
+discoloration
+羿色
+water spots
+水渍
+polishing/surface processing
+表面处理
+exposed metal/bare metal
+金属裸露
+lack of painting
+烤漆不到位
+safety
+安全
+quality
+品质
+delivery deadline
+交货期
+cost
+成本
+engineering
+工程
+die repair
+模修
+enterprise plan = enterprise expansion projects
+企划
+QC
+品管
+die worker
+模工
+production, to produce
+生产
+equipment
+设备
+to start a press
+开机
+stop/switch off a press
+关机
+classification
+整理
+regulation
+整顿
+cleanness
+清扫
+conservation
+清洁
+culture
+教养
+qualified products, up to grade products
+良品
+defective products, not up to grade products
+不良品
+waste
+废料
+board
+看板
+feeder
+送料机
+sliding rack
+滑料架
+defective product box
+不良品箱
+die change
+换模
+to fix a die
+装模
+to take apart a die
+拆模
+to repair a die
+修模
+packing material
+包材
+basket
+蝴蝶竺
+plastic basket
+胶筐
+carton box
+纸箱
+to pull and stretch
+拉深
+to put material in place, to cut material, to input
+落料
+to impose lines
+压线
+to compress, compressing
+压缩
+character die
+字模
+to feed, feeding
+送料
+transportation
+运输
+(be)qualfied, up to grade
+合格
+not up to grade, not qualified
+不合格
+material change, stock change
+材料变更
+feature change
+特性变更
+evaluation
+评估
+prepare for, make preparations for
+准备
+parameters
+参数
+rotating speed, revolution
+转速
+manufacture management
+制造管理
+abnormal handling
+异常处理
+production unit
+生产单位
+lots of production
+生产批量
+steel plate
+钢板
+roll material
+卷料
+manufacture procedure
+制程
+operation procedure
+作业流程
+to revise, modify
+修订
+to switch over to, switchto throwover switching over
+切
+stage die
+工程模
+automation
+自动化
+to stake, staking, reviting
+铆合
+add lubricating oil
+加润滑油
+shut die
+架模
+shut height of a die
+架模高度
+analog mode device
+类模器
+die lifter
+举模器
+argon welding
+氩焊
+stamping, press
+冲压
+punch press, dieing out press
+冲床
+uncoiler & strainghtener
+整平机
+feeder
+送料机
+rack, shelf, stack
+料架
+cylinder
+油缸
+robot
+机械手
+taker
+取料机
+conveyer belt
+输送带
+transmission rack
+输送架
+top stop
+上死点
+bottom stop
+下死点
+one stroke
+一行程
+inch
+寸动
+location lump, locating piece, block stop
+定位块
+reset
+复位
+smoothly
+顺利
+dent
+压痕
+scratch
+刮伤
+deformation
+变形
+filings
+铁削
+to draw holes
+抽孔
+inquiry, search for
+查寻
+to stock, storage, in stock
+库存
+receive
+领取
+approval examine and verify
+审核
+processing, to process
+加工
+delivery, to deliver
+交货
+to retrn of goods
+退货
+registration
+登记
+registration card
+登记卡
+to control
+管制
+to put forward and hand in
+提报
+safe stock
+安全库存
+acceptance = receive
+验收
+to notice
+通知
+application form for purchase
+请购单
+consume, consumption
+消耗
+to fill in
+填写
+abrasion
+磨损
+reverse angle = chamfer
+倒角
+character die
+字模
+to collect, to gather
+收集
+failure, trouble
+故障
+statistics
+统计
+demand and supply
+需求
+career card
+履历卡
+to take apart a die
+卸下模具
+to load a die
+装上模具
+to tight a bolt
+拧紧螺栓
+to looser a bolt
+拧松螺栓
+to move away a die plate
+移走模板
+easily damaged parts
+易损件
+standard parts
+标准件
+breaking.(be)broken,(be)cracked
+断裂
+to lubricate
+润滑
+die
+模具
+figure file, chart file
+图档
+cutting die, blanking die
+冲裁模
+compound die
+复合模
+punched hole
+冲孔
+panel board
+镶块
+to cutedges=side cut=side scrap
+切边
+to bending
+折弯
+to pull, to stretch
+拉伸
+Line streching, line pulling
+线拉伸
+engraving, to engrave
+刻印
+upsiding down edges
+翻边
+to stake
+铆合
+designing, to design
+设计
+design modification
+设计变化
+die block
+模块
+folded block
+折弯块
+sliding block
+滑块
+location pin
+定位销
+lifting pin
+顶料销
+die plate, front board
+模板
+padding block
+垫块
+stepping bar
+垫条
+upper die base
+上模座
+lower die base
+下模座
+upper supporting blank
+上承板
+upper padding plate blank
+上垫板
+spare dies
+模具备品
+spring
+弹簧
+bolt
+螺栓
+document folder
+文件夹
+file folder
+资料夹
+to put file in order
+整理资料
+spare tools location
+手工备品仓
+first count
+初盘人
+first check
+初盘复棹人
+second count
+复盘人
+second check
+复盘复核人
+equipment
+设备
+waste materials
+废料
+work in progress product
+在制品
+casing = containerazation
+装箱
+the first page
+第一联
+plate
+电镀
+mold
+成型
+sample
+样品
+description
+品名
+steel/rolled steel
+钢材
+meeting minutes
+会议记录
+meeting type
+会别
+distribution department
+分发单位
+location
+地点
+chairman
+主席
+present members
+出席人员
+subject
+主题
+conclusion
+结论
+decision items
+决议事项
+responsible department
+负责单位
+pre fixed finishing date
+预定完成日
+approved by
+核准
+checked by
+审核
+prepared by
+承办
+model
+机锺
+work order
+工令
+revision
+版次
+remark
+备注
+production control confirmation
+生产确认
+checked by
+初审
+approved by
+核准
+department
+部门
+on hand inventory
+现有库存
+available material
+良品可使用
+obsolete material
+良品已呆滞
+to be inspected or reworked
+待验或重工
+total
+合计
+cause description
+原因说明
+part number/ P/N
+料号
+type
+形态
+item/group/class
+类别
+quality
+品质
+prepared by
+制表
+notes
+说明
+physical inventory
+盘点数量
+physical count quantity
+帐面数量
+difference quantity
+差异量
+cause analysis
+原因分析
+raw materials
+原料
+materials
+物料
+finished product
+成品
+semi finished product
+半成品
+packing materials
+包材
+good product
+良品
+accepted goods
+良品
+accepted parts
+良品
+good parts
+良品
+defective product
+不良品
+non good parts
+不良品
+disposed goods
+处理品
+warehouse/hub
+仓库
+on way location
+在途仓
+oversea location
+海外仓
+spare molds location
+模具备品仓
+skid/pallet
+栈板
+tox machine
+自铆机
+wire EDM
+线割
+EDM
+放电机
+coil stock
+卷料
+sheet stock
+片料
+tolerance
+工差
+score=groove
+压线
+cam block
+滑块
+pilot
+导正筒
+trim
+剪外边
+pierce
+剪内边
+drag form
+压锻差
+pocket for the punch head
+挂钩槽
+slug hole
+废料孔
+feature die
+公母模
+expansion dwg
+展开图
+radius
+半径
+torch flame cut
+火焰切割
+set screw
+止付螺丝
+form block
+折刀
+stop pin
+定位销
+round pierce punch=die button
+圆冲子
+shape punch=die insert
+异形子
+stock locater block
+定位块
+under cut=scrap chopper
+清角
+active plate
+活动板
+baffle plate
+挡块
+cover plate
+盖板
+male die
+公模
+female die
+母模
+groove punch
+压线冲子
+air cushion eject rod
+气垫顶杆
+spring box eject plate
+弹簧箱顶板
+bushing block
+衬套
+insert
+入块
+club car
+高尔夫球车
+capability
+能力
+parameter
+参数
+factor
+系数
+phosphate
+皮膜化成
+viscosity
+涂料粘度
+alkalidipping
+脱脂
+main manifold
+主集流脉
+bezel
+斜视规
+blanking
+穿落模
+dejecting
+顶固模
+demagnetization
+去磁;消磁
+high speed transmission
+高速传递
+heat dissipation
+热传
+rack
+上料
+degrease
+脱脂
+rinse
+水洗
+alkaline etch
+龄咬
+desmut
+剥黑膜
+D.I. rinse
+纯水次
+Chromate
+铬酸处理
+Anodize
+阳性处理
+seal
+封孔
+revision
+版次
+part number/P/N
+料号
+good products
+良品
+scraped products
+报放心品
+defective products
+不良品
+finished products
+成品
+disposed products
+处理品
+barcode
+条码
+flow chart
+流程表单
+assembly
+组装
+stamping
+冲压
+molding
+成型
+spare parts=buffer
+备品
+coordinate
+座标
+dismantle the die
+折模
+auxiliary fuction
+辅助功能
+poly line
+多义线
+heater band
+加热片
+thermocouple
+热电偶
+sand blasting
+喷沙
+grit
+砂砾
+derusting machine
+除锈机
+degate
+打浇口
+dryer
+烘干机
+induction
+感应
+induction light
+感应光
+response=reaction=interaction
+感应
+ram
+连杆
+edge finder
+巡边器
+concave
+凸
+convex
+凹
+short
+射料不足
+nick
+缺口
+speck
+瑕??
+shine
+亮班
+splay
+银纹
+gas mark
+焦痕
+delamination
+起鳞
+cold slug
+冷块
+blush
+导色
+gouge
+沟槽;凿槽
+satin texture
+段面咬花
+witness line
+证示线
+patent
+专利
+grit
+沙砾
+granule=peuet=grain
+细粒
+grit maker
+抽粒机
+cushion
+缓冲
+magnalium
+镁铝合金
+magnesium
+镁金
+metal plate
+钣金
+lathe
+车
+mill
+锉
+plane
+刨
+grind
+磨
+drill
+铝
+boring
+镗
+blinster
+气泡
+fillet
+镶;嵌边
+through hole form
+通孔形式
+voller pin formality
+滚针形式
+cam driver
+铡楔
+shank
+摸柄
+crank shaft
+曲柄轴
+augular offset
+角度偏差
+velocity
+速度
+production tempo
+生产进度现状
+torque
+扭矩
+spline=the multiple keys
+花键
+quenching
+淬火
+tempering
+回火
+annealing
+退火
+carbonization
+碳化
+alloy
+合金
+tungsten high speed steel
+钨高速的
+moly high speed steel
+钼高速的
+organic solvent
+有机溶剂
+bracket
+小磁导
+liaison
+联络单
+volatile
+挥发性
+resistance
+电阻
+ion
+离子
+titrator
+滴定仪
+beacon
+警示灯
+coolant
+冷却液
+crusher
+破碎机
+plain die
+简易模
+pierce die
+冲孔模
+forming die
+成型模
+progressive die
+连续模
+gang dies
+复合模
+shearing die
+剪边模
+riveting die
+铆合模
+pierce
+冲孔
+forming
+成型(抽凸,冲凸)
+draw hole
+抽孔
+bending
+折弯
+trim
+切边
+emboss
+凸点
+dome
+凸圆
+semi shearing
+半剪
+stamp mark
+冲记号
+deburr or coin
+压毛边
+punch riveting
+冲压铆合
+side stretch
+侧冲压平
+reel stretch
+卷圆压平
+groove
+压线
+blanking
+下料
+stamp letter
+冲字(料号)
+shearing
+剪断
+tick mark nearside
+正面压印
+tick mark farside
+反面压印
+extension dwg
+展开图
+procedure dwg
+工程图
+die structure dwg
+模具结构图
+material
+材质
+material thickness
+料片厚度
+factor
+系数
+upward
+向上
+downward
+向下
+press specification
+冲床规格
+die height range
+适用模高
+die height
+闭模高度
+burr
+毛边
+gap
+间隙
+weight
+重量
+inner guiding post
+内导柱
+inner hexagon screw
+内六角螺钉
+dowel pin
+固定销
+coil spring
+弹簧
+lifter pin
+顶料销
+eq height sleeves=spool
+等高套筒
+pin
+销
+lifter guide pin
+浮升导料销
+guide pin
+导正销
+wire spring
+圆线弹簧
+outer guiding post
+外导柱
+stop screw
+止付螺丝
+located pin
+定位销
+outer bush
+外导套
+top plate
+上托板（顶板）
+top block
+上垫脚
+punch set
+上模座
+punch pad
+上垫板
+punch holder
+上夹板
+stripper pad
+脱料背板
+up stripper
+上脱料板
+male die
+公模(凸模)
+feature die
+公母模
+female die
+母模(凹模)
+upper plate
+上模板
+lower plate
+下模板
+die pad
+下垫板
+die holder
+下夹板
+die set
+下模座
+bottom block
+下垫脚
+bottom plate
+下托板(底板)
+stripping plate
+内外打(脱料板)
+outer stripper
+外脱料板
+inner stripper
+内脱料板
+lower stripper
+下脱料板
+punch
+冲头
+insert
+入块(嵌入件)
+deburring punch
+压毛边冲子
+groove punch
+压线冲子
+stamped punch
+字模冲子
+round punch
+圆冲子
+special shape punch
+异形冲子
+bending block
+折刀
+roller
+滚轴
+baffle plate
+挡块
+located block
+定位块
+air cushion plate
+气垫板
+air cushion eject rod
+气垫顶杆
+trimming punch
+切边冲子
+stiffening rib punch = stinger
+加强筋冲子
+ribbon punch
+压筋冲子
+reel stretch punch
+卷圆压平冲子
+guide plate
+定位板
+sliding block
+滑块
+sliding dowel block
+滑块固定块
+active plate
+活动板
+lower sliding plate
+下滑块板
+upper holder block
+上压块
+upper mid plate
+上中间板
+spring box
+弹簧箱
+spring box eject rod
+弹簧箱顶杆
+spring box eject plate
+弹簧箱顶板
+bushing bolck
+衬套
+cover plate
+盖板
+guide pad
+导料块
+compre sion molding
+压缩成型
+flash mold
+溢流式模具
+plsitive mold
+挤压式模具
+split mold
+分割式模具
+cavity
+型控 母模
+core
+模心 公模
+taper
+锥拔
+leather cloak
+仿皮革
+shiver
+饰纹
+flow mark
+流痕
+welding mark
+溶合痕
+post screw insert
+螺纹套筒埋值
+self tapping screw
+自攻螺丝
+striper plate
+脱料板
+piston
+活塞
+cylinder
+汽缸套
+chip
+细碎物
+handle mold
+手持式模具
+encapsulation molding
+低压封装成型
+two plate
+两极式（模具）
+well type
+蓄料井
+insulated runner
+绝缘浇道方式
+hot runner
+热浇道
+runner plat
+浇道模块
+valve gate
+阀门浇口
+band heater
+环带状的电热器
+spindle
+阀针
+spear head
+刨尖头
+slag well
+冷料井
+cold slag
+冷料渣
+air vent
+排气道
+welding line
+熔合痕
+eject pin
+顶出针
+knock pin
+顶出销
+return pin
+回位销反顶针
+sleave
+套筒
+stripper plate
+脱料板
+insert core
+放置入子
+runner stripper plate
+浇道脱料板
+guide pin
+导销
+subzero
+深冷处理
+three plate
+三极式模具
+runner system
+浇道系统
+stress crack
+应力电裂
+orientation
+定向
+sprue gate
+射料浇口，直浇口
+nozzle
+射嘴
+sprue lock pin
+料头钩销(拉料杆)
+slag well
+冷料井
+side gate
+侧浇口
+edge gate
+侧缘浇口
+tab gate
+搭接浇口
+film gate
+薄膜浇口
+flash gate
+闸门浇口
+slit gate
+缝隙浇口
+fan gate
+扇形浇口
+dish gate
+因盘形浇口
+diaphragm gate
+隔膜浇口
+ring gate
+环形浇口
+subarine gate
+潜入式浇口
+tunnel gate
+隧道式浇口
+pin gate
+针点浇口
+Runner less
+无浇道
+long nozzle
+延长喷嘴方式
+sprue
+浇口;溶渣
+QC quality control
+品质管理人员
+FQC final quality control
+终点品质管制人员
+IPQC in process quality control
+制程中的品质管制人
+OQC output quality control
+最终出货品质管制人员
+IQC incoming quality control
+进料品质管制人员
+TQC total quality control
+全面质量管理
+POC passage quality control
+段检人员
+QA quality assurance
+质量保证人员
+OQA output quality assurance
+出货质量保证人员
+QE quality engineering
+品质工程人员
+FAI first article inspection
+新品首件检查
+FAA first article assurance
+首件确认
+TVR tool verification report
+模具确认报告
+3B 3B
+模具正式投产前确认
+CP capability index
+能力指数
+CPK capability index of process
+模具制程能力参数
+SSQA standardized supplier quality
+合格供应商品质评
+OOBA out of box audit
+开箱检查
+QFD quality function deployment
+品质机能展开
+FMEA failure model effectiveness analysis
+失效模式分
+8 disciplines 8
+项回复内容
+FA final audit
+最後一次稽核
+CAR corrective action request
+改正行动要求
+corrective action report
+改正行动报告
+FQC
+运作类
+AQL Acceptable Quality Level
+运作类允收品质水准
+S/S Sample size
+抽样检验样本大小
+ACC Accept
+允收
+REE Reject
+拒收
+CR Critical
+极严重的
+MAJ Major
+主要的
+MIN Minor
+轻微的
+AOQ Average Output Quality
+平均出厂品质
+AOQL Average Output Quality Level
+平均出厂品质
+Q/R/S Quality/Reliability/Service
+品质/可靠度服务
+MIL STD Military Standard
+军用标准
+S I S IV Special I Special IV
+特殊抽样水准等级
+P/N Part Number
+料号
+L/N Lot Number
+特采
+AOD Accept On Deviation
+特采
+UAI Use As It
+首件检查报告
+FPIR First Piece Inspection Report
+百万分之一
+PPM Percent Per Million
+批号
+SPC Statistical Process Control
+统计制程管制
+SQC Statistical Quality Control
+统计品质管制
+R Range
+全距
+AR Averary Range
+全距平均值
+UCL Upper Central Limit
+管制上限
+LCL Lower Central Limit
+管制下限
+MAX Maximum
+最大值
+MIN Minimum
+最小值
+GRR Gauge Reproducibility&Repeatability
+量具之再制
+DIM Dimension
+尺寸
+DIA Diameter
+直径
+FREQ Frequency
+频率
+N Number
+样品数
+QCC Quality Control Circle
+品质圈
+QIT Quality Improvement Team
+品质改善小组
+PDCA Plan Do Check Action
+计划 执行 检查 总结
+ZD Zero Defect
+零缺点
+QI Quality Improvement
+品质改善
+QP Quality Policy
+目标方针
+TQM Total Quality Management
+全面品质管理
+MRB Material Reject Bill
+退货单
+LQL Limiting Quality Level
+最低品质水准
+RMA Return Material Audit
+退料认可
+QAN Quality Amelionrate Notice
+品质改善活动
+ADM Absolute Dimension Measuremat
+全尺寸测量
+QT Quality Target
+品质目标
+7QCTools 7 Quality Controll Tools
+品管七大手法
+ECN Engineering Change Notes
+工程变更通知(供应
+ECO Engineering Change Order
+工程改动要求(客户)
+PCN Process Change Notice
+工序改动通知
+PMP Product Management Plan
+生产管制计划
+SIP Specification In Process
+制程检验规格
+SOP Standard Operation Procedure
+制造作业规范
+IS Inspection Specification
+成品检验规范
+BOM Bill Of Material
+物料清单
+PS Package Specification
+包装规范
+SPEC Specification
+规格
+DWG Drawing
+图面
+QC Quality System
+品质系统
+ES Engineering Standarization
+工程标准
+CGOO China General PCE
+龙华厂文件
+C China
+中国大陆
+A Assembly
+组装(厂)
+S Stamping
+冲压(厂)
+P Painting
+烤漆(厂)
+I Intel
+英特尔公司
+T TAIWAN
+台湾
+IWS International Workman Standard
+工艺标准
+ISO International Standard Organization
+国际标准化组
+GS General Specification
+一般规格
+Compaq
+产品在龙华冲压厂制造作业规范
+CQCA Q Quality A Assembly Compaq
+产品在龙华组装
+CQCP P Painting Compaq
+产品在龙华烤漆厂品管作业
+PMC Production & Material Control
+生产和物料控制
+PPC Production Plan Control
+生产计划控制
+MC Material Control
+物料控制
+ME Manafacture Engineering
+制造工程部
+PE Project Engineering
+产品工程部
+A/C Accountant Dept
+会计部
+P/A Personal & Administration
+人事行政部
+DC Document Center
+资料中心
+QE Quality Engineering
+品质工程(部)
+QA Quality Assurance
+品质保证(处)
+QC Quality Control
+品质管制(课)
+PD Product Department
+生产部
+LAB Labratry
+实验室
+IE Industrial Engineering
+工业工程
+R&D Research & Design
+设计开发部
+P Painting
+烤漆(厂)
+A Asssembly
+组装(厂)
+S Stamping
+冲压(厂)
+PCS Pieces
+个(根,块等)
+PRS Pairs
+双(对等)
+CTN Carton
+卡通箱
+PAL Pallet/skid
+栈板
+PO Purchasing Order
+采购订单
+MO Manufacture Order
+生产单
+D/C Date Code
+生产日期码
+SWR Special Work Request
+特殊工作需求
+L/N Lot Number
+批号
+P/N Part Number
+料号
+OEM Original Equipment Manufacture
+原设备制造
+PCE Personal Computer Enclosure
+个人电脑外设
+PC Personal Computer
+个人电脑
+CPU Central Processing Unit
+中央处理器
+SGCC SGCC
+热浸镀锌材料
+NHK North of Hongkong
+中国大陆
+U.S.A the United States of America
+美国
+A.S.A.P As Soon As Possible
+尽可能快的
+E MAIL Electrical Mail
+电子邮件
+N/A Not Applicable
+不适用
+QTY Quantity
+数量
+VS
+以及
+REV Revision
+版本
+JIT Just In Time
+零库存
+I/O Input/Output
+输入/输出
+OK Ok
+好
+NG Not Good
+不行,不合格
+C=0 Critical=0
+极严重不允许
+ESD Electry static Discharge
+静电排放
+5S
+希腊语 整理,整顿,清扫,清洁,教养
+ATIN Attention
+知会
+CC Carbon Copy
+副本复印相关人员
+APP Approve
+核准,认可,承认
+CHK Check
+确认
+AM Ante Meridian
+上午
+PM Post Meridian
+下午
+CD Compact Disk
+光碟
+CD ROM Compact Disk Read Only Memory
+只读光碟
+FDD Floppy Disk Drive
+软碟机
+HDD Hard Disk Drive
+碟碟机
+REF Reference
+仅供参考
+CONN Connector
+连接器
+CAV Cavity
+模穴
+CAD Computer Aid Design
+计算机辅助设计
+IC Integrated Circuit
+集成电路
+T/P True Position
+真位度
+TYP Type
+类型
+WDR Weekly Delivery Requitement
+周出货需求
+L/T Lead Time
+前置时间(生产前准备时间)
+S/T Standard Time
+标准时间
+P/M Product Market
+产品市场
+4MIH Man,Materia,Money,Method,Time
+人力,物力,财
+SQA Strategy Quality Assurance
+策略品质保证
+DQA Desigh Quality Assurance
+设计品质保证
+MQA Manufacture Quality Assurance
+制造品质保证
+SSQA Sales and service Quality Assurance
+销售及服务
+LRR Lot Rejeet Rate
+批退率
+BS Brain storming
+脑力激荡
+EMI Electronic Magnetion Inspect
+高磁测试
+FMI Frequency Modulatim Inspect
+高频测试
+SPS Switching power supply
+电源箱
+DT Desk Top
+卧式(机箱)
+MT Mini Tower
+立式(机箱)
+ABIOS Achanced Basic in put/output system
+先进的基
+CMOS Complemeruary Metoll Oxide Semiconductor
+互
+PDA Personal Digital Assistant
+个人数字助理
+IC Integrated Circuit
+集成电路
+ISA Industry Standard Architecture
+工业标准体制结构
+MCA Micro Channel Architecture
+微通道结构
+EISA Extended Industry Standard Architecture
+扩充的
+SIMM Single in line memory module
+单项导通汇流组
+DIMM Dual in line Memory Module
+双项导通汇流组
+LED Light Emitting Diode
+发光二级管
+FMEA Failure Mode Effectivenes
+失效模式分析
+W/H Wire Harness
+金属线绪束集组件
+F/C Flat Calle
+排线
+PCB Printed Circuit Board
+印刷电路板
+CAR Correction Action Report
+改善报告
+NG Not Good
+不良
+WPR Weekly Delivery Requirement
+周出货要求
+PPM Parts Per Million
+百万分之一
+TPM Total Production Maintenance
+全面生产保养
+MRP Material Requiremcnt Planning
+物料需计划
+OC Operation System
+作业系统
+TBA To Be Design
+待定,定缺
+EMI Electrical Music Industry
+电子音乐工业
+RFI Read Frequency Input
+读频输入
+accurate die casting
+精密压铸
+powder forming
+粉末成形
+calendaring molding
+压延成形
+powder metal forging
+粉末锻造
+cold chamber die casting
+冷式压铸
+precision forging
+精密锻造
+cold forging
+冷锻
+press forging
+冲锻
+compacting molding
+粉末压出成形
+rocking die forging
+摇动锻造
+compound molding
+复合成形
+rotary forging
+回转锻造
+compression molding
+压缩成形
+rotational molding
+离心成形
+dip mold
+浸渍成形
+rubber molding
+橡胶成形
+encapsulation molding
+注入成形
+sand mold casting
+砂模铸造
+extrusion molding
+挤出成形
+shell casting
+壳模铸造
+sinter forging
+烧结锻造
+forging roll
+轧锻
+six sides forging
+六面锻造
+gravity casting
+重力铸造
+slush molding
+凝塑成形
+hollow(blow) molding
+中空(吹出)成形
+squeeze casting
+高压铸造
+hot chamber die casting
+热室压铸
+swaging
+挤锻
+hot forging
+热锻
+transfer molding
+转送成形
+injection molding
+射出成形
+warm forging
+温锻
+investment casting
+精密铸造
+matched die method
+对模成形法
+laminating method
+被覆淋膜成形
+low pressure casting
+低压铸造
+lost wax casting
+脱蜡铸造
+matched mould thermal forming
+对模热成形模
+bismuth mold
+铋铸模
+landed plunger mold
+有肩柱塞式模具
+burnishing die
+挤光模
+landed positive mold
+有肩全压式模具
+button die
+镶入式圆形凹模
+loading shoe mold
+料套式模具
+center gated mold
+中心浇口式模具
+loose detail mold
+活零件模具
+chill mold
+冷硬用铸模
+loose mold
+活动式模具
+clod hobbing
+冷挤压制模
+ouvering die
+百叶窗冲切模
+composite dies
+复合模具
+manifold die
+分歧管模具
+counter punch
+反凸模
+modular mold
+组合式模具
+double stack mold
+双层模具
+multi cavity mold
+多模穴模具
+electroformed mold
+电铸成形模
+multi gate mold
+复式浇口模具
+expander die
+扩径模
+offswt bending die
+双折冷弯模具
+extrusion die
+挤出模
+palletizing die
+叠层模
+family mold
+反套制品模具
+plaster mold
+石膏模
+blank through dies
+漏件式落料模
+porous mold
+通气性模具
+duplicated cavity plate
+复板模
+positive mold
+全压式模具
+fantail die
+扇尾形模具
+pressure die
+压紧模
+fishtail die
+鱼尾形模具
+profile die
+轮廓模
+flash mold
+溢料式模具
+progressive die
+顺序模
+gypsum mold
+石膏铸模
+protable mold
+手提式模具
+hot runner mold
+热流道模具
+prototype mold
+雏形试验模具
+ingot mold
+钢锭模
+punching die
+落料模
+lancing die
+切口模
+raising(embossing)
+压花起伏成形
+re entrant mold
+倒角式模具
+sectional die
+拼合模
+runless injection mold
+无流道冷料模具
+sectional die
+对合模具
+segment mold
+组合模
+semi positive mold
+半全压式模具
+shaper
+定型模套
+single cavity mold
+单腔模具
+solid forging die
+整体锻模
+split forging die
+拼合锻模
+split mold
+双并式模具
+sprueless mold
+无注道残料模具
+squeezing die
+挤压模
+stretch form die
+拉伸成形模
+sweeping mold
+平刮铸模
+swing die
+振动模具
+three plates mold
+三片式模具
+trimming die
+切边模
+unit mold
+单元式模具
+universal mold
+通用模具
+unscrewing mold
+退扣式模具
+yoke type die
+轭型模
+air vent vale
+通气阀
+anchor pin
+锚梢
+angular pin
+角梢
+baffle
+调节阻板
+angular pin
+倾斜梢
+baffle plate
+折流档板
+ball button
+球塞套
+ball plunger
+定位球塞
+ball slider
+球塞滑块
+binder plate
+压板
+blank holder
+防皱压板
+blanking die
+落料冲头
+bolster
+上下模板
+bottom board
+浇注底板
+bolster
+垫板
+bottom plate
+下固定板
+bracket
+托架
+bumper block
+缓冲块
+buster
+堵口
+casting ladle
+浇注包
+casting lug
+铸耳
+cavity
+模穴(模仁)
+cavity retainer plate
+模穴托板
+center pin
+中心梢
+clamping block
+锁定块
+coil spring
+螺旋弹簧
+cold punched nut
+冷冲螺母
+cooling spiral
+螺旋冷却栓
+core
+心型
+core pin
+心型梢
+cotter
+开口梢
+cross
+十字接头
+cushion pin
+缓冲梢
+diaphragm gate
+盘形浇口
+die approach
+模头料道
+die bed
+型底
+die block
+块形模体
+die body
+铸模座
+die bush
+合模衬套
+die button
+冲模母模
+die clamper
+夹模器
+die fastener
+模具固定用零件
+die holder
+母模固定板
+die lip
+模唇
+die plate
+冲模板
+die set
+冲压模座
+direct gate
+直接浇口
+dog chuck
+爪牙夹头
+dowel
+定位梢
+dowel hole
+导套孔
+dowel pin
+合模梢
+dozzle
+辅助浇口
+dowel pin
+定位梢
+draft
+拔模锥度
+draw bead
+张力调整杆
+drive bearing
+传动轴承
+ejection pad
+顶出衬垫
+ejector
+脱模器
+ejector guide pin
+顶出导梢
+ejector leader busher
+顶出导梢衬套
+ejector pad
+顶出垫
+ejector pin
+顶出梢
+ejector plate
+顶出板
+ejector rod
+顶出杆
+ejector sleeve
+顶出衬套
+ejector valve
+顶出阀
+eye bolt
+环首螺栓
+filling core
+椿入蕊
+film gate
+薄膜形浇口
+finger pin
+指形梢
+finish machined plate
+角形模板
+finish machined round plate
+圆形模板
+fixed bolster plate
+固定侧模板
+flanged pin
+带凸缘?
+flash gate
+毛边形浇口
+flask
+上箱
+floating punch
+浮动冲头
+gate
+浇口
+gate land
+浇口面
+gib
+凹形拉紧?
+goose neck
+鹅颈管
+guide bushing
+引导衬套
+guide pin
+导梢
+guide post
+引导柱
+guide plate
+导板
+guide rail
+导轨
+head punch
+顶?冲头
+headless punch
+直柄冲头
+heavily tapered solid
+整体模蕊盒
+hose nippler
+管接头
+impact damper
+缓冲器
+injection ram
+压射柱塞
+inlay busher
+嵌入衬套
+inner plunger
+内柱塞
+inner punch
+内冲头
+insert
+嵌件
+insert pin
+嵌件梢
+king pin
+转向梢
+king pin bush
+主梢衬套
+knockout bar
+脱模杵
+land
+合模平坦面
+land area
+合模面
+leader busher
+导梢衬套
+lifting pin
+起模顶?
+lining
+内衬
+locating center punch
+定位中心冲头
+locating pilot pin
+定位导梢
+locating ring
+定位环
+lock block
+压块
+locking block
+定位块
+locking plate
+定位板
+loose bush
+活动衬套
+making die
+打印冲子
+manifold block
+歧管档块
+master plate
+靠模样板
+match plate
+分型板
+mold base
+塑胶模座
+mold clamp
+铸模紧固夹
+mold platen
+模用板
+moving bolster
+换模保持装置
+moving bolster plate
+可动侧模板
+one piece casting
+整体铸件
+parallel block
+平行垫块
+paring line
+分模线
+parting lock set
+合模定位器
+pass guide
+穴型导板
+peened head punch
+镶入式冲头
+pilot pin
+导?
+pin gate
+针尖浇口
+plate
+衬板
+pre extrusion punch
+顶挤冲头
+punch
+冲头
+puncher
+推杆
+pusher pin
+衬套梢
+rack
+机架
+rapping rod
+起模杆
+re entrant mold
+凹入模
+retainer pin
+嵌件梢
+retainer plate
+托料板
+return pin
+回位梢
+riding stripper
+浮动脱模器
+ring gate
+环型浇口
+roller
+滚筒
+runner
+流道
+runner ejector set
+流道顶出器
+runner lock pin
+流道拉梢
+screw plug
+头塞
+set screw
+固定螺丝
+shedder
+脱模装置
+shim
+分隔片
+shoe
+模座之上下模板
+shoot
+流道
+shoulder bolt
+肩部螺丝
+skeleton
+骨架
+slag riser
+冒渣口
+slide(slide core)
+滑块
+slip joint
+滑配接头
+spacer block
+间隔块
+spacer ring
+间隔环
+spider
+模蕊支架
+spindle
+主轴
+sprue
+注道
+sprue bushing
+注道衬套
+sprue bushing guide
+注道导套
+sprue lock bushing
+注道定位衬套
+sprue puller
+注道拉料?
+spue line
+合模线
+square key
+方键
+square nut
+方螺帽
+square thread
+方螺纹
+stop collar
+限位套
+stop pin
+止动梢
+stop ring
+止动环
+stopper
+定位停止梢
+straight pin
+圆柱?
+stripper bolt
+脱料螺栓
+stripper bushing
+脱模衬套
+stripper plate
+剥料板
+stroke end block
+行程止梢
+submarine gate
+潜入式浇口
+support pillar
+支撑支柱/顶出支柱
+support pin
+支撑梢
+supporting plate
+托板
+sweep templete
+造模刮板
+tab gate
+辅助浇口
+taper key
+推拔键
+taper pin
+拔锥梢/锥形梢
+teeming
+浇注
+three start screw
+三条螺纹
+thrust pin
+推力销
+tie bar
+拉杵
+tunnel gate
+隧道形浇口
+vent
+通气孔
+wortle plate
+拉丝模板
+3D coordinate measurement
+三次元量床
+boring machine
+镗床
+CNC milling machine CNC
+铣床
+contouring machine
+轮廓锯床
+copy grinding machine
+仿形磨床
+copy lathe
+仿形车床
+copy milling machine
+仿形铣床
+copy shaping machine
+仿形刨床
+cylindrical grinding machine
+外圆磨床
+die spotting machine
+合模机
+drilling machine
+钻孔机
+engraving machine
+雕刻机
+engraving E.D.M.
+雕模放置加工机
+form grinding machine
+成形磨床
+graphite machine
+石墨加工机
+horizontal boring machine
+卧式镗床
+horizontal machine center
+卧式加工制造中心
+internal cylindrical machine
+内圆磨床
+jig boring machine
+坐标镗床
+jig grinding machine
+坐标磨床
+lap machine
+研磨机
+machine center
+加工中心
+multi model miller
+靠模铣床
+NC drilling machine NC
+钻床
+NC grinding machine NC
+磨床
+NC lathe NC
+车床
+NC programming system NC
+程式制作系统
+planer
+龙门刨床
+profile grinding machine
+成形磨床
+projection grinder
+成形磨床
+radial drilling machine
+旋臂?床
+shaper
+牛头刨床
+surface grinder
+平面磨床
+try machine
+试模机
+turret lathe
+转塔车床
+universal tool grinding machine
+万能工具磨床
+vertical machine center
+立式加工制造中心
+wire E.D.M.
+线割放电加工机
+autocollimator
+自动准直机
+bench comparator
+比长仪
+block gauge
+块规
+bore check
+精密小测定器
+calibration
+校准
+caliper gauge
+卡规
+check gauge
+校对规
+clearance gauge
+间隙规
+clinoretee
+测斜仪
+comparator
+比测仪
+cylinder square
+圆筒直尺
+depth gauge
+测深规
+dial indicator
+针盘指示表
+dial snap gauge
+卡规
+digital micrometer
+数位式测微计
+feeler gauge
+测隙规
+gauge plate
+量规定位板
+height gauge
+测高规
+inside calipers
+内卡钳
+inside micrometer
+内分??卡
+interferometer
+干涉仪
+leveling block
+平台
+limit gauge
+限规
+micrometer
+测微计
+mil
+千分之一寸
+monometer
+压力计
+morse taper gauge
+莫氏锥度量规
+nonius
+游标卡尺
+optical flat
+光学平晶
+optical parallel
+光学平行
+passimeter
+内径仪
+position scale
+位置刻度
+profile projector
+轮廓光学投影仪
+protractor
+分角器
+radius
+半径
+ring gauge
+环规
+sine bar
+正弦量规
+snap gauge
+卡模
+square master
+直角尺
+stylus
+触针
+telescopic gauge
+伸缩性量规
+working gauge
+工作量规
+alloy tool steel
+合金工具钢
+aluminium alloy
+铝合金钢
+bearing alloy
+轴承合金
+blister steel
+浸碳钢
+bonderized steel sheet
+邦德防蚀钢板
+carbon tool steel
+碳素工具钢
+clad sheet
+被覆板
+clod work die steel
+冷锻模用钢
+emery
+金钢砂
+ferrostatic pressure
+钢铁水静压力
+forging die steel
+锻造模用钢
+galvanized steel sheet
+镀锌铁板
+hard alloy steel
+超硬合金钢
+high speed tool steel
+高速度工具钢
+hot work die steel
+热锻模用钢
+low alloy tool steel
+特殊工具钢
+low manganese casting steel
+低锰铸钢
+marging steel
+马式体高强度热处理钢
+martrix alloy
+马特里斯合金
+meehanite cast iron
+米汉纳铸钢
+meehanite metal
+米汉纳铁
+merchant iron
+市售钢材
+molybdenum high speed steel
+钼系高速钢
+molybdenum steel
+钼钢
+nickel chromium steel
+镍铬钢
+prehardened steel
+顶硬钢
+silicon steel sheet
+矽钢板
+stainless steel
+不锈钢
+tin plated steel sheet
+镀锡铁板
+tough pitch copper
+韧铜
+troostite
+屈氏体
+tungsten steel
+钨钢
+vinyl tapped steel sheet
+塑胶覆面钢板
+age hardening
+时效硬化
+ageing
+老化处理
+air hardening
+气体硬化
+air patenting
+空气韧化
+annealing
+退火
+anode effect
+阳极效应
+anodizing
+阳极氧化处理
+atomloy treatment
+阿托木洛伊表面
+austempering
+奥氏体等温淬火
+austenite
+奥氏体
+bainite
+贝氏体
+banded structure
+条纹状组织
+barrel plating
+滚镀
+barrel tumbling
+滚筒打光
+blackening
+染黑法
+blue shortness
+青熟脆性
+bonderizing
+磷酸盐皮膜处理
+box annealing
+箱型退火
+box carburizing
+封箱渗碳
+bright electroplating
+辉面电镀
+bright heat treatment
+光辉热处理
+bypass heat treatment
+旁路热处理
+carbide
+炭化物
+carburized case depth
+浸碳硬化深层
+carburizing
+渗碳
+cementite
+炭化铁
+chemical plating
+化学电镀
+chemical vapor deposition
+化学蒸镀
+coarsening
+结晶粒粗大化
+coating
+涂布被覆
+cold shortness
+低温脆性
+comemtite
+渗碳体
+controlled atmosphere
+大气热处理
+corner effect
+锐角效应
+creeping discharge
+蠕缓放电
+decarburization
+脱碳处理
+decarburizing
+脱碳退火
+depth of hardening
+硬化深层
+diffusion
+扩散
+diffusion annealing
+扩散退火
+electrolytic hardening
+电解淬火
+embossing
+压花
+etching
+表面蚀刻
+ferrite
+肥粒铁
+first stage annealing
+第一段退火
+flame hardening
+火焰硬化
+flame treatment
+火焰处理
+full annealing
+完全退火
+gaseous cyaniding
+气体氧化法
+globular cementite
+球状炭化铁
+grain size
+结晶粒度
+granolite treatment
+磷酸溶液热处理
+graphitizing
+石墨退火
+hardenability
+硬化性
+hardenability curve
+硬化性曲线
+hardening
+硬化
+heat treatment
+热处理
+hot bath quenching
+热浴淬火
+hot dipping
+热浸镀
+induction hardening
+高周波硬化
+ion carbonitriding
+离子渗碳氮化
+ion carburizing
+离子渗碳处理
+ion plating
+离子电镀
+isothermal annealing
+等温退火
+liquid honing
+液体喷砂法
+low temperature annealing
+低温退火
+malleablizing
+可锻化退火
+martempering
+麻回火处理
+martensite
+马氏体/硬化铁炭
+metallikon
+金属喷镀法
+metallizing
+真空涂膜
+nitriding
+氮化处理
+nitrocarburizing
+软氮化
+normalizing
+正常化
+oil quenching
+油淬化
+overageing
+过老化
+overheating
+过热
+pearlite
+针尖组织
+phosphating
+磷酸盐皮膜处理
+physical vapor deposition
+物理蒸镀
+plasma nitriding
+离子氮化
+pre annealing
+预备退火
+precipitation
+析出
+precipitation hardening
+析出硬化
+press quenching
+加压硬化
+process annealing
+制程退火
+quench ageing
+淬火老化
+quench hardening
+淬火
+quenching crack
+淬火裂痕
+quenching distortion
+淬火变形
+quenching stress
+淬火应力
+reconditioning
+再调质
+recrystallization
+再结晶
+red shortness
+红热脆性
+residual stress
+残留应力
+retained austenite
+残留奥
+rust prevention
+防蚀
+salt bath quenching
+盐浴淬火
+sand blast
+喷砂处理
+seasoning
+时效处理
+second stage annealing
+第二段退火
+secular distortion
+经年变形
+segregation
+偏析
+selective hardening
+部分淬火
+shot blast
+喷丸处理
+shot peening
+珠击法
+single stage nitriding
+等温渗氮
+sintering
+烧结处理
+soaking
+均热处理
+softening
+软化退火
+solution treatment
+固溶化热处理
+spheroidizing
+球状化退火
+stabilizing treatment
+安定化处理
+straightening annealing
+矫直退火
+strain ageing
+应变老化
+stress relieving annealing
+应力消除退火
+subzero treatment
+生冷处理
+supercooling
+过冷
+surface hardening
+表面硬化处理
+temper brittleness
+回火脆性
+temper colour
+回火颜色
+tempering
+回火
+tempering crack
+回火裂痕
+texture
+咬花
+thermal refining
+调质处理
+thermoechanical treatment
+加工热处理
+time quenching
+时间淬火
+transformation
+变态
+tufftride process
+软氮化处理
+under annealing
+不完全退火
+vacuum carbonitriding
+真空渗碳氮化
+vacuum carburizing
+真空渗碳处理
+vacuum hardening
+真空淬火
+vacuum heat treatment
+真空热处理
+vacuum nitriding
+真空氮化
+water quenching
+水淬火
+wetout
+浸润处理
+acetylene
+乙炔
+ampere
+电流安培
+angle welding
+角焊
+arc
+电弧
+argon arc welding
+氩弧焊接
+bare electrode
+光熔接条
+butt welding
+对接焊接
+camber
+电弧弯曲
+cascade
+阶叠熔接法
+clad weld
+被覆熔接
+crator
+焊疤
+excess metal
+多余金属
+filler rod
+焊条
+fillet weld
+填角焊接
+gas shield
+气体遮蔽
+groove welding
+起槽熔接
+hand face shield
+手握面罩
+hard facing
+硬表面堆焊
+jig welding
+工模焊接
+laser beam welding
+雷射光焊接
+metal electrode insert gas welding MIG
+熔接
+nugget
+点焊熔核
+overlaying
+堆焊
+peening of welding
+珠击熔接法
+plug welding
+塞孔熔接
+positioned welding
+正向熔接
+pressure welding
+压焊
+propane gas cutting
+丙烷气切割
+pure nickel electrode
+纯镍熔接条
+reinforcement of weld
+加强焊接
+resist
+抗蚀护膜
+root running
+背面熔接
+seam
+焊缝 seaming 接合
+seam welding
+流缝熔接
+series seam welding
+串联缝熔接
+skip welding process
+跳焊法
+spark
+火花
+spot welding
+点焊接
+stitch welding
+针角焊接
+stud arc welding
+电弧焊接
+under laying
+下部焊层
+void
+焊接空隙
+weld flow mark
+焊接流痕
+weld flush
+焊缝凸起
+weld line
+焊接纹
+weld mark
+焊接痕
+weld penetration
+熔接透入
+weld zone
+焊接区
+welding
+焊接
+welding bead
+焊接泡
+welding direction
+焊接方向
+welding distortion
+焊接变形
+welding flux
+焊剂
+welding ground
+电熔接地
+welding interval
+焊接周期
+welding stress
+熔接应变
+welding torch
+熔接气炬
+activator
+活化剂
+bag moulding
+气胎施压成形
+bonding strength
+黏合强度
+breathing
+排气
+caulking compound
+填隙料
+cell
+气孔
+cold slug
+半凝式射出
+colorant
+著色剂
+color matching
+调色
+color masterbatch
+色母料
+compound
+混合料
+copolymer
+共聚合体
+cull
+残料废品
+cure
+凝固化
+cryptometer
+不透明度仪
+daylight
+开隙
+dry cycle time
+空料试车周期时间
+ductility
+延性
+elastomer
+弹性体
+extruded bead sealing
+压出粒涂层法
+feed
+供料
+filler
+充填剂
+film blowing
+薄膜吹制法
+floating platen
+活动模板
+foaming agent
+发泡剂
+gloss
+光泽
+granule
+颗粒料
+gunk
+料斗
+hot mark
+热斑
+hot stamping
+烫印
+injection nozzle
+射出喷嘴
+injection plunger
+射出柱塞
+injection ram
+射出冲柱
+isomer
+同分异构物
+kneader
+混合机
+leveling agent
+匀涂剂
+lubricant
+润滑剂
+matched die method
+配合成形法
+mould clamping force
+锁模力
+mould release agent
+脱模剂
+nozzle
+喷嘴
+oriented film
+取向薄膜
+parison
+吹气成形坏料
+pellet
+粒料
+plasticizer
+可塑剂
+plunger
+压料柱塞
+porosity
+孔隙率
+post cure
+後固化
+premix
+预混料
+purging
+清除
+reciprocating screw
+往复螺杆
+resilience
+回弹性
+resin injection
+树脂射出法
+rheology
+流变学
+sheet
+塑胶片
+shot
+注射
+shot cycle
+射出循环
+slip agent
+光滑剂
+take out device
+取料装置
+tie bar
+拉杆
+toggle type mould clamping system
+肘杆式锁模装置
+torpedo spreader
+鱼雷形分流板
+transparency
+透明性
+void content
+空洞率
+acrylic
+压克力
+casein
+酪素
+cellulose acetate
+醋酸纤维素
+CA cellulose acetate butyrate
+醋酸丁酸纤维素 CAB
+composite material
+复合材料
+cresol resin
+甲酚树脂 CF
+dially phthalate
+苯二甲酸二烯丙酯
+disperse reinforcement
+分散性强化复合材料
+engineering plastics
+工程塑胶
+epoxy resin
+环氧树脂 EP
+ethyl cellulose
+乙基纤维素
+ethylene vinylacetate copolymer
+乙烯 醋酸乙烯 EVA
+ethylene vinlacetate copolyme
+醋酸乙烯共聚物 EVA
+expanded polystyrene
+泡聚苯乙烯 EPS
+fiber reinforcement
+纤维强化热固性/纤维强化复合材
+high density polyethylene
+高密度聚乙烯 HDPE
+high impact polystyrene
+高冲击聚苯乙烯 HIPS
+high impact polystyrene rigidity
+高冲击性聚苯乙烯
+low density polyethylene
+低密度聚乙烯
+LDPE melamine resin
+三聚氰胺酚醛树脂 MF
+nitrocellulose
+硝酸纤维素
+phenolic resin
+酚醛树脂
+plastic
+塑胶
+polyacrylic acid
+聚丙烯酸 PAP
+polyamide
+耐龙 PA
+polybutyleneterephthalate
+聚对苯二甲酸丁酯 PBT
+polycarbonate
+聚碳酸酯
+PC polyethyleneglycol
+聚乙二醇 PFG
+polyethyleneoxide
+聚氧化乙烯
+PEO polyethyleneterephthalate
+聚乙醇对苯 PETP
+polymetylmethacrylate
+聚甲基丙烯酸甲酯
+PMMA polyoxymethylene
+聚缩醛 POM
+polyphenylene oxide
+聚硫化亚苯
+polyphenyleneoxide
+聚苯醚 PPO
+polypropylene
+聚丙烯
+PP polystyrene
+聚苯乙烯 PS
+polytetrafluoroethylene
+聚四氟乙烯
+PTFE polytetrafluoroethylene
+聚四氟乙烯
+polythene
+聚乙烯 PE
+polyurethane
+聚氨基甲酸酯 PU
+polyvinylacetate
+聚醋酸乙烯 PVAC
+polyvinylalcohol
+聚乙烯醇 PVA
+polyvinylbutyral
+聚乙烯醇缩丁醛 PVB
+polyvinylchloride
+聚氯乙烯 PVC
+polyvinylfuoride
+聚氟乙烯 PVF
+polyvinylidenechloride
+聚偏二氯乙烯 PVDC
+prepolymer
+预聚物
+silicone resin
+矽树脂
+thermoplastic
+热塑性
+thermosetting
+热固性
+thermosetting plastic
+塑胶
+unsaturated polyester
+不饱和聚酯树脂
+aberration
+色差
+atomization
+雾化
+bank mark
+料纹
+bite
+咬入
+blacking hole
+涂料孔(铸疵)
+blacking scab
+涂料疤
+blister
+起泡
+blooming
+起霜
+blow hole
+破孔
+blushing
+泛白
+body wrinkle
+侧壁皱纹
+breaking in
+冒口带肉
+bubble
+膜泡
+burn mark
+糊斑
+burr
+毛边
+camber
+翘曲
+cell
+气泡
+center buckle
+表面中部波皱
+check
+细裂痕
+checking
+龟裂
+chipping
+修整表面缺陷
+clamp off
+铸件凹痕
+collapse
+塌陷
+color mottle
+色斑
+corrosion
+腐蚀
+crack
+裂痕
+crazing
+碎裂
+crazing
+龟裂
+deformation
+变形
+edge
+切边碎片
+edge crack
+裂边
+fading
+退色
+filler speak
+填充料斑
+fissure
+裂纹
+flange wrinkle
+凸缘起皱
+flaw
+刮伤
+flow mark
+流痕
+galling
+毛边
+glazing
+光滑
+gloss
+光泽
+grease pits
+污斑
+grinding defect
+磨痕
+haircrack
+发裂
+haze
+雾度
+incrustation
+水锈
+indentation
+压痕
+internal porosity
+内部气孔
+mismatch
+偏模
+mottle
+斑点
+necking
+缩颈
+nick
+割痕
+orange peel
+橘皮状表面缺陷
+overflow
+溢流
+peeling
+剥离
+pit
+坑
+pitting corrosion
+点状腐蚀
+plate mark
+模板印痕
+pock
+麻点
+pock mark
+痘斑
+resin streak
+树脂流纹
+resin wear
+树脂脱落
+riding
+凹陷
+sagging
+松垂
+saponification
+皂化
+scar
+疤痕
+scrap
+废料
+scrap jam
+废料阻塞
+scratch
+刮伤/划痕
+scuffing
+深冲表面划伤
+seam
+裂痕
+shock line
+模口挤痕
+short shot
+充填不足
+shrinkage pool
+凹孔
+sink mark
+凹痕
+skin inclusion
+表皮摺叠
+straightening
+矫直
+streak
+条状痕
+surface check
+表面裂痕
+surface roughening
+橘皮状表皮皱摺
+surging
+波动
+sweat out
+冒汗
+torsion
+扭曲
+warpage
+翘曲
+waviness
+波痕
+webbing
+熔塌
+weld mark
+焊痕
+whitening
+白化
+wrinkle
+皱纹
+adjustable spanner
+活动扳手 angle cutter 角铣刀
+anvil
+铁砧
+arbour
+心轴
+backing
+衬垫
+belt sander
+带式打磨机
+buffing
+抛光
+chamfering machine
+倒角机
+chamfering tool
+去角刀具
+chisel
+扁錾
+chuck
+夹具
+compass
+两角规
+concave cutter
+凹面铣刀
+convex cutter
+凸形铣刀
+cross joint
+十字接头
+cutting edge clearance
+刃口余隙角
+drill stand
+钻台
+edge file
+刃用锉刀
+file
+锉刀
+flange joint
+凸缘接头
+grinder
+砂轮机
+hammer
+铁锤
+hand brace
+手摇钻
+hatching
+剖面线
+hexagon headed bolt
+六角头螺栓
+hexagon nut
+六角螺帽
+index head
+分度头
+jack
+千斤顶
+jig
+治具
+kit
+工具箱
+lapping
+研磨
+metal saw
+金工锯
+nose angle
+刀角
+pinchers
+钳子
+pliers
+铗钳
+plug
+柱塞头
+polisher
+磨光器
+protable driller
+手提钻孔机
+punch
+冲头
+sand paper
+砂纸
+scraper
+刮刀
+screw driver
+螺丝起子
+scribing
+划线
+second out file
+中纹锉
+spanner
+扳手
+spline broach
+方栓槽拉刀
+square
+直角尺
+square sleeker
+方形镘刀
+square trowel
+直角度
+stripping
+剥离工具
+T slot T
+形槽
+tool for lathe
+车刀
+tool point angle
+刀刃角
+tool post
+刀架
+tosecan
+划线盘
+trimming
+去毛边
+waffle die flattening
+压纹效平
+wiper
+脱模钳
+wrench
+螺旋扳手
+3D modeling
+三次元模拟
+access
+通路
+animation
+卡通影片
+application
+应用
+board
+基板
+bug
+故障
+bus
+汇流排
+CAD
+电脑辅助设计
+CAE
+电脑辅助工程分析
+CAM
+电脑辅助制造
+cassette
+卡座
+color display
+彩色显示器
+command
+指令
+communication
+通信
+compact
+精简小型
+computer
+电脑
+copy
+复制
+cursor
+游标
+curve modeling
+曲面模拟
+database
+资料库
+design
+设计
+digitizing
+数位化
+disk
+磁碟
+dot
+点
+eyelet
+眼孔
+floppy
+磁碟片
+format
+格式化
+graphic
+圆解
+hardware
+硬体
+honeycomb
+蜂巢
+interface
+界面
+know how
+秘诀
+laser printer
+雷射印表机
+lay out
+布置
+memory
+记忆
+memory swap
+交换记忆
+microprocessor
+微处理器
+modeling
+造型
+module
+模组
+monitor
+萤幕
+mouse
+滑鼠
+need
+需求
+network
+网路
+new version
+新版
+on line
+上线中
+option
+选择
+PC
+个人电脑
+plotter
+绘图机
+program
+程式
+scanning
+扫描
+simulation
+模拟
+software
+软体
+solid model
+实体模型
+system
+系统
+tape
+磁带
+terminal
+终端机
+texture
+构造
+trim
+修边
+venter
+排气风扇
+word processor
+文书处理器
+barreling
+滚光加工
+belling
+压凸加工
+bending
+弯曲加工
+blanking
+下料加工
+bulging
+撑压加工
+burring
+冲缘加工
+cam die bending
+凸轮弯曲加工
+caulking
+嵌合加工
+coining
+压印加工
+compressing
+压缩加工
+compression bending
+押弯曲加工
+crowning
+凸面加工
+curl bending
+卷边弯曲加工
+curling
+卷曲加工
+cutting
+切削加工
+dinking
+切断蕊骨
+double shearing
+叠板裁断
+drawing
+引伸加工
+drawing with ironing
+抽引光滑加工
+embossing
+浮花压制加工
+extrusion
+挤制加工
+filing
+锉削加工
+fine blanking
+精密下料加工
+finish blanking
+光制下料加工
+finishing
+精整加工
+flanging
+凸缘加工
+folding
+折边弯曲加工
+folding
+摺叠加工
+forming
+成形加工
+impact extrusion
+冲击挤压加工
+indenting
+压痕加工
+ironing
+引缩加工
+knurling
+滚花
+lock seaming
+固定接合
+louvering
+百叶窗板加工
+marking
+刻印加工
+necking
+颈缩加工
+notching
+冲口加工
+parting
+分断加工
+piercing
+冲孔加工
+progressive bending
+连续弯曲加工
+progressive blanking
+连续下料加工
+progressive drawing
+连续引伸加工
+progressive forming
+连续成形加工
+reaming
+铰孔加工
+restriking
+二次精冲加工
+riveting
+铆接加工
+roll bending
+滚筒弯曲加工
+roll finishing
+滚压加工
+rolling
+压延加工
+roughing
+粗加工
+scrapless machining
+无废料加工
+seaming
+折弯重叠加工
+shaving
+缺口修整加工
+shearing
+切断加工
+sizing
+精压加工/矫正加工
+slitting
+割缝加工
+spinning
+卷边?接
+staking
+加固
+tamping
+锻压加工
+swaging
+挤锻压加工
+trimming
+整缘加工
+upsetting
+锻粗加工
+wiring
+抽线加工
+back shaft
+支撑轴
+blank determination
+胚料展开
+bottom slide press
+下传动式压力机
+board drop hammer
+板落锤
+brake
+煞车
+buckle
+剥砂面
+camlachie cramp
+铸包
+chamotte sand
+烧磨砂
+charging hopper
+加料漏斗
+clearance
+间隙
+closed die forging
+合模锻造
+clump
+夹紧
+clutch
+离合器
+clutch brake
+离合器制动器
+clutch boss
+离合器轮壳
+clutch lining
+离合器覆盖
+coil car
+带卷升降运输机
+coil cradle
+卷材进料装置
+coil reel stand
+钢材卷料架
+column
+圆柱
+connection screw
+连杆调节螺钉
+core compound
+砂心黏结剂
+counter blow hammer
+对击锻锤
+cradle
+送料架
+crank
+曲柄轴
+crankless
+无曲柄式
+cross crank
+横向曲轴
+cushion
+缓冲
+depression
+外缩凹孔
+dial feed
+分度送料
+die approach
+模口角度
+die assembly
+合模
+die cushion
+模具缓冲垫
+die height
+冲压闭合高度
+die life
+模具寿命
+die opening
+母模逃孔
+die spotting press
+调整冲模用压力机
+double crank press
+双曲柄轴冲床
+draght angle
+逃料倾斜角
+edging
+边锻伸
+embedded core
+加装砂心
+feed length
+送料长度
+feed level
+送料高度
+filling core
+埋入砂心
+filling in
+填砂
+film play
+液面花纹
+fine blanking press
+精密下料冲床
+forging roll
+辊锻机
+finishing slag
+炼後熔渣
+fly wheel
+飞轮
+fly wheel brake
+飞轮制动器
+foot press
+脚踏冲床
+formboard
+进模口板
+frame
+床身机架
+friction
+摩擦
+friction brake
+摩擦煞车
+gap shear
+凹口剪床
+gear
+齿轮
+gib
+滑块引导部
+gripper
+夹具
+gripper feed
+夹持进料
+gripper feeder
+夹紧传送装置
+hammer
+槌机
+hand press
+手动冲床
+hand rack pinion press
+手动齿轮齿条式冲床
+hand screw press
+手动螺旋式冲床
+hopper feed
+料斗送料
+idle stage
+空站
+inching
+微调尺寸
+isothermal forging
+恒温锻造
+key clutch
+键槽离合器
+knockout
+脱模装置
+knuckle mechanic
+转向机构
+land
+模具直线刀面部
+level
+水平
+loader
+供料器
+unloader
+卸料机
+loop controller
+闭回路控制器
+lower die
+下模
+micro inching device
+微寸动装置
+microinching equipment
+微动装置
+motor
+马达
+moving bolster
+活动工作台
+notching press
+冲缺口压力机
+opening
+排料逃孔
+overload protection device
+防超载装置
+pinch roll
+导正滚轮
+pinion
+小齿轮
+pitch
+节距
+pressfit
+压入
+progressive
+连续送料
+pusher feed
+推杆式送料
+pusher feeder
+料片押片装置
+quick die change system
+快速换模系统
+regrinding
+再次研磨
+releasing
+松释动作
+reversed blanking
+反转下料
+robot
+机器人
+roll forming machine
+辊轧成形
+roll forming machine
+辊轧成形机
+roll release
+脱辊
+roller feed
+辊式送料
+roller leveler
+辊式矫直机
+rotary bender
+卷弯成形机
+safety guard
+安全保护装置
+scrap cutter
+废料切刀
+scrap press
+废料冲床
+seamless forging
+无缝锻造
+separate
+分离
+shave
+崩砂
+shear angle
+剪角
+sheet loader
+薄板装料机
+shot
+单行程工作
+shrinkage fit
+收缩配合
+shut height
+闭合高度
+sieve mesh
+筛孔
+sintering of sand
+铸砂烧贴
+slide balancer
+滑动平衡器
+slug hole
+逃料孔
+spin forming machine
+旋压成形机
+spotting
+合模
+stack feeder
+堆叠拨送料机
+stickness
+黏模性
+straight side frame
+冲床侧板
+stretcher leveler
+拉伸矫直机
+strip feeder
+料材送料装置
+stripping pressure
+弹出压力
+stroke
+冲程
+take out device
+取料装置
+toggle press
+肘杆式压力机
+transfer
+传送
+transfer feed
+连续自动送料装置
+turrent punch press
+转塔冲床
+two speed clutch
+双速离合器
+uncoiler
+闭卷送料机
+unloader
+卸载机
+vibration feeder
+振动送料机
+wiring press
+嵌线卷边机
+abnormal glow
+不规则辉光放电
+arc discharge
+电弧放电
+belt
+皮带
+centreless
+无心
+chrome bronze
+铭铜
+clearance angle
+後角
+corner shear drop
+直角压陷
+deflection
+桡曲度
+discharge energy
+放电能量
+dressing
+修整
+dwell
+保压
+flange
+凸缘
+gap
+间隙
+graphite
+石墨
+graphite contraction allowance
+电极缩小余量
+graphite holder
+电极夹座
+hair crack
+发裂
+horn
+电极臂
+jump
+跳刀
+magnetic base
+磁性座
+master graphite
+标准电极
+pipe graphite
+管状电极
+pulse
+脉冲
+rib working
+肋部加工
+roller electrode
+滚轮式电极
+rotary surface
+旋转面
+shank
+柄部
+sharp edge
+锐角部
+tough bronze
+韧铜
+traverse
+摇臂
+waviness
+波形起伏
+work
+工件
+working allowance
+加工余量
+working dischard
+加工废料
+accretion
+炉瘤
+acid converter
+酸性转炉
+acid lining cupola
+酸性熔铁炉
+acid open hearth furnace
+酸性平炉
+aerator
+松砂机
+air set mold
+常温自硬铸模
+airless blasting cleaning
+离心喷光
+all core molding
+集合式铸模
+all round die holder
+通用模座
+assembly mark
+铸造合模记号
+back pouring
+补浇注
+backing sand
+背砂
+base bullion
+粗金属锭
+base permeability
+原砂透气度
+belling
+压凸
+billet
+坏料
+bleed
+漏铸
+blocker
+预锻模膛
+blocking
+粗胚锻件
+blow hole
+铸件气孔
+board drop hammer
+板落锤
+bottom pour mold
+底浇
+bottom pouring
+底注
+boxless mold
+脱箱砂模
+break off core
+缩颈砂心
+brick molding
+砌箱造模法
+buckle
+剥砂面
+camber
+错箱
+camlachie cramp
+铸包
+cast blade
+铸造叶片
+casting flange
+铸造凸缘
+casting on flat
+水平铸造
+chamotte sand
+烧磨砂
+charging hopper
+加料漏斗
+cleaning of casting
+铸件清理
+closed die forging
+合模锻造
+core compound
+砂心黏结剂
+core template
+砂心模板
+core vent
+砂蕊排气孔
+corner gate
+压边浇口
+counter blow hammer
+对击锻造
+counter lock
+止口镶嵌方式
+depression
+外缩凹孔
+die approach
+模口角度
+draw out
+锻造拔长
+draw plate
+起模板
+draw spike
+起模长针
+dummying
+预锻
+embedded core
+加装砂心
+erosion
+冲砂
+fettling
+铸件清理
+filling core
+埋入砂心
+filling in
+填砂
+film play
+液面花纹
+finishing slag
+炼後熔渣
+flash gutter
+锻模飞边槽
+flask molding
+砂箱造模
+forging roll
+辊锻机
+formboard
+进模口板
+gutter
+锻模飞边槽
+hammer man
+锻工
+heading machine
+顶镦机
+impacter
+卧式锻造机
+inblock cast
+整体铸造
+ingot
+铸锭
+ingot blank
+铸坯
+inlay casting
+镶铸法
+investment casting
+失模铸造
+isothermal forging
+恒温锻造
+loose piece
+木模活块
+molding pit
+铸模地坑
+pouring process
+浇注法
+recasting
+重铸
+roll forging
+轧锻
+rolled surface
+轧制表面
+rough sand
+粗砂
+roughing forge
+粗锻
+sand crushing
+塌箱
+seamless forging
+无缝锻造
+separate
+分离
+shave
+崩砂
+shrinkage fit
+收缩配合
+shut height
+闭合高度
+sieve mesh
+筛孔
+sintering of sand
+铸砂烧贴
+slag
+熔渣
+slag inclusion
+夹渣
+stickness
+黏模性
+strip layout
+带状胚料排样法
+tap casting
+顶注
+top gate
+顶注浇口
+unworked casting
+不加工铸件
+upender
+翻转装置
+upending
+顶锻
+uphill casting
+底铸
+white cast iron
+白口铸件
+barrel
+滚筒(加工)
+bending
+波纹加工
+broaching
+拉刀切削
+centering
+定中心
+cutting
+切削
+cylindrical lathe cutting
+外圆车削
+electric discharge machine
+放电加工
+electrolytic grinding
+电解研磨
+embossing
+压花加工
+facing
+面车削
+filing
+锉刀修润
+hand finishing
+手工修润
+hemming
+卷边加工
+hobbing
+滚齿加工
+joggling
+摇动加工
+lapping
+抛光/研磨修润
+laser beam machining
+雷射加工
+lathe cutting
+车床车削
+planning
+刨削加工
+polishing
+抛亮光
+reaming
+铰孔修润
+rough machining
+粗切削
+rounding
+圆形加工
+sawing
+锯削
+scaling
+清除钢碇缺陷
+shaping
+成形加工
+skiving
+表面研磨
+slotting
+切缝切削
+taper turning
+锥度车削
+thread cutting
+螺纹切削
+ultrasonic machining
+超音波加工
+up cut milling
+逆铣加工
+air permeability test
+透气性试验
+austenitic steel
+沃斯田铁钢
+brinell hardness
+布耐内尔硬度
+brinell hardness test
+布氏硬度试验
+charpy impact test
+夏比冲击试验
+conical cup test
+圆锥杯突试验
+cup flow test
+杯模式流动度试验
+dart drop impact test
+落锤冲击试验
+Elmendorf test
+埃罗门多撕裂强度试验
+environmental stress cracking test
+环境应力龟裂试验
+ericessen test
+埃留伸薄板拉伸试验
+falling ball impact test
+落球冲击试验
+fatigue test
+疲劳试验
+ferrite
+纯铁体
+gantt chart
+甘特图
+heat cycle test
+热循环试验
+histogram
+柱状图
+hot bend test
+热弯试验
+izod impact test
+埃左德冲击试验
+loop tenacity
+环结强度
+martens heat distortion temperature test
+马顿斯耐热试
+martensite
+马氏体
+mullen bursting strength tester
+密廉式破裂强度试验机
+nol ring test
+诺尔环试验
+normal distribution
+常态分配
+ozone resistance test
+抗臭氧试验
+pareto diagram
+柏拉图
+peeling test
+剥离试验
+pinhole test
+针孔试验机
+rattler test
+磨耗试验
+rockweel hardness test
+洛氏硬度试验
+rockweel hardness
+洛氏威尔硬度
+rolinx process
+罗林克斯射出压缩成形法
+rossi peakes flow test
+罗西皮克斯流动试验
+sampling inspection
+抽样检查
+scratch hardness
+抗刮硬度
+shore hardness
+萧氏硬度
+spiral flow test
+螺旋流动试验
+surface abrasion test
+表面磨耗试验
+taber abraser
+泰伯磨耗试验机
+tensile impact test
+拉伸冲击试验
+tensile strength
+抗拉强度
+tension test
+张力试验
+thermal shock test
+冷热剧变试验
+torsion test
+扭曲试验
+ubbelohde viscometer
+乌别洛德黏度计
+vicat indentation test
+维卡针压陷试验
+Vickers hardness test
+维氏硬度试验
+warpage test
+翘曲试验
+weatherometer
+人工老化试验机
+weissenberg effect
+威森伯格回转效应
+abrasive
+砂轮
+Al2O3
+氧化铝
+balance
+平衡
+bond
+结合
+borazon
+氧化硼立方晶
+buffing wheel
+抛光布轮
+diamond
+钻石
+dresser
+砂轮整修机
+dressing
+修整
+endless grinding belt
+循环式研磨带
+finishing allowance
+加工余量 g
+rain
+磨粒
+grinding disc
+研磨盘
+jamp up
+孔眼堵塞
+mesh
+网筛目
+parameter
+参数
+resinoid grinding wheel
+半树脂型砂轮
+slitting
+切缝量
+vitrified
+陶瓷的
+wheel
+旋转
+assembly drawing
+装配图
+auto tool change cycle
+自动换刀时间周期
+beam
+横梁
+bending moment
+弯矩
+bending stress
+弯曲应力
+bottoming
+底靠
+buckling
+纵弯曲
+chamfering
+去角斜切
+channel
+凹槽
+chattering
+颤动
+check point
+查核点
+chip
+切屑
+chip conveyor
+排屑输送机
+coefficient of friction
+摩擦系数
+compact
+小型的
+cooling pipe
+冷却管
+coupon
+试样胚
+deflection
+挠曲量
+distortion
+扭曲变形
+draft taper
+拔模锥度
+draw out
+拉拔
+fit tolerance
+配合公差
+flexible rigidity
+弯曲刚性
+gas vent
+气孔
+hatching
+剖面线
+heater cooler
+加热器冷却装置
+hook cavity
+钩穴
+inching
+寸动
+lug
+凸缘
+maintenance
+维修保固
+metallurgy
+冶金学
+notch effect
+切口效果
+out of roughness
+真圆度
+performance
+动作性能
+pit
+坑 plane strain 倒角应力
+plug mill
+蕊棒轧管机
+repeated load
+重覆载荷
+sand paper
+砂纸
+shift
+偏移
+shrink fit
+热压配合
+shrinkage hole
+缩孔
+sinking
+凹陷
+sketch
+草图
+spalling
+剥落
+straightness
+直度
+submarine
+深陷式
+surface roughness
+表面粗度
+tapping
+攻螺丝
+thermocouple
+热电耦
+torsion load
+扭转载荷
+toughness
+韧性
+tracing
+描图
+under cut
+凹割
+3D coordinate measurement
+三次元量床
+3D modeling
+三次元模拟
+aberration
+色差
+abnormal glow
+不规则辉光放电
+abrasive
+砂轮
+access
+通路
+account
+帐户
+accretion
+炉瘤
+accurate die casting
+精密压铸
+acid converter
+酸性转炉
+acid lining cupola
+酸性熔铁炉
+acid open hearth furnance
+酸性平炉
+activator
+活化剂
+acetylene
+乙炔
+adjustable spanner
+活动扳手
+aerator
+松砂机
+after service
+售後服务
+age hardening
+时效硬化
+ageing
+老化处理
+air hardening
+气体硬化
+airless plasting cleaning
+离心喷光
+air patenting
+空气韧化
+air permeability test
+透气性试验
+air set mold
+常温自硬铸模
+air vent valve
+通气阀
+all core molding
+集合式铸模
+alloy tool steel
+合金工具钢
+allround die holder
+通用模型
+aluminium alloy
+铝合金钢
+amendment
+修正
+ampere
+电流安培
+anchor pin
+锚梢
+angle cutter
+角铣刀
+angle welding
+角焊
+angular pin
+角梢
+angular pin
+倾斜梢
+animation
+卡通影片
+anode effect
+阳极效应
+annealing
+退火
+acetylene
+乙炔
+ampere
+电流安培
+angle welding
+角焊
+arc
+电弧
+argon arc welding
+氩弧焊接
+bare electrode
+光熔接条
+butt welding
+对接焊接
+camber
+电弧弯曲
+cascade
+阶叠熔接法
+clad weld
+被覆熔接
+crator
+焊疤
+excess metal
+多余金属
+filler rod
+焊条
+fillet weld
+填角焊接
+gas shield
+气体遮蔽
+groove welding
+起槽熔接
+hand face shield
+手握面罩
+hard facing
+硬表面堆焊
+jig welding
+工模焊接
+laser beam welding
+雷射光焊接
+metal electrode insert gas welding MIG
+熔接
+nugget
+点焊熔核
+overlaying
+堆焊
+peening of welding
+珠击熔接法
+plug welding
+塞孔熔接
+positioned welding
+正向熔接
+pressure welding
+压焊
+propane gas cutting
+丙烷气切割
+pure nickel electrode
+纯镍熔接条
+reinforcement of weld
+加强焊接
+resist
+抗蚀护膜
+root running
+背面熔接
+seam
+焊缝
+seaming
+接合
+seam welding
+流缝熔接
+series seam welding
+串联缝熔接
+skip welding process
+跳焊法
+spark
+火花
+spot welding
+点焊接
+stitch welding
+针角焊接
+stud arc welding
+电弧焊接
+under laying
+下部焊层
+void
+焊接空隙
+weld flow mark
+焊接流痕
+weld flush
+焊缝凸起
+weld line
+焊接纹
+weld mark
+焊接痕
+weld penetration
+熔接透入
+weld zone
+焊接区
+welding
+焊接
+welding bead
+焊接泡
+welding direction
+焊接方向
+welding distortion
+焊接变形
+welding flux
+焊剂
+welding ground
+电熔接地
+welding interval
+焊接周期
+welding stress
+熔接应变
+welding torch
+熔接气炬

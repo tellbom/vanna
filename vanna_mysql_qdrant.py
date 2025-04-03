@@ -206,7 +206,7 @@ class AsyncTaskManager:
 
 
 class DocumentChunker:
-    def __init__(self, mechanical_terms_path="/dictionary/Mechanical_words.txt", max_chunk_size=1000, overlap=50,
+    def __init__(self, mechanical_terms_path="/dictionary/MechanicalWords.txt", max_chunk_size=1000, overlap=50,
                  model_name="m3e-base"):
         """
         初始化文档分块器，使用语义模型辅助优化分块
@@ -1444,7 +1444,7 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
         if len(documentation) > self.config.get("chunk_threshold", 500):
             # 创建分块器实例
             chunker = DocumentChunker(
-                mechanical_terms_path=self.config.get("mechanical_terms_path", "/dictionary/Mechanical_words.txt"),
+                mechanical_terms_path=self.config.get("mechanical_terms_path", "/dictionary/MechanicalWords.txt"),
                 max_chunk_size=self.config.get("max_chunk_size", 1000),
                 overlap=self.config.get("chunk_overlap", 50)
             )
