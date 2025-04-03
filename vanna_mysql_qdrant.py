@@ -195,14 +195,18 @@ class AsyncTaskManager:
         return self.results[task_id]
 
     def clean_old_tasks(self, max_age: float = 3600):
-        """
-        清理旧任务数据
+        """清理超过max_age秒的旧任务"""
+        current_time = time.time()
+        to_remove = []
 
-        Args:
-            max_age: 最大保留时间（秒），默认1小时
-        """
-        # 实现清理逻辑...
-        pass
+        for task_id, status_info in self.status.items():
+            if status_info.get("timestamp", 0) < current_time - max_age:
+                to_remove.append(task_id)
+
+        for task_id in to_remove:
+            self.results.pop(task_id, None)
+            self.status.pop(task_id, None)
+            self.callbacks.pop(task_id, None)
 
 
 class DocumentChunker:
