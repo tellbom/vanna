@@ -230,6 +230,207 @@ class DocumentChunker:
             local_files_only=True
         )
 
+    def _is_json(self, text: str) -> bool:
+        """
+        检测文本是否为有效的JSON
+
+        Args:
+            text: 要检查的文本
+
+        Returns:
+            bool: 是否为有效的JSON
+        """
+        text = text.strip()
+        # 快速检查：JSON必须以{ 或 [ 开头
+        if not (text.startswith('{') or text.startswith('[')):
+            return False
+
+        try:
+            json.loads(text)
+            return True
+        except json.JSONDecodeError:
+            return False
+
+    def _detect_json_blocks(self, text: str) -> List[Tuple[int, int, str]]:
+        """
+        在文本中检测JSON代码块
+
+        Args:
+            text: 源文本
+
+        Returns:
+            List[Tuple[int, int, str]]: 返回JSON块列表，每项包含(开始位置, 结束位置, JSON内容)
+        """
+        # 查找Markdown代码块中的JSON
+        md_json_pattern = r'```(?:json)?\s*([\s\S]*?)\s*```'
+        md_matches = re.finditer(md_json_pattern, text, re.MULTILINE)
+
+        blocks = []
+        for match in md_matches:
+            json_text = match.group(1).strip()
+            if self._is_json(json_text):
+                blocks.append((match.start(), match.end(), json_text))
+
+        # 如果没有找到Markdown代码块，尝试寻找裸JSON
+        if not blocks:
+            # 这需要更谨慎，因为可能误报
+            # 查找以{ 或 [ 开头，以} 或 ]结尾的大块文本
+            raw_json_pattern = r'(\{[\s\S]*?\}|\[[\s\S]*?\])'
+            for match in re.finditer(raw_json_pattern, text):
+                json_text = match.group(1).strip()
+                if self._is_json(json_text):
+                    blocks.append((match.start(), match.end(), json_text))
+
+        return blocks
+
+    def _split_json_intelligently(self, json_text: str) -> List[str]:
+        """
+        智能分割JSON数据，保持每个分块的有效性
+
+        Args:
+            json_text: JSON文本
+
+        Returns:
+            List[str]: JSON分块列表
+        """
+        try:
+            # 如果JSON小于最大块大小，直接返回
+            if len(json_text) <= self.max_chunk_size:
+                return [json_text]
+
+            data = json.loads(json_text)
+            chunks = []
+
+            # 处理JSON数组
+            if isinstance(data, list):
+                return self._split_json_array(data)
+
+            # 处理JSON对象
+            elif isinstance(data, dict):
+                return self._split_json_object(data)
+
+            # 非预期的JSON类型，作为普通文本处理
+            else:
+                return [json_text]
+
+        except json.JSONDecodeError:
+            # JSON解析失败，作为普通文本处理
+            return self._process_section_with_original_method(json_text)
+
+    def _split_json_array(self, data: List) -> List[str]:
+        """
+        分割JSON数组，保持每个分块为有效的JSON数组
+
+        Args:
+            data: 要分割的JSON数组
+
+        Returns:
+            List[str]: JSON数组分块列表
+        """
+        chunks = []
+
+        # 空数组直接返回
+        if not data:
+            return ['[]']
+
+        # 计算每个元素的大概大小
+        avg_element_size = len(json.dumps(data[0])) if data else 0
+
+        # 计算每块的元素数量，确保不超过最大块大小
+        batch_size = max(1, min(len(data), int(self.max_chunk_size / (avg_element_size + 5))))
+
+        # 分批处理数组
+        for i in range(0, len(data), batch_size):
+            batch = data[i:i + batch_size]
+            # 添加额外信息，标记这是第几批，共几批
+            batch_info = {
+                "_meta": {
+                    "part": i // batch_size + 1,
+                    "total_parts": (len(data) + batch_size - 1) // batch_size,
+                    "elements": len(batch),
+                    "total_elements": len(data)
+                },
+                "data": batch
+            }
+            chunk_json = json.dumps(batch_info, ensure_ascii=False, indent=2)
+            chunks.append(chunk_json)
+
+        return chunks
+
+    def _split_json_object(self, data: Dict) -> List[str]:
+        """
+        分割大型JSON对象，按键进行分组
+
+        Args:
+            data: 要分割的JSON对象
+
+        Returns:
+            List[str]: JSON对象分块列表
+        """
+        # 如果是嵌套复杂对象，优先处理大的子对象/数组
+        keys = list(data.keys())
+        chunks = []
+
+        # 计算每个键值对的大小
+        key_sizes = {}
+        for key in keys:
+            key_sizes[key] = len(json.dumps({key: data[key]}))
+
+        # 分组键：先处理大型嵌套结构
+        large_keys = [k for k, size in key_sizes.items() if size > self.max_chunk_size / 2]
+        small_keys = [k for k in keys if k not in large_keys]
+
+        # 处理大型嵌套结构
+        for key in large_keys:
+            value = data[key]
+            if isinstance(value, list):
+                # 递归处理大型数组
+                array_chunks = self._split_json_array(value)
+                for i, chunk in enumerate(array_chunks):
+                    chunks.append(json.dumps({
+                        "key": key,
+                        "part": i + 1,
+                        "total_parts": len(array_chunks),
+                        "value": json.loads(chunk)
+                    }, ensure_ascii=False, indent=2))
+            elif isinstance(value, dict):
+                # 递归处理大型对象
+                dict_chunks = self._split_json_object(value)
+                for i, chunk in enumerate(dict_chunks):
+                    chunks.append(json.dumps({
+                        "key": key,
+                        "part": i + 1,
+                        "total_parts": len(dict_chunks),
+                        "value": json.loads(chunk)
+                    }, ensure_ascii=False, indent=2))
+            else:
+                # 单个大型值（如长文本）
+                chunks.append(json.dumps({key: value}, ensure_ascii=False, indent=2))
+
+        # 处理剩余的小型键值对
+        current_chunk = {}
+        current_size = 0
+
+        for key in small_keys:
+            item_json = json.dumps({key: data[key]})
+            item_size = len(item_json)
+
+            if current_size + item_size > self.max_chunk_size and current_chunk:
+                # 当前块达到大小限制，保存并创建新块
+                chunks.append(json.dumps(current_chunk, ensure_ascii=False, indent=2))
+                current_chunk = {}
+                current_size = 0
+
+            # 添加到当前块
+            current_chunk[key] = data[key]
+            current_size += item_size
+
+        # 保存最后一个块
+        if current_chunk:
+            chunks.append(json.dumps(current_chunk, ensure_ascii=False, indent=2))
+
+        return chunks
+
     def _load_mechanical_terms(self, filepath):
         """加载专业术语词典 - 调整为适应一行英文一行中文的格式"""
         terms_dict = {}
@@ -311,7 +512,45 @@ class DocumentChunker:
         # 保护专业术语
         protected_text = self._protect_terms(document)
 
-        # 1. 首先尝试按表定义分块
+        # 1. 检测是否包含JSON代码块
+        json_blocks = self._detect_json_blocks(protected_text)
+
+        if json_blocks:
+            result_chunks = []
+            last_position = 0
+
+            # 处理交替的文本和JSON块
+            for start, end, json_text in json_blocks:
+                # 处理JSON块前的文本
+                if start > last_position:
+                    before_text = protected_text[last_position:start]
+                    if before_text.strip():
+                        # 使用原有方法处理JSON块之前的文本
+                        before_chunks = self._process_section_with_original_method(before_text)
+                        result_chunks.extend(before_chunks)
+
+                # 处理JSON块
+                json_chunks = self._split_json_intelligently(json_text)
+
+                # 添加适当的上下文，确保模型理解这是分块的JSON
+                for i, chunk in enumerate(json_chunks):
+                    # 为JSON添加分块信息
+                    context = f"## JSON数据（第{i + 1}部分，共{len(json_chunks)}部分）\n\n```json\n{chunk}\n```"
+                    result_chunks.append(context)
+
+                last_position = end
+
+            # 处理最后一个JSON块后的文本
+            if last_position < len(protected_text):
+                after_text = protected_text[last_position:]
+                if after_text.strip():
+                    after_chunks = self._process_section_with_original_method(after_text)
+                    result_chunks.extend(after_chunks)
+
+            # 恢复专业术语并返回
+            return [self._restore_terms(chunk) for chunk in result_chunks]
+
+        # 2. 首先尝试按表定义分块
         table_sections = []
         table_pattern = r'(# 表名词:.+?)(?=# 表名词:|$)'
         table_matches = re.finditer(table_pattern, protected_text, re.DOTALL)
@@ -412,8 +651,8 @@ class DocumentChunker:
             # 恢复专业术语并返回
             return [self._restore_terms(chunk) for chunk in result_chunks]
 
-        # 2. 如果不是按表结构组织的，回退到原有的基于标记的分块方法
-        # 找出所有关键标记的位置
+        # 3. 如果不是按表结构组织的，回退到原有的基于标记的分块方法
+        # 找出所有关键标记的位置 JSON数据和表格数据不可放在下面，避免重复向量化数据
         key_markers = [
             "业务场景:",
             "示例数据:",
@@ -438,7 +677,7 @@ class DocumentChunker:
             if chunk_text.strip():  # 忽略空块
                 initial_chunks.append(chunk_text)
 
-        # 3. 对超出最大长度的块进行进一步分割
+        # 4. 对超出最大长度的块进行进一步分割
         result_chunks = []
         for chunk in initial_chunks:
             if len(chunk) <= self.max_chunk_size:
@@ -480,7 +719,7 @@ class DocumentChunker:
                 if current_chunk:
                     result_chunks.append(current_chunk)
 
-        # 4. 确保相邻块有适当的重叠
+        # 5. 确保相邻块有适当的重叠
         final_chunks = []
         for i, chunk in enumerate(result_chunks):
             if i > 0 and self.overlap > 0:
@@ -491,7 +730,7 @@ class DocumentChunker:
                     chunk = prev_end + chunk
             final_chunks.append(chunk)
 
-        # 5. 恢复专业术语并返回
+        # 6. 恢复专业术语并返回
         return [self._restore_terms(chunk) for chunk in final_chunks]
 
     def _process_section_with_original_method(self, section):
@@ -1139,6 +1378,8 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
 
         # 初始化Qdrant_VectorStore基类
         Qdrant_VectorStore.__init__(self, config=qdrant_config)
+        config.update(qdrant_config)
+        self.config = config
 
         # 初始化OpenAI_Chat基类
         OpenAI_Chat.__init__(self, client=client, config=self.config)
@@ -2438,7 +2679,7 @@ class EnhancedVannaFlaskApp(VannaFlaskApp):
                         return jsonify({"type": "error", "error": "文件类型必须是TXT、Excel或CSV"}), 400
 
                     # 读取并保存文件
-                    mechanical_terms_path = os.path.join('/dictionary', 'Mechanical_words.txt')
+                    mechanical_terms_path = os.path.join('/dictionary', 'MechanicalWords.txt')
                     os.makedirs(os.path.dirname(mechanical_terms_path), exist_ok=True)
 
                     # 处理不同格式
