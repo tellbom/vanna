@@ -47,6 +47,40 @@ client = OpenAI(
     base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
 )
 
+# 定义意图关键词全局字典
+INTENT_KEYWORDS = {
+    "status": ['状态', '取消', '完成', '支付', 'status', 'complete', 'cancel', '进度', '阶段'],
+    "time": ['时间', '日期', '年', '月', '日', 'time', 'date', 'year', 'month', 'day', '周期', '期限'],
+    "type": ['类型', '种类', '分类', 'type', 'category', 'kind', '型号', '系列'],
+    "count": ['数量', '多少', '计数', 'count', 'how many', 'number of', '个数', '台数'],
+    "aggregation": ['average', 'sum', 'total', 'count', 'mean', 'max', 'min', '平均', '总和', '最大', '最小', '统计'],
+    "comparison": ['more than', 'less than', 'greater', 'smaller', 'between', 'compare', '超过', '小于', '大于', '比较',
+                   '差异'],
+
+    # 机械制造专业意图关键词
+    "equipment": ['设备', '机器', '机械', '装置', '仪器', '工具', 'equipment', 'machine', 'machinery', 'device',
+                  'tool'],
+    "component": ['零件', '部件', '组件', '配件', '元件', 'component', 'part', 'assembly', 'module', '轴承', '齿轮',
+                  '螺栓'],
+    "material": ['材料', '原料', '物料', '金属', '合金', '钢材', '塑料', 'material', 'metal', 'alloy', 'steel',
+                 'plastic'],
+    "specification": ['规格', '参数', '尺寸', '公差', '精度', '直径', '长度', '宽度', '高度', 'specification',
+                      'dimension', 'tolerance'],
+    "process": ['工艺', '流程', '制造', '加工', '生产', '装配', '焊接', '铸造', 'process', 'manufacturing',
+                'production', 'assembly'],
+    "maintenance": ['维护', '保养', '检修', '维修', '保养', '润滑', 'maintenance', 'upkeep', 'repair', 'service',
+                    'lubrication'],
+    "troubleshooting": ['故障', '问题', '诊断', '排查', '修复', '异常', '排障', 'trouble', 'issue', 'fault', 'diagnose',
+                        'error'],
+    "quality": ['质量', '检验', '检测', '标准', '合格', 'quality', 'inspection', 'test', 'standard', 'qualified',
+                '抽检'],
+    "efficiency": ['效率', '产能', '产量', '输出', '运行', 'efficiency', 'productivity', 'output', 'rate', 'operation'],
+    "cost": ['成本', '费用', '价格', '预算', '投入', 'cost', 'expense', 'price', 'budget', 'investment', '经济性'],
+    "safety": ['安全', '防护', '事故', '危险', '风险', '保障', 'safety', 'protection', 'accident', 'hazard', 'risk'],
+    "supply_chain": ['供应', '供应商', '采购', '库存', '物流', '交付', 'supply', 'vendor', 'procurement', 'inventory',
+                     'logistics']
+}
+
 
 class AsyncTaskManager:
     """异步任务管理器，使用线程池处理耗时任务"""
@@ -874,7 +908,7 @@ class RetrievalService:
 
     def retrieve(self, question: str, options: Optional[Dict] = None) -> Dict[str, Any]:
         """
-        Execute comprehensive retrieval pipeline using the new integrated reranking approach
+        Execute comprehensive retrieval pipeline with intent support
 
         Args:
             question: User question
@@ -882,7 +916,7 @@ class RetrievalService:
                 - max_results: Maximum results per type
                 - enhance_query: Whether to enhance the query
                 - use_rerank: Whether to use reranking
-                - rerank_top_k: Number of candidates to rerank
+                - intent_type: Query intent type
 
         Returns:
             Dict containing retrieval results and statistics
@@ -891,47 +925,47 @@ class RetrievalService:
         options = options or {}
         stats = {}
 
-        # Extract options
+        # 获取选项
         max_results = options.get("max_results", self.max_results)
         enhance_query = options.get("enhance_query", True)
         use_rerank = options.get("use_rerank", self.rerank_enabled)
-        rerank_top_k = options.get("rerank_top_k", max_results * 2)  # Default to twice max_results
+        intent_type = options.get("intent_type")  # 获取意图类型
 
-        # Prepare retrieval kwargs
+        # 准备检索参数
         retrieval_kwargs = {
             'rerank': use_rerank,
-            'rerank_top_k': rerank_top_k
+            'intent_type': intent_type  # 传递意图类型
         }
 
-        # Step 1: Enhance query if needed (handled internally by each method now)
+        # 增强查询（如果需要）
         if enhance_query and hasattr(self.vn, "preprocess_field_names"):
             enhanced_question = self.vn.preprocess_field_names(question)
             stats["enhanced_question"] = enhanced_question
 
-        # Step 2: Retrieve SQL examples with integrated reranking
+        # 执行SQL示例检索
         sql_start = time.time()
         question_sql_list = self.vn.get_similar_question_sql(question, **retrieval_kwargs)
         stats["sql_retrieval_time"] = round(time.time() - sql_start, 3)
         stats["sql_results_count"] = len(question_sql_list)
 
-        # Step 3: Retrieve DDL with integrated reranking
+        # 执行DDL检索
         ddl_start = time.time()
         ddl_list = self.vn.get_related_ddl(question, **retrieval_kwargs)
         stats["ddl_retrieval_time"] = round(time.time() - ddl_start, 3)
         stats["ddl_results_count"] = len(ddl_list)
 
-        # Step 4: Retrieve docs with integrated reranking
+        # 执行文档检索
         doc_start = time.time()
         doc_list = self.vn.get_related_documentation(question, **retrieval_kwargs)
         stats["doc_retrieval_time"] = round(time.time() - doc_start, 3)
         stats["doc_results_count"] = len(doc_list)
 
-        # Step 5: Extract table relationships
+        # 提取表关系
         table_relationships = ""
         if hasattr(self.vn, "_extract_table_relationships"):
             table_relationships = self.vn._extract_table_relationships(ddl_list)
 
-        # Step 6: Limit results if needed
+        # 限制结果数量
         if max_results > 0:
             if len(question_sql_list) > max_results:
                 question_sql_list = question_sql_list[:max_results]
@@ -940,14 +974,15 @@ class RetrievalService:
             if len(doc_list) > max_results:
                 doc_list = doc_list[:max_results]
 
-        # Return the results
+        # 返回结果
         results = {
             "question_sql_list": question_sql_list,
             "ddl_list": ddl_list,
             "doc_list": doc_list,
             "table_relationships": table_relationships,
             "stats": stats,
-            "total_time": round(time.time() - start_time, 3)
+            "total_time": round(time.time() - start_time, 3),
+            "detected_intent": intent_type  # 包含检测到的意图
         }
 
         return results
@@ -1156,9 +1191,9 @@ class RankFusion:
 
     @staticmethod
     def contextual_fusion(query: str, dense_results: list, lexical_results: list, metadata=None, k: int = 60,
-                          rerank_service_url: str = None) -> list:
+                          rerank_service_url: str = None, intent_type: str = None) -> list:
         """
-        Context-aware fusion algorithm with integrated reranking for semantic field optimization
+        Context-aware fusion algorithm with intent detection and integrated reranking
 
         Args:
             query: User query
@@ -1167,119 +1202,190 @@ class RankFusion:
             metadata: Metadata information
             k: RRF constant
             rerank_service_url: Optional URL for reranking service
+            intent_type: Query intent type from upstream analysis (optional)
 
         Returns:
             Fused result list
         """
-        # Extract query features
-        query_terms = set(re.findall(r'\b\w+\b', query.lower()))
-        is_status_query = any(
-            term in query_terms for term in ['状态', '取消', '完成', '支付', 'status', 'complete', 'cancel'])
-        is_time_query = any(
-            term in query_terms for term in ['时间', '日期', '年', '月', '日', 'time', 'date', 'year', 'month', 'day'])
-        is_type_query = any(term in query_terms for term in ['类型', '种类', '分类', 'type', 'category', 'kind'])
-        is_count_query = any(term in query_terms for term in ['数量', '多少', '计数', 'count', 'how many', 'number of'])
+        # 默认权重
+        vector_weight = 0.7
+        lexical_weight = 0.3
 
-        # Query intent detection - expand to more intents based on query structure
-        is_aggregation_query = any(term in query.lower() for term in
-                                   ['average', 'sum', 'total', 'count', 'mean', 'max', 'min', '平均', '总和', '最大',
-                                    '最小'])
-        is_comparison_query = any(term in query.lower() for term in
-                                  ['more than', 'less than', 'greater', 'smaller', 'between', 'compare', '超过', '小于',
-                                   '大于', '比较'])
+        # 如果没有提供intent_type，尝试检测意图
+        if not intent_type:
+            query_terms = set(re.findall(r'\b\w+\b', query.lower()))
 
-        # Set dynamic weights based on query intent
-        if is_status_query or is_type_query:
-            # Status and type queries, BM25 might be more accurate
+            # 检测通用意图类型
+            is_status_query = any(term in query_terms for term in INTENT_KEYWORDS["status"])
+            is_time_query = any(term in query_terms for term in INTENT_KEYWORDS["time"])
+            is_type_query = any(term in query_terms for term in INTENT_KEYWORDS["type"])
+            is_count_query = any(term in query_terms for term in INTENT_KEYWORDS["count"])
+            is_aggregation_query = any(term in query.lower() for term in INTENT_KEYWORDS["aggregation"])
+            is_comparison_query = any(term in query.lower() for term in INTENT_KEYWORDS["comparison"])
+
+            # 检测机械制造专业意图
+            is_equipment_query = any(term in query_terms for term in INTENT_KEYWORDS["equipment"])
+            is_component_query = any(term in query_terms for term in INTENT_KEYWORDS["component"])
+            is_material_query = any(term in query_terms for term in INTENT_KEYWORDS["material"])
+            is_specification_query = any(term in query_terms for term in INTENT_KEYWORDS["specification"])
+            is_process_query = any(term in query_terms for term in INTENT_KEYWORDS["process"])
+            is_maintenance_query = any(term in query_terms for term in INTENT_KEYWORDS["maintenance"])
+            is_troubleshooting_query = any(term in query_terms for term in INTENT_KEYWORDS["troubleshooting"])
+            is_quality_query = any(term in query_terms for term in INTENT_KEYWORDS["quality"])
+            is_efficiency_query = any(term in query_terms for term in INTENT_KEYWORDS["efficiency"])
+            is_cost_query = any(term in query_terms for term in INTENT_KEYWORDS["cost"])
+            is_safety_query = any(term in query_terms for term in INTENT_KEYWORDS["safety"])
+            is_supply_chain_query = any(term in query_terms for term in INTENT_KEYWORDS["supply_chain"])
+
+            # 确定主要意图
+            if is_status_query:
+                intent_type = "status"
+            elif is_time_query:
+                intent_type = "time"
+            elif is_type_query:
+                intent_type = "type"
+            elif is_count_query or is_aggregation_query:
+                intent_type = "count" if is_count_query else "aggregation"
+            elif is_comparison_query:
+                intent_type = "comparison"
+            elif is_equipment_query:
+                intent_type = "equipment"
+            elif is_component_query:
+                intent_type = "component"
+            elif is_material_query:
+                intent_type = "material"
+            elif is_specification_query:
+                intent_type = "specification"
+            elif is_process_query:
+                intent_type = "process"
+            elif is_maintenance_query:
+                intent_type = "maintenance"
+            elif is_troubleshooting_query:
+                intent_type = "troubleshooting"
+            elif is_quality_query:
+                intent_type = "quality"
+            elif is_efficiency_query:
+                intent_type = "efficiency"
+            elif is_cost_query:
+                intent_type = "cost"
+            elif is_safety_query:
+                intent_type = "safety"
+            elif is_supply_chain_query:
+                intent_type = "supply_chain"
+            else:
+                intent_type = "general"
+
+        # 基于意图类型设置权重
+        if intent_type == "status" or intent_type == "type":
+            # 状态和类型查询，BM25可能更准确
             vector_weight = 0.4
             lexical_weight = 0.6
-        elif is_time_query:
-            # Time queries, both are important
+        elif intent_type == "time":
+            # 时间查询，两者都重要
             vector_weight = 0.5
             lexical_weight = 0.5
-        elif is_count_query or is_aggregation_query:
-            # Count/aggregation queries often need precise lexical matching
+        elif intent_type in ["count", "aggregation"]:
+            # 计数/聚合查询通常需要精确匹配
             vector_weight = 0.35
             lexical_weight = 0.65
-        elif is_comparison_query:
-            # Comparison queries benefit from semantic understanding
+        elif intent_type == "comparison":
+            # 比较查询需要语义理解
+            vector_weight = 0.6
+            lexical_weight = 0.4
+        elif intent_type == "specification":
+            # 规格参数查询通常需要精确匹配
+            vector_weight = 0.3
+            lexical_weight = 0.7
+        elif intent_type == "troubleshooting":
+            # 故障诊断查询受益于语义相似性
+            vector_weight = 0.65
+            lexical_weight = 0.35
+        elif intent_type in ["material", "component"]:
+            # 材料和零部件查询需要精确匹配
+            vector_weight = 0.45
+            lexical_weight = 0.55
+        elif intent_type == "safety":
+            # 安全规范查询需要高度准确性
+            vector_weight = 0.35
+            lexical_weight = 0.65
+        elif intent_type == "process":
+            # 工艺流程查询需要语义理解
             vector_weight = 0.6
             lexical_weight = 0.4
         else:
-            # Default weights with preference for vector/semantic results
+            # 默认权重
             vector_weight = 0.7
             lexical_weight = 0.3
 
-        # Apply external reranking if URL is provided (as a final step after fusion)
+        # 应用外部重排序(如果提供URL)
         if rerank_service_url:
             try:
-                # Combine all candidates for reranking
+                # 合并所有候选项用于重排序
                 all_candidates = []
                 seen_items = set()
 
-                # Process dense results first (higher priority)
+                # 处理dense_results
                 for item in dense_results:
                     item_key = RankFusion._get_item_key(item)
                     if item_key not in seen_items:
                         seen_items.add(item_key)
                         all_candidates.append({"content": str(item), "item": item})
 
-                # Add lexical results
+                # 添加lexical_results
                 for item in lexical_results:
                     item_key = RankFusion._get_item_key(item)
                     if item_key not in seen_items:
                         seen_items.add(item_key)
                         all_candidates.append({"content": str(item), "item": item})
 
-                # Call reranking service
+                # 调用重排序服务
                 response = requests.post(
                     rerank_service_url,
                     json={
                         "query": query,
                         "documents": [{"content": c["content"]} for c in all_candidates],
-                        "top_k": len(all_candidates)
+                        "top_k": len(all_candidates),
+                        "intent_type": intent_type  # 传递意图类型给重排序服务
                     },
                     timeout=10
                 )
 
                 if response.status_code == 200:
-                    # Process reranked results
+                    # 处理重排序结果
                     reranked_data = response.json()
                     reranked_results = []
 
-                    # Reconstruct original items in new order
+                    # 按新顺序重建原始列表
                     for item in reranked_data.get("results", []):
                         idx = item.get("index")
                         if 0 <= idx < len(all_candidates):
                             reranked_results.append(all_candidates[idx]["item"])
 
-                    # Return reranked results directly
+                    # 直接返回重排序结果
                     return reranked_results
-
             except Exception as e:
-                # Log error and continue with regular fusion
-                print(f"Error during reranking in contextual_fusion: {str(e)}")
+                logger.error(f"Error during reranking in contextual_fusion: {str(e)}", exc_info=True)
 
-        # Compute fusion scores using RRF as base
+        # 计算融合分数
         scores = {}
 
-        # Process vector results
+        # 处理向量结果
         for rank, item in enumerate(dense_results, start=1):
             item_key = RankFusion._get_item_key(item)
             if item_key not in scores:
                 scores[item_key] = {"item": item, "score": 0, "matches": set()}
 
-            # Check if item has a rerank_score from previous reranking
+            # 检查item是否有rerank_score
             if isinstance(item, dict) and "rerank_score" in item:
-                # Use rerank score as a boost
-                rerank_boost = min(1.5, 1.0 + item["rerank_score"] / 2)  # Cap at 50% boost
+                # 使用rerank_score作为提升
+                rerank_boost = min(1.5, 1.0 + item["rerank_score"] / 2)  # 最高50%提升
                 scores[item_key]["score"] += vector_weight * (1.0 / (k + rank)) * rerank_boost
             else:
                 scores[item_key]["score"] += vector_weight * (1.0 / (k + rank))
 
             scores[item_key]["matches"].add("vector")
 
-        # Process lexical results
+        # 处理文本结果
         for rank, item in enumerate(lexical_results, start=1):
             item_key = RankFusion._get_item_key(item)
             if item_key not in scores:
@@ -1288,53 +1394,43 @@ class RankFusion:
             scores[item_key]["score"] += lexical_weight * (1.0 / (k + rank))
             scores[item_key]["matches"].add("lexical")
 
-            # Calculate exact term match bonus
+            # 计算精确词汇匹配奖励
             item_str = str(item).lower()
 
-            # Check if result contains query terms
+            # 提取查询词
+            query_terms = set(re.findall(r'\b\w+\b', query.lower()))
+
+            # 计算查询词匹配率
             term_matches = sum(1 for term in query_terms if term in item_str)
             term_match_ratio = term_matches / len(query_terms) if query_terms else 0
 
-            # Term matching bonus increases with match ratio
+            # 词匹配奖励随匹配率增加
             term_match_boost = 1.0 + (0.3 * term_match_ratio)
             scores[item_key]["score"] *= term_match_boost
 
-        # Multiple retrieval source bonus
+        # 多检索源奖励
         for item_key, data in scores.items():
             if len(data["matches"]) > 1:
-                data["score"] *= 1.25  # 25% extra score for items appearing in both retrieval methods
+                data["score"] *= 1.25  # 同时出现在多个检索源的项获得25%额外分数
 
-        # Add intent-specific bonuses based on pattern matching
-        for item_key, data in scores.items():
-            item_str = str(data["item"]).lower()
+        # 意图相关内容奖励
+        if intent_type and intent_type in INTENT_KEYWORDS:
+            for item_key, data in scores.items():
+                item_str = str(data["item"]).lower()
 
-            # Status query bonuses
-            if is_status_query and any(
-                    term in item_str for term in ["status", "state", "condition", "状态", "完成", "取消", "进行中"]):
-                data["score"] *= 1.15
+                # 检查项是否包含相关意图关键词
+                relevant_keywords = INTENT_KEYWORDS.get(intent_type, [])
+                keyword_matches = sum(1 for kw in relevant_keywords if kw in item_str)
 
-            # Time query bonuses
-            if is_time_query and any(
-                    term in item_str for term in ["time", "date", "timestamp", "时间", "日期", "年", "月", "日"]):
-                data["score"] *= 1.15
+                if keyword_matches > 0:
+                    # 最多20%的意图匹配奖励
+                    intent_boost = min(1.2, 1.0 + (0.04 * keyword_matches))
+                    data["score"] *= intent_boost
 
-            # Type query bonuses
-            if is_type_query and any(term in item_str for term in ["type", "category", "类型", "种类", "分类"]):
-                data["score"] *= 1.15
-
-            # Count/aggregation query bonuses
-            if (is_count_query or is_aggregation_query) and any(
-                    term in item_str for term in ["count", "sum", "avg", "average", "total", "数量", "总数", "平均"]):
-                data["score"] *= 1.18
-
-            # Comparison query bonuses
-            if is_comparison_query and any(term in item_str for term in
-                                           ["greater", "less", "between", "compare", "大于", "小于", "之间", "比较"]):
-                data["score"] *= 1.15
-
-        # Sort by score
+        # 按分数排序
         sorted_items = sorted(scores.values(), key=lambda x: x["score"], reverse=True)
         return [item_data["item"] for item_data in sorted_items]
+
 
 # 本地 Sentence Transformer 嵌入函数
 class LocalSentenceTransformerEmbeddingFunction:
@@ -2415,12 +2511,12 @@ class EnhancedVannaFlaskApp(VannaFlaskApp):
         # Initialize task manager
         self.task_manager = AsyncTaskManager(max_workers=5)
 
-        # 添加自定义API端点
-        self.add_custom_endpoints()
+        # 添加面向dify工作流API端点
+        self.add_dify_endpoints()
         # 添加数据管理API端点
         self._add_data_management_endpoints()
 
-    def add_custom_endpoints(self):
+    def add_dify_endpoints(self):
         # 添加检索上下文API
         @self.flask_app.route("/api/v0/get_retrieval_context", methods=["GET"])
         @self.requires_auth
@@ -2432,15 +2528,22 @@ class EnhancedVannaFlaskApp(VannaFlaskApp):
                 include_prompt = request.args.get("include_prompt", "true").lower() == "true"
                 enhance_query = request.args.get("enhance_query", "true").lower() == "true"
                 use_rerank = request.args.get("use_rerank", "true").lower() == "true"
+                intent_type = request.args.get("intent_type")  # 新增意图类型参数
 
                 if not question:
                     return jsonify({"type": "error", "error": "No question provided"}), 400
+
+                # 验证intent_type是否有效
+                if intent_type and intent_type not in INTENT_TYPES:
+                    logger.warning(f"接收到未知意图类型: {intent_type}，将使用自动检测")
+                    intent_type = None
 
                 # 使用检索服务执行检索
                 options = {
                     "max_results": max_results,
                     "enhance_query": enhance_query,
-                    "use_rerank": use_rerank
+                    "use_rerank": use_rerank,
+                    "intent_type": intent_type  # 传递意图类型
                 }
 
                 retrieval_results = self.retrieval_service.retrieve(question, options)
@@ -2470,7 +2573,8 @@ class EnhancedVannaFlaskApp(VannaFlaskApp):
                     },
                     "dialect": getattr(self.vn, "dialect", "MySQL"),
                     "retrieval_stats": retrieval_results["stats"],
-                    "total_time": retrieval_results["total_time"]
+                    "total_time": retrieval_results["total_time"],
+                    "detected_intent": retrieval_results.get("detected_intent", None)  # 返回检测到的意图
                 }
 
                 if include_prompt:
