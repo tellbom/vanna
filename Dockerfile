@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # 安装Python依赖
 RUN pip install \
     vanna[chromadb,postgres,ollama,mysql,qdrant,openai] \
-    elasticsearch \
+    elasticsearch==7.17.10 \
     sentence-transformers==3.4.1 \
     transformers==4.49.0 \
     "accelerate<=0.23.0" \
@@ -31,6 +31,8 @@ RUN pip install \
     pandas \
     requests \
     Flask
+RUN pip install cryptography
+
 
 # 创建必要的目录
 RUN mkdir -p ${SENTENCE_TRANSFORMERS_HOME}/sentence-transformers_m3e-base \
