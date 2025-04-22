@@ -2534,7 +2534,7 @@ class EnhancedVannaFlaskApp(VannaFlaskApp):
                     return jsonify({"type": "error", "error": "No question provided"}), 400
 
                 # 验证intent_type是否有效
-                if intent_type and intent_type not in INTENT_TYPES:
+                if intent_type and intent_type not in INTENT_KEYWORDS:
                     logger.warning(f"接收到未知意图类型: {intent_type}，将使用自动检测")
                     intent_type = None
 
@@ -2580,7 +2580,7 @@ class EnhancedVannaFlaskApp(VannaFlaskApp):
                 if include_prompt:
                     response["prompt"] = prompt
 
-                return jsonify(response)
+                return jsonify(response, ensure_ascii=False)
 
             except Exception as e:
                 logger.error(f"检索API错误: {str(e)}")
@@ -2967,7 +2967,7 @@ if __name__ == "__main__":
         'model': 'qwen-plus',
         'qdrant_url': 'http://124.71.225.73:6333',  # 修改为您的Qdrant服务地址
         'elasticsearch': {
-            'hosts': ['http://192.168.66.100:9200']
+            'hosts': ['http://192.168.222.137:9200']
         },
         'fusion_method': 'contextual',  # 使用上下文感知融合，可选值: rrf, borda, contextual, multi_stage
         'vector_weight': 0.6,  # 向量检索结果权重
@@ -2976,7 +2976,7 @@ if __name__ == "__main__":
 
     # 连接到MySQL
     vn.connect_to_mysql(
-        host=os.getenv("MYSQL_HOST", "124.71.225.73"),
+        host=os.getenv("MYSQL_HOST", "192.168.222.137"),
         dbname=os.getenv("MYSQL_DATABASE", "testdb"),
         user=os.getenv("MYSQL_USER", "testuser"),
         password=os.getenv("MYSQL_PASSWORD", "testpassword"),
