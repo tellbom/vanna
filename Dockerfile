@@ -24,7 +24,7 @@ RUN pip install \
     elasticsearch \
     sentence-transformers==3.4.1 \
     transformers==4.49.0 \
-    accelerate<=0.23.0 \
+    "accelerate<=0.23.0" \
     qdrant-client \
     openpyxl \
     xlrd \
