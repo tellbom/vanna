@@ -30,8 +30,8 @@ RUN pip install \
     xlrd \
     pandas \
     requests \
-    Flask
-RUN pip install cryptography
+    Flask \
+    cryptography
 
 
 # 创建必要的目录
