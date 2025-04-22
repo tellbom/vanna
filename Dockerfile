@@ -19,19 +19,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # 安装Python依赖
-RUN pip install \
-    vanna[chromadb,postgres,ollama,mysql,qdrant,openai] \
-    elasticsearch==7.17.10 \
-    sentence-transformers==3.4.1 \
-    transformers==4.49.0 \
-    "accelerate<=0.23.0" \
-    qdrant-client \
-    openpyxl \
-    xlrd \
-    pandas \
-    requests \
-    Flask \
-    cryptography
+COPY ./requirements.txt .
+RUN pip install -r requirements.txt
 
 
 # 创建必要的目录
