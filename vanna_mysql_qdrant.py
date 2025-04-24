@@ -245,18 +245,31 @@ class AsyncTaskManager:
 
 class DocumentChunker:
     def __init__(self, mechanical_terms_path="/dictionary/MechanicalWords.txt", max_chunk_size=1000, overlap=50,
-                 model_name="m3e-base"):
+                 model_name="m3e-base", doc_patterns=None, key_markers=None):
         """
         初始化文档分块器，使用语义模型辅助优化分块
 
         Args:
-            mechanical_terms_path: 专业术语词典文件路径
+             mechanical_terms_path: 专业术语词典文件路径
             max_chunk_size: 最大块大小
             overlap: 块之间的重叠大小
+            model_name: 使用的语义模型名称
+            doc_patterns: 文档模式配置字典
+            key_markers: 分块用的关键标记列表
         """
         self.max_chunk_size = max_chunk_size
         self.overlap = overlap
         self.terms_dict = self._load_mechanical_terms(mechanical_terms_path)
+
+        # 设置文档模式配置
+        self.doc_patterns = doc_patterns or {}
+
+        # 设置关键标记
+        self.key_markers = key_markers or [
+            "业务场景:",
+            "示例数据:",
+            "业务规则:"
+        ]
 
         # 初始化语义模型
         self.semantic_model = SentenceTransformer(
@@ -586,7 +599,10 @@ class DocumentChunker:
 
         # 2. 首先尝试按表定义分块
         table_sections = []
-        table_pattern = r'(# 表名词:.+?)(?=# 表名词:|$)'
+        # 使用配置的表定义模式
+        table_pattern = self.doc_patterns.get("table_definition", {}).get(
+            "block_pattern", r'(# 表名词:.+?)(?=# 表名词:|$)'
+        )
         table_matches = re.finditer(table_pattern, protected_text, re.DOTALL)
 
         for match in table_matches:
@@ -687,13 +703,14 @@ class DocumentChunker:
 
         # 3. 如果不是按表结构组织的，回退到原有的基于标记的分块方法
         # 找出所有关键标记的位置 JSON数据和表格数据不可放在下面，避免重复向量化数据
-        key_markers = [
-            "业务场景:",
-            "示例数据:",
-            "业务规则:"
-        ]
-
         marker_positions = []
+        for marker in self.key_markers:
+            for match in re.finditer(re.escape(marker), protected_text):
+                marker_positions.append(match.start())
+
+        # 加入文本开始和结束位置
+        marker_positions = [0] + sorted(marker_positions) + [len(protected_text)]
+
         for marker in key_markers:
             for match in re.finditer(re.escape(marker), protected_text):
                 marker_positions.append(match.start())
@@ -858,8 +875,6 @@ class DocumentChunker:
             chunks.append(remaining)
 
         return chunks
-
-
 
 # 修正utils类中的serialize_data函数
 class utils:
@@ -1453,6 +1468,53 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
         self.config = config or {}
         model_name = self.config.get("embedding_model", "bge-m3")
 
+        # 默认文档模式配置
+        self.doc_patterns = {
+            "table_definition": {
+                "pattern": r'# 表名词:(.+?)(?=\n)',
+                "block_pattern": r'(# 表名词:.+?)(?=# 表名词:|$)',
+                "marker": "# 表名词:"
+            },
+            "json_data": {
+                "pattern": r'## JSON数据（第(\d+)部分，共(\d+)部分）',
+                "marker": "## JSON数据"
+            },
+            "business_scenario": {
+                "pattern": r'业务场景:(.*?)(?=\n|$)',
+                "marker": "业务场景:"
+            },
+            "example_data": {
+                "pattern": r'示例数据:(.*?)(?=\n|$)',
+                "marker": "示例数据:"
+            },
+            "business_rule": {
+                "pattern": r'业务规则:(.*?)(?=\n|$)',
+                "marker": "业务规则:"
+            }
+        }
+
+        # 定义关键标记（用于分块），从配置提取
+        self.key_markers = [
+            self.doc_patterns["business_scenario"]["marker"],
+            self.doc_patterns["example_data"]["marker"],
+            self.doc_patterns["business_rule"]["marker"]
+        ]
+
+        # 允许通过配置覆盖文档模式
+        if "doc_patterns" in self.config:
+            for pattern_type, pattern_info in self.config["doc_patterns"].items():
+                if pattern_type in self.doc_patterns:
+                    self.doc_patterns[pattern_type].update(pattern_info)
+                else:
+                    self.doc_patterns[pattern_type] = pattern_info
+
+            # 重新生成关键标记列表
+            self.key_markers = [
+                self.doc_patterns.get("business_scenario", {}).get("marker", "业务场景:"),
+                self.doc_patterns.get("example_data", {}).get("marker", "示例数据:"),
+                self.doc_patterns.get("business_rule", {}).get("marker", "业务规则:")
+            ]
+
         # 创建本地 SentenceTransformer 嵌入模型实例
         self.embedding_model = SentenceTransformer(
             model_name_or_path=f"/models/sentence-transformers_{model_name}",
@@ -1772,43 +1834,300 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
 
     def add_documentation(self, documentation: str, **kwargs) -> str:
         """
-        添加文档到向量存储中，使用语义感知的分块策略
-
-        Args:
-            documentation: 要添加的文档内容
-            **kwargs: 额外参数
-
-        Returns:
-            str: 文档ID列表的第一个ID
+        增强版添加文档方法，保存块间关联信息
         """
         # 检查是否需要分块
         if len(documentation) > self.config.get("chunk_threshold", 500):
-            # 创建分块器实例
+            # 创建分块器实例（保持原有分块器）
             chunker = DocumentChunker(
                 mechanical_terms_path=self.config.get("mechanical_terms_path", "/dictionary/MechanicalWords.txt"),
                 max_chunk_size=self.config.get("max_chunk_size", 1000),
-                overlap=self.config.get("chunk_overlap", 50)
+                overlap=self.config.get("chunk_overlap", 50),
+                doc_patterns=self.doc_patterns,  # 传递文档模式配置
+                key_markers=self.key_markers  # 传递关键标记
             )
 
             # 分块
             chunks = chunker.chunk_document(documentation)
 
+            # 分析块之间的关系
+            chunks_relations = self._analyze_chunk_relations(chunks, documentation)
+
             # 对每个分块进行处理
             doc_ids = []
-            for chunk in chunks:
+            chunk_id_map = {}  # 保存块文本到ID的映射
+
+            # 第一轮：添加所有块并保存ID
+            for i, chunk in enumerate(chunks):
                 # 调用父类方法添加文档
                 id = super().add_documentation(chunk, **kwargs)
-                # 同时索引到ES
-                self._index_to_es("documentation", chunk, id)
+
+                # 保存ID映射
+                chunk_id_map[chunk] = id
                 doc_ids.append(id)
+
+                # 同时索引到ES，添加特殊块类型标记
+                chunk_type = self._detect_chunk_type(chunk)
+
+                # 构造ES文档，添加元数据
+                es_doc = {
+                    "document": chunk,
+                    "id": id,
+                    "chunk_type": chunk_type,
+                    "chunk_index": i,
+                    "total_chunks": len(chunks)
+                }
+
+                self._index_to_es("documentation", json.dumps(es_doc), id)
+
+            # 第二轮：更新关联信息
+            for chunk, relations in chunks_relations.items():
+                if chunk in chunk_id_map:
+                    chunk_id = chunk_id_map[chunk]
+
+                    # 将关联ID列表转换为实际ID
+                    related_ids = [chunk_id_map[rel_chunk] for rel_chunk in relations
+                                   if rel_chunk in chunk_id_map]
+
+                    # 保存关联信息
+                    if related_ids:
+                        # 更新向量存储中的记录
+                        self._update_document_relations(chunk_id, related_ids)
+
+                        # 更新ES中的记录
+                        self._update_es_relations("documentation", chunk_id, related_ids)
 
             # 返回第一个ID
             return doc_ids[0] if doc_ids else ""
         else:
             # 文档较小，不需要分块
             id = super().add_documentation(documentation, **kwargs)
-            self._index_to_es("documentation", documentation, id)
+
+            # 添加元数据
+            es_doc = {
+                "document": documentation,
+                "id": id,
+                "chunk_type": "complete_document",
+                "chunk_index": 0,
+                "total_chunks": 1
+            }
+            self._index_to_es("documentation", json.dumps(es_doc), id)
             return id
+
+    def _analyze_chunk_relations(self, chunks, full_document):
+        """
+        分析文档分块间的关联关系
+
+        Args:
+            chunks: 文档分块列表
+            full_document: 完整文档文本
+
+        Returns:
+            dict: 每个块与其相关块的映射关系 {chunk -> [related_chunks]}
+        """
+        # 初始化结果字典：每个块的关联列表
+        relations = {chunk: [] for chunk in chunks}
+
+        # 从配置中获取模式和标记
+        table_name_pattern = self.doc_patterns.get("table_definition", {}).get(
+            "pattern", r'# 表名词:(.+?)(?=\n)'
+        )
+        example_data_marker = self.doc_patterns.get("example_data", {}).get(
+            "marker", "示例数据:"
+        )
+        json_pattern = self.doc_patterns.get("json_data", {}).get(
+            "pattern", r'## JSON数据（第(\d+)部分，共(\d+)部分）'
+        )
+
+        # 获取key_markers用于标记分组
+        key_markers = self.key_markers
+
+        # ---------------------------------------
+        # 1. 处理表格定义与示例数据的关联
+        # ---------------------------------------
+        tables = {}  # 表名 -> 块
+        examples = {}  # 表名 -> 块
+
+        # 第一轮：识别所有表格定义和示例数据块
+        for chunk in chunks:
+            # 查找表名
+            table_match = re.search(table_name_pattern, chunk)
+            if table_match:
+                table_name = table_match.group(1).strip()
+                tables[table_name] = chunk
+
+            # 查找示例数据引用表名
+            for line in chunk.split('\n'):
+                if line.startswith(example_data_marker):
+                    example_name = line.replace(example_data_marker, "").strip()
+                    examples[example_name] = chunk
+
+        # 第二轮：关联表格和示例
+        for table_name, table_chunk in tables.items():
+            if table_name in examples:
+                # 建立双向关联
+                relations[table_chunk].append(examples[table_name])
+                relations[examples[table_name]].append(table_chunk)
+                logger.debug(f"关联表格 '{table_name}' 与其示例数据")
+
+        # ---------------------------------------
+        # 2. 处理JSON数据块之间的关联
+        # ---------------------------------------
+        json_groups = {}  # 组ID -> 块列表
+
+        # 识别所有JSON分块并按组分类
+        for chunk in chunks:
+            match = re.search(json_pattern, chunk)
+            if match:
+                part = int(match.group(1))  # 第几部分
+                total = int(match.group(2))  # 共几部分
+                group_id = f"json_group_{total}"  # 组ID
+
+                if group_id not in json_groups:
+                    json_groups[group_id] = []
+
+                json_groups[group_id].append((part, chunk))  # 保存部分编号和块
+
+        # 关联同一组内的所有JSON块
+        for group_id, parts_chunks in json_groups.items():
+            # 按部分编号排序
+            sorted_parts = sorted(parts_chunks, key=lambda x: x[0])
+
+            # 建立组内各块之间的双向关联
+            for i, (part1, chunk1) in enumerate(sorted_parts):
+                for j, (part2, chunk2) in enumerate(sorted_parts):
+                    if i != j:  # 不与自己关联
+                        if chunk2 not in relations[chunk1]:
+                            relations[chunk1].append(chunk2)
+                            logger.debug(f"关联JSON组 {group_id} 的第 {part1} 和第 {part2} 部分")
+
+        # ---------------------------------------
+        # 3. 处理同一标记下内容块的关联
+        # ---------------------------------------
+        # 找出所有标记的位置
+        marker_positions = []
+        for marker in key_markers:
+            for match in re.finditer(re.escape(marker), full_document):
+                marker_positions.append((match.start(), marker))
+
+        # 按位置排序
+        marker_positions.sort()
+
+        # 为每个块找到其对应的标记
+        chunk_markers = {}  # 块 -> 标记
+
+        for chunk in chunks:
+            chunk_start = full_document.find(chunk)
+            if chunk_start >= 0:
+                # 找到最近的前导标记
+                nearest_marker = None
+                nearest_dist = float('inf')
+
+                for pos, marker in marker_positions:
+                    # 标记必须在块之前，且是最近的标记
+                    if pos <= chunk_start and chunk_start - pos < nearest_dist:
+                        nearest_marker = marker
+                        nearest_dist = chunk_start - pos
+
+                # 只记录在合理距离内的标记
+                if nearest_marker and nearest_dist < 1000:  # 1000字符的合理距离内
+                    chunk_markers[chunk] = nearest_marker
+                    logger.debug(f"块与标记 '{nearest_marker}' 关联, 距离: {nearest_dist}")
+
+        # 按标记分组
+        marker_groups = {}  # 标记 -> 块列表
+        for chunk, marker in chunk_markers.items():
+            if marker not in marker_groups:
+                marker_groups[marker] = []
+            marker_groups[marker].append(chunk)
+
+        # 关联同一标记下的所有块
+        for marker, group_chunks in marker_groups.items():
+            if len(group_chunks) > 1:  # 只有多个块才需要关联
+                for chunk in group_chunks:
+                    for other_chunk in group_chunks:
+                        # 不与自己关联，且避免重复关联
+                        if chunk != other_chunk and other_chunk not in relations[chunk]:
+                            relations[chunk].append(other_chunk)
+                            logger.debug(f"关联同标记 '{marker}' 下的两个块")
+
+        # ---------------------------------------
+        # 4. 特殊关系处理（如业务规则与表的关联)
+        # ---------------------------------------
+        # 可以在这里添加其他特殊关系的处理逻辑
+
+        return relations
+
+
+    def _detect_chunk_type(self, chunk):
+        """检测块类型，使用配置的模式"""
+        # 按照配置尝试各种模式
+        for chunk_type, pattern_info in self.doc_patterns.items():
+            marker = pattern_info.get("marker", "")
+            if marker and marker in chunk:
+                return chunk_type
+
+        # 默认检测（如果配置不完整）
+        if "# 表名词:" in chunk:
+            return "table_definition"
+        elif "JSON数据" in chunk:
+            return "json_data"
+        elif "业务场景:" in chunk:
+            return "business_scenario"
+        elif "示例数据:" in chunk:
+            return "example_data"
+        elif "业务规则:" in chunk:
+            return "business_rule"
+        else:
+            return "general"
+
+    def _update_document_relations(self, doc_id, related_ids):
+        """更新向量存储中的关联信息"""
+        try:
+            # 获取现有点信息
+            point = self._client.get_points(
+                collection_name=self.documentation_collection_name,
+                ids=[doc_id]
+            ).points[0]
+
+            # 更新payload
+            payload = point.payload or {}
+            payload["related_chunks"] = related_ids
+
+            # 更新点
+            self._client.update_points(
+                collection_name=self.documentation_collection_name,
+                points=[{"id": doc_id, "payload": payload}]
+            )
+        except Exception as e:
+            logger.error(f"更新文档关联信息失败: {str(e)}")
+
+    def _update_es_relations(self, collection_type, doc_id, related_ids):
+        """更新ES中的关联信息"""
+        if not self.es_client:
+            return
+
+        index_name = self.es_indexes.get(collection_type)
+        if not index_name:
+            return
+
+        try:
+            # 获取现有文档
+            doc = self.es_client.get(index=index_name, id=doc_id)
+            source = doc.get("_source", {})
+
+            # 更新关联信息
+            if isinstance(source, dict):
+                source["related_chunks"] = related_ids
+
+                # 更新文档
+                self.es_client.update(
+                    index=index_name,
+                    id=doc_id,
+                    doc=source
+                )
+        except Exception as e:
+            logger.error(f"更新ES关联信息失败: {str(e)}")
 
     # 重写删除方法以同时从ES删除
     def remove_training_data(self, id: str, **kwargs) -> bool:
@@ -2066,13 +2385,16 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
                 logger.warning(f"No documentation results found for question: {question}")
                 return []
 
+            # 在返回结果前，添加关联块
+            expanded_results = self._expand_with_related_chunks(dense_results + bm25_results)
+
             # 3. Apply reranking if enabled
             if use_rerank:
-                # Combine candidates from both sources for reranking
+                # 使用扩展后的结果创建初始候选集
                 seen_docs = set()
                 initial_candidates = []
 
-                for doc in dense_results + bm25_results:
+                for doc in expanded_results:  # 使用expanded_results而不是原始结果
                     doc_str = str(doc).strip()
                     if doc_str and doc_str not in seen_docs:
                         seen_docs.add(doc_str)
@@ -2089,7 +2411,7 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
                     final_results = RankFusion.contextual_fusion(
                         query=question,
                         dense_results=reranked_results,  # Use reranked results as dense results
-                        lexical_results=bm25_results,  # Keep original lexical results for diversity
+                        lexical_results=expanded_results,  # 使用扩展后结果替代原始bm25_results
                         metadata={"vector_time": vector_time, "bm25_time": bm25_time}
                     )
 
@@ -2101,13 +2423,117 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
                     return reranked_results
 
             # 6. Fall back to regular fusion if reranking wasn't used or failed
-            return self._fuse_results(dense_results, bm25_results, question)
+            return self._fuse_results(dense_results, expanded_results, question)  # 使用expanded_results替代原始bm25_results
 
         except Exception as e:
             logger.error(f"Error in get_related_documentation: {str(e)}")
             logger.error(traceback.format_exc())
             # Return whatever results we have so far
             return dense_results or bm25_results or []
+
+    def _expand_with_related_chunks(self, initial_results, max_related=3):
+        """
+        扩展检索结果，添加相关块
+
+        Args:
+            initial_results: 初始检索结果
+            max_related: 每个块最多添加的相关块数量
+
+        Returns:
+            扩展后的结果列表
+        """
+        if not initial_results:
+            return initial_results
+
+        # 结果去重
+        seen_chunks = set()
+        expanded = []
+
+        for chunk in initial_results:
+            # 添加当前块
+            chunk_str = str(chunk)
+            if chunk_str not in seen_chunks:
+                seen_chunks.add(chunk_str)
+                expanded.append(chunk)
+
+            # 查找相关块
+            related_chunks = self._get_related_chunks(chunk)
+            if not related_chunks:
+                continue
+
+            # 限制每个块添加的相关块数量
+            for related in related_chunks[:max_related]:
+                rel_str = str(related)
+                if rel_str not in seen_chunks:
+                    seen_chunks.add(rel_str)
+                    expanded.append(related)
+
+        return expanded
+
+    def _get_related_chunks(self, chunk):
+        """获取与给定块相关的块"""
+        # 如果是字符串，尝试找到对应的文档ID
+        if isinstance(chunk, str):
+            chunk_id = self._find_chunk_id(chunk)
+            if not chunk_id:
+                return []
+        else:
+            # 如果是字典对象，尝试直接获取ID
+            chunk_id = chunk.get("id") if isinstance(chunk, dict) else None
+            if not chunk_id:
+                return []
+
+        # 从向量存储中获取关联信息
+        try:
+            point = self._client.get_points(
+                collection_name=self.documentation_collection_name,
+                ids=[chunk_id]
+            ).points[0]
+
+            related_ids = point.payload.get("related_chunks", [])
+            if not related_ids:
+                return []
+
+            # 获取关联块内容
+            related_points = self._client.get_points(
+                collection_name=self.documentation_collection_name,
+                ids=related_ids
+            ).points
+
+            return [point.payload.get("documentation", "") for point in related_points]
+
+        except Exception as e:
+            logger.error(f"获取关联块失败: {str(e)}")
+            return []
+
+    def _find_chunk_id(self, chunk_text):
+        """根据块内容查找ID"""
+        # 这里需要实现一个查找机制，可能通过ES或向量存储
+        # 简化实现：使用ES进行精确匹配
+        if not self.es_client:
+            return None
+
+        try:
+            response = self.es_client.search(
+                index=self.es_indexes.get("documentation"),
+                body={
+                    "query": {
+                        "match_phrase": {
+                            "document": chunk_text[:200]  # 使用前200个字符进行匹配
+                        }
+                    },
+                    "size": 1
+                }
+            )
+
+            hits = response.get("hits", {}).get("hits", [])
+            if hits:
+                return hits[0].get("_id")
+
+        except Exception as e:
+            logger.error(f"查找块ID失败: {str(e)}")
+
+        return None
 
     # 添加便利方法，预处理字段名以提高匹配质量
     def preprocess_field_names(self, question: str) -> str:
