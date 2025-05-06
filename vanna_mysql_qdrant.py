@@ -2241,6 +2241,11 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
         except Exception as e:
             logger.error(f"Error in get_similar_question_sql: {str(e)}")
             logger.error(traceback.format_exc())
+
+            # 修复: 确保变量已定义
+            dense_results = locals().get('dense_results', [])
+            bm25_results = locals().get('bm25_results', [])
+
             # Return whatever results we have so far
             return dense_results or bm25_results or []
 
@@ -2333,6 +2338,11 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
         except Exception as e:
             logger.error(f"Error in get_related_ddl: {str(e)}")
             logger.error(traceback.format_exc())
+
+            # 修复: 确保变量已定义
+            dense_results = locals().get('dense_results', [])
+            bm25_results = locals().get('bm25_results', [])
+
             # Return whatever results we have so far
             return dense_results or bm25_results or []
 
@@ -2428,16 +2438,22 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
         except Exception as e:
             logger.error(f"Error in get_related_documentation: {str(e)}")
             logger.error(traceback.format_exc())
+            # 修复: 确保变量已定义
+            dense_results = locals().get('dense_results', [])
+            bm25_results = locals().get('bm25_results', [])
+
             # Return whatever results we have so far
             return dense_results or bm25_results or []
 
-    def _expand_with_related_chunks(self, initial_results, max_related=3):
+    def _expand_with_related_chunks(self, initial_results, max_related=3, max_depth=2, max_total=15):
         """
-        扩展检索结果，添加相关块
+        扩展检索结果，添加多层关联块
 
         Args:
             initial_results: 初始检索结果
-            max_related: 每个块最多添加的相关块数量
+            max_related: 每个块最多添加的直接相关块数量
+            max_depth: 最大递归深度
+            max_total: 结果中最大块总数，防止过度扩展
 
         Returns:
             扩展后的结果列表
@@ -2449,24 +2465,56 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
         seen_chunks = set()
         expanded = []
 
-        for chunk in initial_results:
-            # 添加当前块
-            chunk_str = str(chunk)
+        # 跟踪已探索的块和它们的深度
+        explored_with_depth = {}
+
+        # 使用广度优先搜索探索关系网络
+        queue = [(chunk, 0) for chunk in initial_results]  # (块, 深度)
+
+        while queue and len(expanded) < max_total:
+            current_chunk, current_depth = queue.pop(0)
+
+            # 添加当前块（如果尚未添加）
+            chunk_str = str(current_chunk)
             if chunk_str not in seen_chunks:
                 seen_chunks.add(chunk_str)
-                expanded.append(chunk)
+                expanded.append(current_chunk)
+                explored_with_depth[chunk_str] = current_depth
+
+            # 如果已达到最大深度，不再继续探索
+            if current_depth >= max_depth:
+                continue
 
             # 查找相关块
-            related_chunks = self._get_related_chunks(chunk)
+            related_chunks = self._get_related_chunks(current_chunk)
             if not related_chunks:
                 continue
 
             # 限制每个块添加的相关块数量
-            for related in related_chunks[:max_related]:
+            related_count = 0
+            for related in related_chunks:
                 rel_str = str(related)
-                if rel_str not in seen_chunks:
-                    seen_chunks.add(rel_str)
-                    expanded.append(related)
+
+                # 避免重复探索或添加到队列
+                if rel_str in seen_chunks:
+                    # 如果已探索但在更深层次，更新为当前更浅层次
+                    if rel_str in explored_with_depth and explored_with_depth[rel_str] > current_depth + 1:
+                        explored_with_depth[rel_str] = current_depth + 1
+                    continue
+
+                # 控制直接相关块数量
+                related_count += 1
+                if related_count > max_related:
+                    break
+
+                # 将相关块加入队列进行后续探索
+                queue.append((related, current_depth + 1))
+
+            # 根据相关性和层级对队列排序，优先处理浅层次和高相关性的块
+            queue.sort(key=lambda x: x[1])  # 首先按深度排序
+
+        # 记录日志
+        logger.debug(f"块关系探索: 初始块数 {len(initial_results)}, 扩展后块数 {len(expanded)}, 最大深度 {max_depth}")
 
         return expanded
 
@@ -3006,7 +3054,7 @@ class EnhancedVannaFlaskApp(VannaFlaskApp):
                 if include_prompt:
                     response["prompt"] = prompt
 
-                return jsonify(response, ensure_ascii=False)
+                return current_app.json.response(response, ensure_ascii=False)
 
             except Exception as e:
                 logger.error(f"检索API错误: {str(e)}")
