@@ -3054,7 +3054,8 @@ class EnhancedVannaFlaskApp(VannaFlaskApp):
                 if include_prompt:
                     response["prompt"] = prompt
 
-                return current_app.json.response(response, ensure_ascii=False)
+                # 修复后的返回方式 - 使用**将字典展开为关键字参数
+                return jsonify(**response)
 
             except Exception as e:
                 logger.error(f"检索API错误: {str(e)}")
