@@ -1471,43 +1471,33 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
         # 默认文档模式配置
         self.doc_patterns = {
             "table_definition": {
-                "pattern": r'## 表定义说明([\s\S]*?)(?=^##|\Z)',
-                "block_pattern": r'(## 表定义说明[\s\S]*?)(?=^##|\Z)',
-                "marker": "## 表定义说明"
-            },
-            "table_attributes": {
-                "pattern": r'## 表属性说明([\s\S]*?)(?=^##|\Z)',
-                "block_pattern": r'(## 表属性说明[\s\S]*?)(?=^##|\Z)',
-                "marker": "## 表属性说明"
-            },
-            "terminology": {
-                "pattern": r'## 专用名词解释([\s\S]*?)(?=^##|\Z)',
-                "block_pattern": r'(## 专用名词解释[\s\S]*?)(?=^##|\Z)',
-                "marker": "## 专用名词解释"
-            },
-            "table_relationships": {
-                "pattern": r'## 表关联关系([\s\S]*?)(?=^##|\Z)',
-                "block_pattern": r'(## 表关联关系[\s\S]*?)(?=^##|\Z)',
-                "marker": "## 表关联关系"
-            },
-            "example_data": {
-                "pattern": r'## 表数据示例([\s\S]*?)(?=^##|\Z)',
-                "block_pattern": r'(## 表数据示例[\s\S]*?)(?=^##|\Z)',
-                "marker": "## 表数据示例"
+                "pattern": r'# 表名词:(.+?)(?=\n)',
+                "block_pattern": r'(# 表名词:.+?)(?=# 表名词:|$)',
+                "marker": "# 表名词:"
             },
             "json_data": {
-                "pattern": r'```json\s*([\s\S]*?)\s*```',
-                "marker": "```json"
+                "pattern": r'## JSON数据（第(\d+)部分，共(\d+)部分）',
+                "marker": "## JSON数据"
+            },
+            "business_scenario": {
+                "pattern": r'业务场景:(.*?)(?=\n|$)',
+                "marker": "业务场景:"
+            },
+            "example_data": {
+                "pattern": r'示例数据:(.*?)(?=\n|$)',
+                "marker": "示例数据:"
+            },
+            "business_rule": {
+                "pattern": r'业务规则:(.*?)(?=\n|$)',
+                "marker": "业务规则:"
             }
         }
 
-        # 定义关键标记（用于分块），从模式配置中提取
+        # 定义关键标记（用于分块），从配置提取
         self.key_markers = [
-            self.doc_patterns["table_definition"]["marker"],
-            self.doc_patterns["table_attributes"]["marker"],
-            self.doc_patterns["terminology"]["marker"],
-            self.doc_patterns["table_relationships"]["marker"],
-            self.doc_patterns["example_data"]["marker"]
+            self.doc_patterns["business_scenario"]["marker"],
+            self.doc_patterns["example_data"]["marker"],
+            self.doc_patterns["business_rule"]["marker"]
         ]
 
         # 允许通过配置覆盖文档模式
@@ -1520,11 +1510,9 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
 
             # 重新生成关键标记列表
             self.key_markers = [
-                self.doc_patterns.get("table_definition", {}).get("marker", "## 表定义说明"),
-                self.doc_patterns.get("table_attributes", {}).get("marker", "## 表属性说明"),
-                self.doc_patterns.get("terminology", {}).get("marker", "## 专用名词解释"),
-                self.doc_patterns.get("table_relationships", {}).get("marker", "## 表关联关系"),
-                self.doc_patterns.get("example_data", {}).get("marker", "## 表数据示例")
+                self.doc_patterns.get("business_scenario", {}).get("marker", "业务场景:"),
+                self.doc_patterns.get("example_data", {}).get("marker", "示例数据:"),
+                self.doc_patterns.get("business_rule", {}).get("marker", "业务规则:")
             ]
 
         # 创建本地 SentenceTransformer 嵌入模型实例
@@ -1532,6 +1520,12 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
             model_name_or_path=f"/models/sentence-transformers_{model_name}",
             local_files_only=True
         )
+
+        # TEI 服务配置
+        self.tei_service_url = self.config.get("embedding_service_url", "http://localhost:80")
+        self.tei_timeout = self.config.get("embedding_timeout", 30)
+        self.tei_max_retries = self.config.get("embedding_max_retries", 3)
+        self.tei_batch_size = self.config.get("embedding_batch_size", 32)
 
         # 配置Qdrant连接参数
         qdrant_config = {
@@ -1579,23 +1573,179 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
         self.n_results_ddl = self.config.get("n_results_ddl", 10)
         self.n_results_documentation = self.config.get("n_results_documentation", 10)
 
+    def _validate_tei_service(self):
+        """Validate that TEI service is accessible"""
+        try:
+            response = requests.get(f"{self.tei_service_url}/health", timeout=5)
+            if response.status_code == 200:
+                logger.info(f"TEI service connected successfully at {self.tei_service_url}")
+            else:
+                logger.warning(f"TEI service health check failed: {response.status_code}")
+        except Exception as e:
+            logger.error(f"Cannot connect to TEI service at {self.tei_service_url}: {str(e)}")
+            raise ConnectionError(f"TEI service unavailable: {str(e)}")
+
     # 重写 generate_embedding 方法，使用我们的本地模型
     def generate_embedding(self, data: str, **kwargs) -> List[float]:
         """
-        使用本地 SentenceTransformer 模型生成文本嵌入向量
+        Generate embeddings using remote TEI service with retry logic
 
         Args:
-            data (str): 需要生成嵌入的文本
+            data (str): Text to generate embedding for
+            **kwargs: Additional parameters (unused for TEI)
 
         Returns:
-            List[float]: 嵌入向量
+            List[float]: Embedding vector
+
+        Raises:
+            Exception: If embedding generation fails after all retries
         """
+        if not data or not data.strip():
+            raise ValueError("Input data cannot be empty")
+
+        # Prepare request payload
+        payload = {
+            "inputs": data.strip(),
+            "truncate": True  # Handle long texts gracefully
+        }
+
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        last_exception = None
+
+        # Retry logic for robustness
+        for attempt in range(self.tei_max_retries):
+            try:
+                start_time = time.time()
+
+                response = requests.post(
+                    f"{self.tei_service_url}/embed",
+                    json=payload,
+                    headers=headers,
+                    timeout=self.tei_timeout
+                )
+
+                if response.status_code == 200:
+                    result = response.json()
+
+                    # TEI returns embeddings in different formats, handle both
+                    if isinstance(result, list) and len(result) > 0:
+                        # Format: [embedding_vector]
+                        embedding = result[0]
+                    elif isinstance(result, dict) and "embeddings" in result:
+                        # Format: {"embeddings": [embedding_vector]}
+                        embedding = result["embeddings"][0]
+                    elif isinstance(result, dict) and "data" in result:
+                        # OpenAI-compatible format: {"data": [{"embedding": [...]}]}
+                        embedding = result["data"][0]["embedding"]
+                    else:
+                        raise ValueError(f"Unexpected TEI response format: {type(result)}")
+
+                    # Validate embedding
+                    if not isinstance(embedding, list) or len(embedding) == 0:
+                        raise ValueError(f"Invalid embedding format: {type(embedding)}")
+
+                    elapsed_time = time.time() - start_time
+                    logger.debug(f"Generated embedding for text length {len(data)} in {elapsed_time:.3f}s")
+
+                    return embedding
+
+                elif response.status_code == 413:  # Payload too large
+                    # Handle long text by truncating
+                    if len(data) > 1000:
+                        logger.warning(f"Text too long ({len(data)} chars), truncating to 1000 chars")
+                        return self.generate_embedding(data[:1000], **kwargs)
+                    else:
+                        raise Exception(f"TEI service payload too large: {response.status_code}")
+
+                elif response.status_code == 422:  # Validation error
+                    error_detail = response.json() if response.content else "Unknown validation error"
+                    raise ValueError(f"TEI validation error: {error_detail}")
+
+                else:
+                    raise Exception(f"TEI service error: {response.status_code} - {response.text}")
+
+            except requests.exceptions.Timeout:
+                last_exception = Exception(f"TEI service timeout after {self.tei_timeout}s (attempt {attempt + 1})")
+                logger.warning(str(last_exception))
+
+            except requests.exceptions.ConnectionError:
+                last_exception = Exception(f"TEI service connection error (attempt {attempt + 1})")
+                logger.warning(str(last_exception))
+
+            except Exception as e:
+                last_exception = e
+                logger.error(f"TEI embedding error (attempt {attempt + 1}): {str(e)}")
+
+            # Wait before retry (exponential backoff)
+            if attempt < self.tei_max_retries - 1:
+                wait_time = 2 ** attempt  # 1s, 2s, 4s
+                logger.info(f"Retrying in {wait_time}s...")
+                time.sleep(wait_time)
+
+        # All retries failed
+        logger.error(f"Failed to generate embedding after {self.tei_max_retries} attempts")
+        raise last_exception or Exception("Unknown embedding generation error")
+
+    def generate_embeddings_batch(self, texts: List[str], **kwargs) -> List[List[float]]:
+        """
+        Generate embeddings for multiple texts in batch (if supported by TEI)
+
+        Args:
+            texts: List of texts to generate embeddings for
+
+        Returns:
+            List of embedding vectors
+        """
+        if not texts:
+            return []
+
+        # Check if TEI supports batch processing
+        if len(texts) == 1:
+            return [self.generate_embedding(texts[0], **kwargs)]
+
         try:
-            # 使用预先初始化的 embedding_model 生成嵌入向量
-            embedding = self.embedding_model.encode(data, convert_to_numpy=True)
-            return embedding.tolist()
+            # Try batch processing first
+            payload = {
+                "inputs": [text.strip() for text in texts],
+                "truncate": True
+            }
+
+            response = requests.post(
+                f"{self.tei_service_url}/embed",
+                json=payload,
+                headers={"Content-Type": "application/json"},
+                timeout=self.tei_timeout * 2  # Longer timeout for batch
+            )
+
+            if response.status_code == 200:
+                result = response.json()
+
+                # Handle different batch response formats
+                if isinstance(result, list):
+                    return result
+                elif isinstance(result, dict) and "embeddings" in result:
+                    return result["embeddings"]
+                elif isinstance(result, dict) and "data" in result:
+                    return [item["embedding"] for item in result["data"]]
+
         except Exception as e:
-            logger.error(f"生成嵌入向量时出错: {str(e)}")
+            logger.warning(f"Batch embedding failed, falling back to individual: {str(e)}")
+
+        # Fallback to individual processing
+        embeddings = []
+        for text in texts:
+            try:
+                embedding = self.generate_embedding(text, **kwargs)
+                embeddings.append(embedding)
+            except Exception as e:
+                logger.error(f"Failed to generate embedding for text: {text[:50]}... Error: {str(e)}")
+                # You might want to raise here or append a zero vector
+                raise e
+
+        return embeddings
 
     def _connect_elasticsearch(self):
         """连接到Elasticsearch服务器"""
@@ -1793,6 +1943,11 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
                 self.sql_collection_name,
                 query=embedding,
                 limit=self.n_results_sql,
+                search_params =  {
+                'hnsw_ef': 512,           # HNSW搜索参数，越大越精确（默认16）
+                'exact': False,           # 是否精确搜索（太慢，建议False）
+                'quantization': None,     # 关闭量化以提高精度
+                },
                 with_payload=True
             ).points
 
@@ -1803,6 +1958,11 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
                 self.ddl_collection_name,
                 query=embedding,
                 limit=self.n_results_ddl,
+                search_params={
+                    'hnsw_ef': 512,  # HNSW搜索参数，越大越精确（默认16）
+                    'exact': False,  # 是否精确搜索（太慢，建议False）
+                    'quantization': None,  # 关闭量化以提高精度
+                },
                 with_payload=True
             ).points
 
@@ -1813,6 +1973,11 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
                 self.documentation_collection_name,
                 query=embedding,
                 limit=self.n_results_documentation,
+                search_params={
+                    'hnsw_ef': 512,  # HNSW搜索参数，越大越精确（默认16）
+                    'exact': False,  # 是否精确搜索（太慢，建议False）
+                    'quantization': None,  # 关闭量化以提高精度
+                },
                 with_payload=True
             ).points
 
@@ -1844,20 +2009,6 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
 
         return id
 
-    def _get_qdrant_id(self, doc_id: str) -> str:
-        """确保ID格式适用于Qdrant（纯UUID，无后缀）"""
-        return doc_id.replace("-doc", "") if isinstance(doc_id, str) and doc_id.endswith("-doc") else doc_id
-
-    def _get_es_id(self, doc_id: str) -> str:
-        """确保ID格式适用于Elasticsearch（带-doc后缀）"""
-        return doc_id if isinstance(doc_id, str) and doc_id.endswith("-doc") else f"{doc_id}-doc"
-
-    def _is_same_doc_id(self, id1: str, id2: str) -> bool:
-        """比较两个ID是否指向同一文档，忽略格式差异"""
-        clean_id1 = self._get_qdrant_id(id1)
-        clean_id2 = self._get_qdrant_id(id2)
-        return clean_id1 == clean_id2
-
     def add_documentation(self, documentation: str, **kwargs) -> str:
         """
         增强版添加文档方法，保存块间关联信息
@@ -1885,15 +2036,12 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
 
             # 第一轮：添加所有块并保存ID
             for i, chunk in enumerate(chunks):
-                # 调用父类方法添加文档，获取带后缀的ID
-                full_id = super().add_documentation(chunk, **kwargs)
+                # 调用父类方法添加文档
+                id = super().add_documentation(chunk, **kwargs)
 
-                # 存储纯UUID作为Qdrant所需的ID格式
-                qdrant_id = self._get_qdrant_id(full_id)
-
-                # 保存ID映射（使用原始文本作为键，存储两种格式的ID）
-                chunk_id_map[chunk] = {"es_id": full_id, "qdrant_id": qdrant_id}
-                doc_ids.append(full_id)
+                # 保存ID映射
+                chunk_id_map[chunk] = id
+                doc_ids.append(id)
 
                 # 同时索引到ES，添加特殊块类型标记
                 chunk_type = self._detect_chunk_type(chunk)
@@ -1901,66 +2049,51 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
                 # 构造ES文档，添加元数据
                 es_doc = {
                     "document": chunk,
-                    "id": full_id,
-                    "qdrant_id": qdrant_id,  # 添加Qdrant ID便于跨系统引用
+                    "id": id,
                     "chunk_type": chunk_type,
                     "chunk_index": i,
                     "total_chunks": len(chunks)
                 }
 
-                self._index_to_es("documentation", json.dumps(es_doc), full_id)
+                self._index_to_es("documentation", json.dumps(es_doc), id)
 
             # 第二轮：更新关联信息
             for chunk, relations in chunks_relations.items():
                 if chunk in chunk_id_map:
-                    chunk_ids = chunk_id_map[chunk]
+                    chunk_id = chunk_id_map[chunk]
 
-                    # 将关联块文本转换为ID列表
-                    related_es_ids = []
-                    related_qdrant_ids = []
-
-                    for rel_chunk in relations:
-                        if rel_chunk in chunk_id_map:
-                            related_es_ids.append(chunk_id_map[rel_chunk]["es_id"])
-                            related_qdrant_ids.append(chunk_id_map[rel_chunk]["qdrant_id"])
+                    # 将关联ID列表转换为实际ID
+                    related_ids = [chunk_id_map[rel_chunk] for rel_chunk in relations
+                                   if rel_chunk in chunk_id_map]
 
                     # 保存关联信息
-                    if related_es_ids and related_qdrant_ids:
-                        # 更新向量存储中的记录 - 使用纯UUID格式
-                        self._update_document_relations(
-                            chunk_ids["qdrant_id"],
-                            related_qdrant_ids
-                        )
+                    if related_ids:
+                        # 更新向量存储中的记录
+                        self._update_document_relations(chunk_id, related_ids)
 
-                        # 更新ES中的记录 - 使用带后缀的ID格式
-                        self._update_es_relations(
-                            "documentation",
-                            chunk_ids["es_id"],
-                            related_es_ids
-                        )
+                        # 更新ES中的记录
+                        self._update_es_relations("documentation", chunk_id, related_ids)
 
             # 返回第一个ID
             return doc_ids[0] if doc_ids else ""
         else:
             # 文档较小，不需要分块
-            full_id = super().add_documentation(documentation, **kwargs)
-            qdrant_id = self._get_qdrant_id(full_id)
+            id = super().add_documentation(documentation, **kwargs)
 
             # 添加元数据
             es_doc = {
                 "document": documentation,
-                "id": full_id,
-                "qdrant_id": qdrant_id,  # 添加Qdrant ID
+                "id": id,
                 "chunk_type": "complete_document",
                 "chunk_index": 0,
                 "total_chunks": 1
             }
-            self._index_to_es("documentation", json.dumps(es_doc), full_id)
-            return full_id
+            self._index_to_es("documentation", json.dumps(es_doc), id)
+            return id
 
     def _analyze_chunk_relations(self, chunks, full_document):
         """
-        分析文档分块间的关联关系，特别注意处理大型JSON数据的分块
+        分析文档分块间的关联关系
 
         Args:
             chunks: 文档分块列表
@@ -1972,127 +2105,136 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
         # 初始化结果字典：每个块的关联列表
         relations = {chunk: [] for chunk in chunks}
 
-        try:
-            # 从配置中获取模式和标记
-            table_definition_marker = self.doc_patterns.get("table_definition", {}).get("marker", "## 表定义说明")
-            example_data_marker = self.doc_patterns.get("example_data", {}).get("marker", "## 表数据示例")
+        # 从配置中获取模式和标记
+        table_name_pattern = self.doc_patterns.get("table_definition", {}).get(
+            "pattern", r'# 表名词:(.+?)(?=\n)'
+        )
+        example_data_marker = self.doc_patterns.get("example_data", {}).get(
+            "marker", "示例数据:"
+        )
+        json_pattern = self.doc_patterns.get("json_data", {}).get(
+            "pattern", r'## JSON数据（第(\d+)部分，共(\d+)部分）'
+        )
 
-            # 标准JSON代码块和JSON数据分块模式
-            json_code_pattern = r'```json\s*([\s\S]*?)\s*```'
-            json_part_pattern = r'## JSON数据（第(\d+)部分，共(\d+)部分）'
+        # 获取key_markers用于标记分组
+        key_markers = self.key_markers
 
-            # ---------------------------------------
-            # 1. 处理表格定义与示例数据的关联
-            # ---------------------------------------
-            tables = {}  # 表名 -> 块
-            examples = {}  # 表名 -> 块
+        # ---------------------------------------
+        # 1. 处理表格定义与示例数据的关联
+        # ---------------------------------------
+        tables = {}  # 表名 -> 块
+        examples = {}  # 表名 -> 块
 
-            # 识别所有表格定义和示例数据块
-            for chunk in chunks:
-                if table_definition_marker in chunk:
-                    # 尝试提取表名
-                    table_name_match = re.search(r'英文表名称[^\n]*[:：]\s*([^\n]+)', chunk)
-                    if table_name_match:
-                        table_name = table_name_match.group(1).strip()
-                        tables[table_name] = chunk
+        # 第一轮：识别所有表格定义和示例数据块
+        for chunk in chunks:
+            # 查找表名
+            table_match = re.search(table_name_pattern, chunk)
+            if table_match:
+                table_name = table_match.group(1).strip()
+                tables[table_name] = chunk
 
-                if example_data_marker in chunk:
-                    # 查找该块是否与某个表定义关联
-                    chunk_idx = chunks.index(chunk)
-                    for i in range(chunk_idx - 1, -1, -1):
-                        if table_definition_marker in chunks[i]:
-                            # 建立双向关联
-                            relations[chunk].append(chunks[i])
-                            relations[chunks[i]].append(chunk)
-                            break
+            # 查找示例数据引用表名
+            for line in chunk.split('\n'):
+                if line.startswith(example_data_marker):
+                    example_name = line.replace(example_data_marker, "").strip()
+                    examples[example_name] = chunk
 
-            # ---------------------------------------
-            # 2. 处理JSON数据分块的关联 - 支持两种格式
-            # ---------------------------------------
-            # 处理方式1: 标准JSON代码块之间的关联
-            # 找出所有包含JSON代码块的分块
-            json_containing_blocks = [chunk for chunk in chunks if re.search(json_code_pattern, chunk)]
+        # 第二轮：关联表格和示例
+        for table_name, table_chunk in tables.items():
+            if table_name in examples:
+                # 建立双向关联
+                relations[table_chunk].append(examples[table_name])
+                relations[examples[table_name]].append(table_chunk)
+                logger.debug(f"关联表格 '{table_name}' 与其示例数据")
 
-            # 关联相邻的JSON区块
-            for i in range(len(json_containing_blocks) - 1):
-                current = json_containing_blocks[i]
-                next_block = json_containing_blocks[i + 1]
+        # ---------------------------------------
+        # 2. 处理JSON数据块之间的关联
+        # ---------------------------------------
+        json_groups = {}  # 组ID -> 块列表
 
-                # 检查两个块是否来自同一个表数据示例
-                current_idx = chunks.index(current)
-                next_idx = chunks.index(next_block)
+        # 识别所有JSON分块并按组分类
+        for chunk in chunks:
+            match = re.search(json_pattern, chunk)
+            if match:
+                part = int(match.group(1))  # 第几部分
+                total = int(match.group(2))  # 共几部分
+                group_id = f"json_group_{total}"  # 组ID
 
-                # 如果两个块之间没有新的表定义，则认为它们属于同一个表
-                if not any(table_definition_marker in chunks[idx] for idx in range(current_idx + 1, next_idx)):
-                    # 建立双向关联
-                    relations[current].append(next_block)
-                    relations[next_block].append(current)
+                if group_id not in json_groups:
+                    json_groups[group_id] = []
 
-            # 处理方式2: ## JSON数据（第x部分，共y部分）格式
-            json_parts = {}  # 格式: {(total_parts, part_num): chunk}
+                json_groups[group_id].append((part, chunk))  # 保存部分编号和块
 
-            # 识别所有JSON分块标记
-            for chunk in chunks:
-                try:
-                    # 检查是否有JSON分块标记
-                    match = re.search(json_part_pattern, chunk)
-                    if match:
-                        part = int(match.group(1))
-                        total = int(match.group(2))
-                        json_parts[(total, part)] = chunk
-                except (ValueError, IndexError) as e:
-                    # 忽略转换错误，继续处理
-                    logger.warning(f"处理JSON分块标记时出错: {str(e)}")
-                    continue
+        # 关联同一组内的所有JSON块
+        for group_id, parts_chunks in json_groups.items():
+            # 按部分编号排序
+            sorted_parts = sorted(parts_chunks, key=lambda x: x[0])
 
-            # 根据total和part给JSON分块分组
-            for (total, _) in set(key[0] for key in json_parts.keys()):
-                # 按照part排序
-                parts = sorted([(p, chunk) for (t, p), chunk in json_parts.items() if t == total],
-                               key=lambda x: x[0])
+            # 建立组内各块之间的双向关联
+            for i, (part1, chunk1) in enumerate(sorted_parts):
+                for j, (part2, chunk2) in enumerate(sorted_parts):
+                    if i != j:  # 不与自己关联
+                        if chunk2 not in relations[chunk1]:
+                            relations[chunk1].append(chunk2)
+                            logger.debug(f"关联JSON组 {group_id} 的第 {part1} 和第 {part2} 部分")
 
-                # 建立相邻分块之间的关联
-                for i in range(len(parts) - 1):
-                    current_part, current_chunk = parts[i]
-                    next_part, next_chunk = parts[i + 1]
+        # ---------------------------------------
+        # 3. 处理同一标记下内容块的关联
+        # ---------------------------------------
+        # 找出所有标记的位置
+        marker_positions = []
+        for marker in key_markers:
+            for match in re.finditer(re.escape(marker), full_document):
+                marker_positions.append((match.start(), marker))
 
-                    # 确保是连续的部分
-                    if next_part == current_part + 1:
-                        # 建立双向关联
-                        relations[current_chunk].append(next_chunk)
-                        relations[next_chunk].append(current_chunk)
+        # 按位置排序
+        marker_positions.sort()
 
-            # ---------------------------------------
-            # 3. 关联JSON块与其所属的表定义/示例数据
-            # ---------------------------------------
-            # 将所有JSON块关联到最近的表数据示例
-            for chunk in chunks:
-                # 检查是否为JSON块
-                if (re.search(json_code_pattern, chunk) or
-                        re.search(json_part_pattern, chunk)):
+        # 为每个块找到其对应的标记
+        chunk_markers = {}  # 块 -> 标记
 
-                    chunk_idx = chunks.index(chunk)
+        for chunk in chunks:
+            chunk_start = full_document.find(chunk)
+            if chunk_start >= 0:
+                # 找到最近的前导标记
+                nearest_marker = None
+                nearest_dist = float('inf')
 
-                    # 向前查找最近的示例数据标记
-                    for i in range(chunk_idx - 1, -1, -1):
-                        if example_data_marker in chunks[i]:
-                            # 关联JSON块与示例数据
-                            relations[chunk].append(chunks[i])
-                            relations[chunks[i]].append(chunk)
+                for pos, marker in marker_positions:
+                    # 标记必须在块之前，且是最近的标记
+                    if pos <= chunk_start and chunk_start - pos < nearest_dist:
+                        nearest_marker = marker
+                        nearest_dist = chunk_start - pos
 
-                            # 再向前查找表定义
-                            for j in range(i - 1, -1, -1):
-                                if table_definition_marker in chunks[j]:
-                                    # 关联JSON块与表定义
-                                    relations[chunk].append(chunks[j])
-                                    relations[chunks[j]].append(chunk)
-                                    break
-                            break
+                # 只记录在合理距离内的标记
+                if nearest_marker and nearest_dist < 1000:  # 1000字符的合理距离内
+                    chunk_markers[chunk] = nearest_marker
+                    logger.debug(f"块与标记 '{nearest_marker}' 关联, 距离: {nearest_dist}")
 
-        except Exception as e:
-            logger.warning(f"分析块关系时出错: {str(e)}, traceback: {traceback.format_exc()}")
+        # 按标记分组
+        marker_groups = {}  # 标记 -> 块列表
+        for chunk, marker in chunk_markers.items():
+            if marker not in marker_groups:
+                marker_groups[marker] = []
+            marker_groups[marker].append(chunk)
+
+        # 关联同一标记下的所有块
+        for marker, group_chunks in marker_groups.items():
+            if len(group_chunks) > 1:  # 只有多个块才需要关联
+                for chunk in group_chunks:
+                    for other_chunk in group_chunks:
+                        # 不与自己关联，且避免重复关联
+                        if chunk != other_chunk and other_chunk not in relations[chunk]:
+                            relations[chunk].append(other_chunk)
+                            logger.debug(f"关联同标记 '{marker}' 下的两个块")
+
+        # ---------------------------------------
+        # 4. 特殊关系处理（如业务规则与表的关联)
+        # ---------------------------------------
+        # 可以在这里添加其他特殊关系的处理逻辑
 
         return relations
+
 
     def _detect_chunk_type(self, chunk):
         """检测块类型，使用配置的模式"""
@@ -2119,23 +2261,21 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
     def _update_document_relations(self, doc_id, related_ids):
         """更新向量存储中的关联信息"""
         try:
-            # 确保使用纯UUID格式（不带-doc后缀）
-            qdrant_id = self._get_qdrant_id(doc_id)
-            qdrant_related_ids = [self._get_qdrant_id(rid) for rid in related_ids]
+            # 获取现有点信息
+            point = self._client.get_points(
+                collection_name=self.documentation_collection_name,
+                ids=[doc_id]
+            ).points[0]
 
-            logger.info(f"更新Qdrant关联, ID: {qdrant_id}, 关联ID数量: {len(qdrant_related_ids)}")
+            # 更新payload
+            payload = point.payload or {}
+            payload["related_chunks"] = related_ids
 
-            try:
-                # 直接设置payload，不需要先获取
-                self._client.set_payload(
-                    collection_name=self.documentation_collection_name,
-                    payload={"related_chunks": qdrant_related_ids},
-                    points=[qdrant_id]
-                )
-                logger.info(f"成功更新Qdrant关联信息")
-            except Exception as e:
-                logger.error(f"更新Qdrant关联信息失败: {str(e)}")
-
+            # 更新点
+            self._client.update_points(
+                collection_name=self.documentation_collection_name,
+                points=[{"id": doc_id, "payload": payload}]
+            )
         except Exception as e:
             logger.error(f"更新文档关联信息失败: {str(e)}")
 
@@ -2149,71 +2289,46 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
             return
 
         try:
-            # 确保使用带-doc后缀的ID
-            es_id = self._get_es_id(doc_id)
-            es_related_ids = [self._get_es_id(rid) for rid in related_ids]
-
-            logger.info(f"更新ES关联, ID: {es_id}, 关联ID数量: {len(es_related_ids)}")
-
             # 获取现有文档
-            doc = self.es_client.get(index=index_name, id=es_id)
+            doc = self.es_client.get(index=index_name, id=doc_id)
             source = doc.get("_source", {})
 
             # 更新关联信息
             if isinstance(source, dict):
-                source["related_chunks"] = es_related_ids
-                # 添加Qdrant ID便于跨引用
-                source["related_qdrant_ids"] = [self._get_qdrant_id(rid) for rid in related_ids]
+                source["related_chunks"] = related_ids
 
                 # 更新文档
                 self.es_client.update(
                     index=index_name,
-                    id=es_id,
+                    id=doc_id,
                     doc=source
                 )
-                logger.info(f"成功更新ES关联信息")
         except Exception as e:
             logger.error(f"更新ES关联信息失败: {str(e)}")
 
     # 重写删除方法以同时从ES删除
     def remove_training_data(self, id: str, **kwargs) -> bool:
-        """同时从Qdrant和ES中删除训练数据"""
-        es_id = self._get_es_id(id)
-        qdrant_id = self._get_qdrant_id(id)
+        result = super().remove_training_data(id, **kwargs)
 
-        logger.info(f"尝试删除训练数据, ES ID: {es_id}, Qdrant ID: {qdrant_id}")
-
-        # 调用Qdrant删除 - 使用纯UUID
-        try:
-            qdrant_result = super().remove_training_data(qdrant_id, **kwargs)
-            logger.info(f"Qdrant删除结果: {qdrant_result}")
-        except Exception as e:
-            qdrant_result = False
-            logger.error(f"从Qdrant删除失败: {str(e)}")
-
-        # 从ES中删除 - 使用带后缀的ID
-        es_result = False
-        if self.es_client:
+        # 从ES中删除
+        if result and self.es_client:
             collection_type = None
-            if es_id.endswith("-sql"):
+            if id.endswith("-sql"):
                 collection_type = "sql"
-            elif es_id.endswith("-ddl"):
+            elif id.endswith("-ddl"):
                 collection_type = "ddl"
-            elif es_id.endswith("-doc"):
+            elif id.endswith("-doc"):
                 collection_type = "documentation"
 
             if collection_type:
                 index_name = self.es_indexes.get(collection_type)
                 if index_name:
                     try:
-                        self.es_client.delete(index=index_name, id=es_id)
-                        es_result = True
-                        logger.info(f"从ES成功删除: {es_id}")
+                        self.es_client.delete(index=index_name, id=id)
                     except Exception as e:
                         logger.error(f"从ES删除文档时出错: {str(e)}")
 
-        # 只要有一个成功即视为成功
-        return qdrant_result or es_result
+        return result
 
     # 重写搜索方法以使用增强的融合算法
     def get_similar_question_sql(self, question: str, **kwargs) -> list:
@@ -2593,65 +2708,24 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
             if not chunk_id:
                 return []
 
-        # 转换为Qdrant格式ID
-        qdrant_id = self._get_qdrant_id(chunk_id)
-
         # 从向量存储中获取关联信息
         try:
-            logger.debug(f"从Qdrant获取关联, ID: {qdrant_id}")
-
-            # 获取payload
-            payload_response = self._client.payload(
+            point = self._client.get_points(
                 collection_name=self.documentation_collection_name,
-                point_id=qdrant_id
-            )
+                ids=[chunk_id]
+            ).points[0]
 
-            # 从payload中提取关联的块ID
-            related_qdrant_ids = payload_response.get("related_chunks", [])
-            if not related_qdrant_ids:
-                logger.debug(f"未找到相关块: {qdrant_id}")
+            related_ids = point.payload.get("related_chunks", [])
+            if not related_ids:
                 return []
 
-            logger.debug(f"找到关联ID: {related_qdrant_ids}")
-
             # 获取关联块内容
-            related_chunks = []
+            related_points = self._client.get_points(
+                collection_name=self.documentation_collection_name,
+                ids=related_ids
+            ).points
 
-            # 优先尝试从Qdrant获取内容
-            try:
-                # 从Qdrant获取块内容
-                related_points = self._client.retrieve(
-                    collection_name=self.documentation_collection_name,
-                    ids=related_qdrant_ids
-                )
-
-                for point in related_points:
-                    doc_content = point.payload.get("documentation", "")
-                    if doc_content:
-                        related_chunks.append(doc_content)
-
-                logger.debug(f"从Qdrant成功获取到{len(related_chunks)}个关联块")
-
-            except Exception as e:
-                logger.warning(f"从Qdrant获取关联块失败: {str(e)}, 尝试从ES获取")
-
-                # 如果Qdrant获取失败，尝试从ES获取
-                for rid in related_qdrant_ids:
-                    es_id = self._get_es_id(rid)
-                    try:
-                        doc = self.es_client.get(
-                            index=self.es_indexes.get("documentation"),
-                            id=es_id
-                        )
-
-                        doc_content = doc.get("_source", {}).get("document", "")
-                        if doc_content:
-                            related_chunks.append(doc_content)
-
-                    except Exception as es_error:
-                        logger.error(f"从ES获取块失败, ID: {es_id}, 错误: {str(es_error)}")
-
-            return related_chunks
+            return [point.payload.get("documentation", "") for point in related_points]
 
         except Exception as e:
             logger.error(f"获取关联块失败: {str(e)}")
@@ -2659,6 +2733,7 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
 
     def _find_chunk_id(self, chunk_text):
         """根据块内容查找ID"""
+        # 这里需要实现一个查找机制，可能通过ES或向量存储
         # 简化实现：使用ES进行精确匹配
         if not self.es_client:
             return None
@@ -2678,16 +2753,7 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
 
             hits = response.get("hits", {}).get("hits", [])
             if hits:
-                es_id = hits[0].get("_id")
-                # 检查是否同时存储了qdrant_id
-                qdrant_id = hits[0].get("_source", {}).get("qdrant_id")
-
-                # 如果明确有qdrant_id字段，直接返回
-                if qdrant_id:
-                    return qdrant_id
-
-                # 否则从ES ID转换
-                return self._get_qdrant_id(es_id)
+                return hits[0].get("_id")
 
         except Exception as e:
             logger.error(f"查找块ID失败: {str(e)}")
