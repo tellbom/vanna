@@ -711,9 +711,9 @@ class DocumentChunker:
         # 加入文本开始和结束位置
         marker_positions = [0] + sorted(marker_positions) + [len(protected_text)]
 
-        for marker in key_markers:
-            for match in re.finditer(re.escape(marker), protected_text):
-                marker_positions.append(match.start())
+        # for marker in key_markers:
+        #     for match in re.finditer(re.escape(marker), protected_text):
+        #         marker_positions.append(match.start())
 
         # 加入文本开始和结束位置
         marker_positions = [0] + sorted(marker_positions) + [len(protected_text)]
@@ -1464,10 +1464,67 @@ class LocalSentenceTransformerEmbeddingFunction:
 
 # 扩展的Vanna类 - 集成ES和Qdrant向量数据库
 class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
+    # 在EnhancedVanna类的__init__方法中添加多模型支持
     def __init__(self, client=None, config=None):
         self.config = config or {}
-        model_name = self.config.get("embedding_model", "bge-m3")
 
+        # ========== 多模型配置 ==========
+        # 支持的嵌入模型列表
+        self.embedding_models = self.config.get("embedding_models", [
+            {
+                "name": "bge_m3",
+                "service_url": self.config.get("embedding_service_url", "http://localhost:8080"),
+                "weight": 0.4,
+                "timeout": 30,
+                "max_retries": 3
+            }
+        ])
+
+        # 如果配置了多个模型，使用多模型设置
+        if "multi_embedding_services" in self.config:
+            self.embedding_models = []
+            for model_config in self.config["multi_embedding_services"]:
+                self.embedding_models.append({
+                    "name": model_config.get("name", "default"),
+                    "service_url": model_config.get("service_url"),
+                    "weight": model_config.get("weight", 1.0 / len(self.config["multi_embedding_services"])),
+                    "timeout": model_config.get("timeout", 30),
+                    "max_retries": model_config.get("max_retries", 3)
+                })
+
+        # 验证模型配置
+        self._validate_embedding_models()
+
+        # ========== Collection名称配置 ==========
+        # 为每个模型生成独立的collection名称
+        self.model_collections = {}
+        base_collections = {
+            "sql": self.config.get("sql_collection_name", "vanna_sql"),
+            "ddl": self.config.get("ddl_collection_name", "vanna_ddl"),
+            "documentation": self.config.get("documentation_collection_name", "vanna_documentation")
+        }
+
+        # 为每个模型创建独立的collection映射
+        for model in self.embedding_models:
+            model_name = model["name"]
+            self.model_collections[model_name] = {
+                "sql": f"{base_collections['sql']}_{model_name}",
+                "ddl": f"{base_collections['ddl']}_{model_name}",
+                "documentation": f"{base_collections['documentation']}_{model_name}"
+            }
+
+        logger.info(f"配置了 {len(self.embedding_models)} 个嵌入模型")
+        logger.info(f"Collection映射: {self.model_collections}")
+
+        # ========== 分数融合配置 ==========
+        self.fusion_config = {
+            "method": self.config.get("fusion_method", "score_fusion"),  # score_fusion, voting, contextual
+            "normalize_scores": self.config.get("normalize_scores", True),
+            "diversity_bonus": self.config.get("diversity_bonus", 0.25),  # 多源匹配奖励
+            "rrf_k": self.config.get("rrf_k", 30)  # RRF参数
+        }
+
+        # ========== 保持原有初始化逻辑 ==========
         # 默认文档模式配置
         self.doc_patterns = {
             "table_definition": {
@@ -1515,30 +1572,19 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
                 self.doc_patterns.get("business_rule", {}).get("marker", "业务规则:")
             ]
 
-        # 创建本地 SentenceTransformer 嵌入模型实例
-        self.embedding_model = SentenceTransformer(
-            model_name_or_path=f"/models/sentence-transformers_{model_name}",
-            local_files_only=True
-        )
-
-        # TEI 服务配置
-        self.tei_service_url = self.config.get("embedding_service_url", "http://localhost:80")
-        self.tei_timeout = self.config.get("embedding_timeout", 30)
-        self.tei_max_retries = self.config.get("embedding_max_retries", 3)
-        self.tei_batch_size = self.config.get("embedding_batch_size", 32)
-
-        # 配置Qdrant连接参数
+        # ========== Qdrant配置 ==========
+        # 使用第一个模型的collection作为默认（向后兼容）
+        primary_model = self.embedding_models[0]["name"]
         qdrant_config = {
             "url": self.config.get("qdrant_url", "http://localhost:6333"),
             "api_key": self.config.get("qdrant_api_key", None),
             "prefer_grpc": self.config.get("prefer_grpc", True),
             "timeout": self.config.get("qdrant_timeout", 30),
-            "sql_collection_name": self.config.get("sql_collection_name", "vanna_sql"),
-            "ddl_collection_name": self.config.get("ddl_collection_name", "vanna_ddl"),
-            "documentation_collection_name": self.config.get("documentation_collection_name", "vanna_documentation"),
+            "sql_collection_name": self.model_collections[primary_model]["sql"],
+            "ddl_collection_name": self.model_collections[primary_model]["ddl"],
+            "documentation_collection_name": self.model_collections[primary_model]["documentation"],
             "n_results": self.config.get("n_results", 10),
         }
-
 
         # 初始化Qdrant_VectorStore基类
         Qdrant_VectorStore.__init__(self, config=qdrant_config)
@@ -1548,6 +1594,7 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
         # 初始化OpenAI_Chat基类
         OpenAI_Chat.__init__(self, client=client, config=self.config)
 
+        # ========== ES配置保持不变 ==========
         # 初始化ES客户端（如果配置中指定）
         self.es_client = None
         self.es_indexes = {
@@ -1569,44 +1616,222 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
         self.train = self._patched_train
 
         # 保存检索参数
-        self.n_results_sql = self.config.get("n_results_sql", 10)
-        self.n_results_ddl = self.config.get("n_results_ddl", 10)
-        self.n_results_documentation = self.config.get("n_results_documentation", 10)
+        self.n_results_sql = self.config.get("n_results_sql", 20)  # 增加检索数量
+        self.n_results_ddl = self.config.get("n_results_ddl", 15)
+        self.n_results_documentation = self.config.get("n_results_documentation", 25)
 
-    def _validate_tei_service(self):
-        """Validate that TEI service is accessible"""
-        try:
-            response = requests.get(f"{self.tei_service_url}/health", timeout=5)
-            if response.status_code == 200:
-                logger.info(f"TEI service connected successfully at {self.tei_service_url}")
-            else:
-                logger.warning(f"TEI service health check failed: {response.status_code}")
-        except Exception as e:
-            logger.error(f"Cannot connect to TEI service at {self.tei_service_url}: {str(e)}")
-            raise ConnectionError(f"TEI service unavailable: {str(e)}")
+        logger.info("多模型EnhancedVanna初始化完成")
 
-    # 重写 generate_embedding 方法，使用我们的本地模型
-    def generate_embedding(self, data: str, **kwargs) -> List[float]:
+    def _get_vector_results_multi_model(self, query: str, collection_type: str, **kwargs) -> Dict[str, List[Any]]:
         """
-        Generate embeddings using remote TEI service with retry logic
+        使用多模型进行向量检索
 
         Args:
-            data (str): Text to generate embedding for
-            **kwargs: Additional parameters (unused for TEI)
+            query: 查询文本
+            collection_type: collection类型 ("sql", "ddl", "documentation")
+            **kwargs: 其他参数
 
         Returns:
-            List[float]: Embedding vector
+            Dict[str, List[Any]]: 每个模型的检索结果 {model_name: results}
+        """
+        # 生成多模型嵌入向量
+        try:
+            query_embeddings = self.generate_embeddings_multi_model(query)
+        except Exception as e:
+            logger.error(f"生成查询嵌入向量失败: {str(e)}")
+            return {}
 
-        Raises:
-            Exception: If embedding generation fails after all retries
+        # 获取检索数量配置
+        limit_map = {
+            "sql": self.n_results_sql,
+            "ddl": self.n_results_ddl,
+            "documentation": self.n_results_documentation
+        }
+        limit = limit_map.get(collection_type, 10)
+
+        # 搜索参数配置
+        search_params = {
+            'hnsw_ef': 512,  # 提高搜索精度
+            'exact': False,
+            'quantization': None,
+        }
+
+        all_results = {}
+
+        for model_name, query_embedding in query_embeddings.items():
+            try:
+                # 获取该模型对应的collection名称
+                collection_name = self.get_collection_name(model_name, collection_type)
+
+                # 执行向量搜索
+                results = self._client.query_points(
+                    collection_name=collection_name,
+                    query=query_embedding,
+                    limit=limit,
+                    search_params=search_params,
+                    with_payload=True,
+                    with_score=True  # 包含相似度分数
+                ).points
+
+                # 处理结果
+                processed_results = []
+                for result in results:
+                    payload = dict(result.payload)
+                    payload["vector_score"] = result.score  # 添加向量相似度分数
+                    payload["source_model"] = model_name  # 添加来源模型信息
+
+                    # 根据collection类型提取主要内容
+                    if collection_type == "sql":
+                        processed_results.append(payload)
+                    elif collection_type == "ddl":
+                        processed_results.append(payload.get("ddl", ""))
+                    elif collection_type == "documentation":
+                        processed_results.append(payload.get("documentation", ""))
+
+                all_results[model_name] = processed_results
+                logger.debug(f"模型 {model_name} 检索到 {len(processed_results)} 个 {collection_type} 结果")
+
+            except Exception as e:
+                logger.error(f"模型 {model_name} 检索失败: {str(e)}")
+                all_results[model_name] = []
+                continue
+
+        return all_results
+
+    def _validate_embedding_models(self):
+        """验证嵌入模型配置"""
+        if not self.embedding_models:
+            raise ValueError("至少需要配置一个嵌入模型")
+
+        # 验证权重总和
+        total_weight = sum(model["weight"] for model in self.embedding_models)
+        if abs(total_weight - 1.0) > 0.01:
+            logger.warning(f"模型权重总和为 {total_weight}，不等于1.0，将自动标准化")
+            # 标准化权重
+            for model in self.embedding_models:
+                model["weight"] = model["weight"] / total_weight
+
+        # 验证服务连接
+        for model in self.embedding_models:
+            try:
+                response = requests.get(f"{model['service_url']}/health", timeout=5)
+                if response.status_code == 200:
+                    logger.info(f"✓ 模型 {model['name']} 服务连接成功: {model['service_url']}")
+                else:
+                    logger.warning(f"✗ 模型 {model['name']} 服务状态异常: {response.status_code}")
+            except Exception as e:
+                logger.error(f"✗ 无法连接模型 {model['name']} 服务: {str(e)}")
+                raise ConnectionError(f"模型 {model['name']} 服务不可用: {str(e)}")
+
+    def get_active_models(self) -> List[str]:
+        """获取当前活跃的模型列表"""
+        return [model["name"] for model in self.embedding_models]
+
+    def get_model_weight(self, model_name: str) -> float:
+        """获取指定模型的权重"""
+        for model in self.embedding_models:
+            if model["name"] == model_name:
+                return model["weight"]
+        return 0.0
+
+    def get_collection_name(self, model_name: str, collection_type: str) -> str:
+        """获取指定模型的collection名称"""
+        if model_name in self.model_collections:
+            return self.model_collections[model_name].get(collection_type, "")
+        return ""
+
+    # def _validate_tei_service(self):
+    #     """Validate that TEI service is accessible"""
+    #     try:
+    #         response = requests.get(f"{self.tei_service_url}/health", timeout=5)
+    #         if response.status_code == 200:
+    #             logger.info(f"TEI service connected successfully at {self.tei_service_url}")
+    #         else:
+    #             logger.warning(f"TEI service health check failed: {response.status_code}")
+    #     except Exception as e:
+    #         logger.error(f"Cannot connect to TEI service at {self.tei_service_url}: {str(e)}")
+    #         raise ConnectionError(f"TEI service unavailable: {str(e)}")
+
+    # 重写 generate_embedding 方法，使用我们的本地模型
+    def generate_embedding(self, data: str, model_name: str = None, **kwargs) -> List[float]:
+        """
+        使用指定模型生成嵌入向量（单模型版本，保持向后兼容）
+
+        Args:
+            data: 要生成嵌入的文本
+            model_name: 指定的模型名称，如果为None则使用第一个模型
+            **kwargs: 其他参数
+
+        Returns:
+            List[float]: 嵌入向量
+        """
+        if model_name is None:
+            model_name = self.embedding_models[0]["name"]
+
+        return self._generate_single_embedding(data, model_name, **kwargs)
+
+    def generate_embeddings_multi_model(self, data: str, **kwargs) -> Dict[str, List[float]]:
+        """
+        使用所有配置的模型生成嵌入向量
+
+        Args:
+            data: 要生成嵌入的文本
+            **kwargs: 其他参数
+
+        Returns:
+            Dict[str, List[float]]: 每个模型的嵌入向量 {model_name: embedding_vector}
         """
         if not data or not data.strip():
-            raise ValueError("Input data cannot be empty")
+            raise ValueError("输入文本不能为空")
 
-        # Prepare request payload
+        embeddings = {}
+        errors = []
+
+        for model in self.embedding_models:
+            model_name = model["name"]
+            try:
+                embedding = self._generate_single_embedding(data, model_name, **kwargs)
+                embeddings[model_name] = embedding
+                logger.debug(f"模型 {model_name} 生成嵌入向量成功，维度: {len(embedding)}")
+            except Exception as e:
+                error_msg = f"模型 {model_name} 生成嵌入向量失败: {str(e)}"
+                logger.error(error_msg)
+                errors.append(error_msg)
+
+        if not embeddings:
+            raise Exception(f"所有模型都生成嵌入向量失败: {'; '.join(errors)}")
+
+        if len(embeddings) < len(self.embedding_models):
+            logger.warning(f"只有 {len(embeddings)}/{len(self.embedding_models)} 个模型成功生成嵌入向量")
+
+        return embeddings
+
+    def _generate_single_embedding(self, data: str, model_name: str, **kwargs) -> List[float]:
+        """
+        使用指定模型生成单个嵌入向量
+
+        Args:
+            data: 要生成嵌入的文本
+            model_name: 模型名称
+            **kwargs: 其他参数
+
+        Returns:
+            List[float]: 嵌入向量
+        """
+        # 找到对应的模型配置
+        model_config = None
+        for model in self.embedding_models:
+            if model["name"] == model_name:
+                model_config = model
+                break
+
+        if not model_config:
+            raise ValueError(f"未找到模型配置: {model_name}")
+
+        # 准备请求数据
         payload = {
             "inputs": data.strip(),
-            "truncate": True  # Handle long texts gracefully
+            "truncate": True
         }
 
         headers = {
@@ -1614,138 +1839,221 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
         }
 
         last_exception = None
+        max_retries = model_config["max_retries"]
+        timeout = model_config["timeout"]
+        service_url = model_config["service_url"]
 
-        # Retry logic for robustness
-        for attempt in range(self.tei_max_retries):
+        # 重试逻辑
+        for attempt in range(max_retries):
             try:
                 start_time = time.time()
 
                 response = requests.post(
-                    f"{self.tei_service_url}/embed",
+                    f"{service_url}/embed",
                     json=payload,
                     headers=headers,
-                    timeout=self.tei_timeout
+                    timeout=timeout
                 )
 
                 if response.status_code == 200:
                     result = response.json()
 
-                    # TEI returns embeddings in different formats, handle both
-                    if isinstance(result, list) and len(result) > 0:
-                        # Format: [embedding_vector]
-                        embedding = result[0]
-                    elif isinstance(result, dict) and "embeddings" in result:
-                        # Format: {"embeddings": [embedding_vector]}
-                        embedding = result["embeddings"][0]
-                    elif isinstance(result, dict) and "data" in result:
-                        # OpenAI-compatible format: {"data": [{"embedding": [...]}]}
-                        embedding = result["data"][0]["embedding"]
-                    else:
-                        raise ValueError(f"Unexpected TEI response format: {type(result)}")
+                    # 处理不同的返回格式
+                    embedding = self._extract_embedding_from_response(result)
 
-                    # Validate embedding
+                    # 验证嵌入向量
                     if not isinstance(embedding, list) or len(embedding) == 0:
-                        raise ValueError(f"Invalid embedding format: {type(embedding)}")
+                        raise ValueError(f"无效的嵌入向量格式: {type(embedding)}")
 
                     elapsed_time = time.time() - start_time
-                    logger.debug(f"Generated embedding for text length {len(data)} in {elapsed_time:.3f}s")
+                    logger.debug(
+                        f"模型 {model_name} 生成嵌入向量成功，文本长度: {len(data)}, 耗时: {elapsed_time:.3f}s, 维度: {len(embedding)}")
 
                     return embedding
 
-                elif response.status_code == 413:  # Payload too large
-                    # Handle long text by truncating
+                elif response.status_code == 413:  # 文本太长
                     if len(data) > 1000:
-                        logger.warning(f"Text too long ({len(data)} chars), truncating to 1000 chars")
-                        return self.generate_embedding(data[:1000], **kwargs)
+                        logger.warning(f"模型 {model_name} 文本太长 ({len(data)} 字符)，截断到1000字符")
+                        return self._generate_single_embedding(data[:1000], model_name, **kwargs)
                     else:
-                        raise Exception(f"TEI service payload too large: {response.status_code}")
+                        raise Exception(f"模型 {model_name} 文本太长: {response.status_code}")
 
-                elif response.status_code == 422:  # Validation error
-                    error_detail = response.json() if response.content else "Unknown validation error"
-                    raise ValueError(f"TEI validation error: {error_detail}")
+                elif response.status_code == 422:  # 验证错误
+                    error_detail = response.json() if response.content else "未知验证错误"
+                    raise ValueError(f"模型 {model_name} 验证错误: {error_detail}")
 
                 else:
-                    raise Exception(f"TEI service error: {response.status_code} - {response.text}")
+                    raise Exception(f"模型 {model_name} 服务错误: {response.status_code} - {response.text}")
 
             except requests.exceptions.Timeout:
-                last_exception = Exception(f"TEI service timeout after {self.tei_timeout}s (attempt {attempt + 1})")
+                last_exception = Exception(f"模型 {model_name} 服务超时 {timeout}s (尝试 {attempt + 1})")
                 logger.warning(str(last_exception))
 
             except requests.exceptions.ConnectionError:
-                last_exception = Exception(f"TEI service connection error (attempt {attempt + 1})")
+                last_exception = Exception(f"模型 {model_name} 连接错误 (尝试 {attempt + 1})")
                 logger.warning(str(last_exception))
 
             except Exception as e:
                 last_exception = e
-                logger.error(f"TEI embedding error (attempt {attempt + 1}): {str(e)}")
+                logger.error(f"模型 {model_name} 嵌入生成错误 (尝试 {attempt + 1}): {str(e)}")
 
-            # Wait before retry (exponential backoff)
-            if attempt < self.tei_max_retries - 1:
+            # 重试前等待（指数退避）
+            if attempt < max_retries - 1:
                 wait_time = 2 ** attempt  # 1s, 2s, 4s
-                logger.info(f"Retrying in {wait_time}s...")
+                logger.info(f"模型 {model_name} 将在 {wait_time}s 后重试...")
                 time.sleep(wait_time)
 
-        # All retries failed
-        logger.error(f"Failed to generate embedding after {self.tei_max_retries} attempts")
-        raise last_exception or Exception("Unknown embedding generation error")
+        # 所有重试都失败
+        logger.error(f"模型 {model_name} 在 {max_retries} 次尝试后仍然失败")
+        raise last_exception or Exception(f"模型 {model_name} 嵌入生成失败")
 
-    def generate_embeddings_batch(self, texts: List[str], **kwargs) -> List[List[float]]:
+    def _extract_embedding_from_response(self, result) -> List[float]:
         """
-        Generate embeddings for multiple texts in batch (if supported by TEI)
+        从TEI响应中提取嵌入向量
 
         Args:
-            texts: List of texts to generate embeddings for
+            result: TEI服务的响应结果
 
         Returns:
-            List of embedding vectors
+            List[float]: 嵌入向量
+        """
+        # 处理不同的TEI返回格式
+        if isinstance(result, list) and len(result) > 0:
+            # 格式1: [embedding_vector]
+            return result[0]
+        elif isinstance(result, dict) and "embeddings" in result:
+            # 格式2: {"embeddings": [embedding_vector]}
+            return result["embeddings"][0]
+        elif isinstance(result, dict) and "data" in result:
+            # 格式3: OpenAI兼容格式 {"data": [{"embedding": [...]}]}
+            return result["data"][0]["embedding"]
+        else:
+            raise ValueError(f"未知的TEI响应格式: {type(result)}")
+
+    def generate_embeddings_batch_multi_model(self, texts: List[str], **kwargs) -> Dict[str, List[List[float]]]:
+        """
+        批量生成多模型嵌入向量
+
+        Args:
+            texts: 文本列表
+            **kwargs: 其他参数
+
+        Returns:
+            Dict[str, List[List[float]]]: 每个模型的嵌入向量列表 {model_name: [embedding_vectors]}
+        """
+        if not texts:
+            return {}
+
+        results = {}
+
+        for model in self.embedding_models:
+            model_name = model["name"]
+            try:
+                model_embeddings = []
+                for text in texts:
+                    embedding = self._generate_single_embedding(text, model_name, **kwargs)
+                    model_embeddings.append(embedding)
+                results[model_name] = model_embeddings
+                logger.debug(f"模型 {model_name} 批量生成 {len(texts)} 个嵌入向量成功")
+            except Exception as e:
+                logger.error(f"模型 {model_name} 批量生成嵌入向量失败: {str(e)}")
+
+        return results
+
+    def test_multi_model_embedding_quality(self, test_pairs: List[tuple] = None):
+        """
+        测试多模型嵌入向量质量
+
+        Args:
+            test_pairs: 测试对列表 [(text1, text2, expected_similarity)]
+        """
+        import numpy as np
+
+        # 默认测试对
+        if test_pairs is None:
+            test_pairs = [
+                ("SELECT * FROM users", "SELECT * FROM user", 0.8),
+                ("CREATE TABLE orders", "DROP TABLE orders", 0.3),
+                ("订单状态", "order status", 0.7),
+                ("用户表", "users table", 0.7),
+            ]
+
+        logger.info("开始测试多模型嵌入向量质量...")
+
+        for text1, text2, expected_sim in test_pairs:
+            logger.info(f"\n测试对: '{text1}' vs '{text2}' (期望相似度: {expected_sim})")
+
+            try:
+                # 生成多模型嵌入向量
+                embeddings1 = self.generate_embeddings_multi_model(text1)
+                embeddings2 = self.generate_embeddings_multi_model(text2)
+
+                for model_name in embeddings1:
+                    if model_name in embeddings2:
+                        emb1 = np.array(embeddings1[model_name])
+                        emb2 = np.array(embeddings2[model_name])
+
+                        # 计算余弦相似度
+                        similarity = np.dot(emb1, emb2) / (np.linalg.norm(emb1) * np.linalg.norm(emb2))
+
+                        # 评估与期望的差异
+                        diff = abs(similarity - expected_sim)
+                        status = "✓" if diff < 0.2 else "✗"
+
+                        logger.info(f"  {status} 模型 {model_name}: 相似度={similarity:.3f}, 差异={diff:.3f}")
+
+            except Exception as e:
+                logger.error(f"测试失败: {str(e)}")
+
+    def generate_embeddings_batch(self, texts: List[str], model_name: str = None, **kwargs) -> List[List[float]]:
+        """
+        批量生成嵌入向量（单模型版本，保持向后兼容）
+
+        Args:
+            texts: 文本列表
+            model_name: 指定的模型名称，如果为None则使用第一个模型
+            **kwargs: 其他参数
+
+        Returns:
+            List[List[float]]: 嵌入向量列表
         """
         if not texts:
             return []
 
-        # Check if TEI supports batch processing
-        if len(texts) == 1:
-            return [self.generate_embedding(texts[0], **kwargs)]
+        if model_name is None:
+            model_name = self.embedding_models[0]["name"]
 
-        try:
-            # Try batch processing first
-            payload = {
-                "inputs": [text.strip() for text in texts],
-                "truncate": True
-            }
-
-            response = requests.post(
-                f"{self.tei_service_url}/embed",
-                json=payload,
-                headers={"Content-Type": "application/json"},
-                timeout=self.tei_timeout * 2  # Longer timeout for batch
-            )
-
-            if response.status_code == 200:
-                result = response.json()
-
-                # Handle different batch response formats
-                if isinstance(result, list):
-                    return result
-                elif isinstance(result, dict) and "embeddings" in result:
-                    return result["embeddings"]
-                elif isinstance(result, dict) and "data" in result:
-                    return [item["embedding"] for item in result["data"]]
-
-        except Exception as e:
-            logger.warning(f"Batch embedding failed, falling back to individual: {str(e)}")
-
-        # Fallback to individual processing
         embeddings = []
         for text in texts:
             try:
-                embedding = self.generate_embedding(text, **kwargs)
+                embedding = self._generate_single_embedding(text, model_name, **kwargs)
                 embeddings.append(embedding)
             except Exception as e:
-                logger.error(f"Failed to generate embedding for text: {text[:50]}... Error: {str(e)}")
-                # You might want to raise here or append a zero vector
+                logger.error(f"批量生成第 {len(embeddings) + 1} 个文本的嵌入向量失败: {str(e)}")
                 raise e
 
         return embeddings
+
+    def get_embedding_stats(self) -> Dict[str, Any]:
+        """
+        获取嵌入向量生成统计信息
+
+        Returns:
+            Dict: 统计信息
+        """
+        stats = {
+            "total_models": len(self.embedding_models),
+            "active_models": [],
+            "model_weights": {},
+            "collection_mapping": self.model_collections
+        }
+
+        for model in self.embedding_models:
+            model_name = model["name"]
+            stats["active_models"].append(model_name)
+            stats["model_weights"][model_name] = model["weight"]
+
+        return stats
 
     def _connect_elasticsearch(self):
         """连接到Elasticsearch服务器"""
@@ -1935,58 +2243,243 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
 
     # 添加新的辅助方法来简化向量检索结果获取
     def _get_vector_results(self, query: str, collection_type: str) -> list:
-        """获取向量检索结果的辅助方法"""
-        embedding = self.generate_embedding(query)
+        """
+        获取向量检索结果（保持向后兼容）
+        使用多模型检索并融合结果
 
-        if collection_type == "sql":
-            results = self._client.query_points(
-                self.sql_collection_name,
-                query=embedding,
-                limit=self.n_results_sql,
-                search_params =  {
-                'hnsw_ef': 512,           # HNSW搜索参数，越大越精确（默认16）
-                'exact': False,           # 是否精确搜索（太慢，建议False）
-                'quantization': None,     # 关闭量化以提高精度
-                },
-                with_payload=True
-            ).points
+        Args:
+            query: 查询文本
+            collection_type: collection类型
 
-            return [dict(result.payload) for result in results]
+        Returns:
+            list: 融合后的检索结果
+        """
+        # 使用多模型检索
+        multi_results = self._get_vector_results_multi_model(query, collection_type)
 
+        if not multi_results:
+            return []
+
+        # 应用分数融合
+        fused_results = self._apply_score_fusion(query, multi_results, collection_type)
+
+        return fused_results
+
+    def _apply_score_fusion(self, query: str, multi_results: Dict[str, List[Any]], collection_type: str) -> List[Any]:
+        """
+        应用分数融合算法
+
+        Args:
+            query: 原始查询
+            multi_results: 多模型检索结果
+            collection_type: collection类型
+
+        Returns:
+            List[Any]: 融合后的结果列表
+        """
+        if not multi_results:
+            return []
+
+        fusion_method = self.fusion_config.get("method", "score_fusion")
+
+        if fusion_method == "score_fusion":
+            return self._score_fusion(query, multi_results, collection_type)
+        elif fusion_method == "voting":
+            return self._voting_fusion(query, multi_results, collection_type)
+        elif fusion_method == "contextual":
+            return self._contextual_fusion(query, multi_results, collection_type)
+        else:
+            # 默认使用分数融合
+            return self._score_fusion(query, multi_results, collection_type)
+
+    def _score_fusion(self, query: str, multi_results: Dict[str, List[Any]], collection_type: str) -> List[Any]:
+        """
+        基于分数的融合算法
+
+        Args:
+            query: 查询文本
+            multi_results: 多模型结果
+            collection_type: collection类型
+
+        Returns:
+            List[Any]: 融合后的结果
+        """
+        final_scores = {}
+
+        for model_name, results in multi_results.items():
+            model_weight = self.get_model_weight(model_name)
+
+            for rank, item in enumerate(results, start=1):
+                # 获取项目的唯一键
+                item_key = self._get_fusion_key(item, collection_type)
+
+                # 获取向量相似度分数
+                vector_score = 0.0
+                if isinstance(item, dict) and "vector_score" in item:
+                    vector_score = item["vector_score"]
+
+                # 标准化分数到[0,1]区间
+                normalized_score = self._normalize_vector_score(vector_score)
+
+                # 计算加权分数（结合排名和向量分数）
+                rank_score = 1.0 / (self.fusion_config.get("rrf_k", 30) + rank)
+                combined_score = 0.7 * normalized_score + 0.3 * rank_score
+                weighted_score = model_weight * combined_score
+
+                # 累加分数
+                if item_key not in final_scores:
+                    final_scores[item_key] = {
+                        "item": item,
+                        "score": 0.0,
+                        "sources": set(),
+                        "vector_scores": [],
+                        "model_ranks": {}
+                    }
+
+                final_scores[item_key]["score"] += weighted_score
+                final_scores[item_key]["sources"].add(model_name)
+                final_scores[item_key]["vector_scores"].append(vector_score)
+                final_scores[item_key]["model_ranks"][model_name] = rank
+
+        # 应用多样性奖励
+        self._apply_diversity_bonus(final_scores)
+
+        # 排序并返回
+        sorted_items = sorted(final_scores.values(), key=lambda x: x["score"], reverse=True)
+
+        # 添加融合元信息
+        for item_data in sorted_items:
+            if isinstance(item_data["item"], dict):
+                item_data["item"]["fusion_score"] = item_data["score"]
+                item_data["item"]["source_models"] = list(item_data["sources"])
+                item_data["item"]["avg_vector_score"] = sum(item_data["vector_scores"]) / len(
+                    item_data["vector_scores"])
+
+        return [item_data["item"] for item_data in sorted_items]
+
+    def _voting_fusion(self, query: str, multi_results: Dict[str, List[Any]], collection_type: str) -> List[Any]:
+        """
+        基于投票的融合算法
+
+        Args:
+            query: 查询文本
+            multi_results: 多模型结果
+            collection_type: collection类型
+
+        Returns:
+            List[Any]: 融合后的结果
+        """
+        vote_scores = {}
+
+        for model_name, results in multi_results.items():
+            model_weight = self.get_model_weight(model_name)
+
+            for rank, item in enumerate(results, start=1):
+                item_key = self._get_fusion_key(item, collection_type)
+
+                # 投票分数：排名越前分数越高
+                vote_value = model_weight * (len(results) - rank + 1)
+
+                if item_key not in vote_scores:
+                    vote_scores[item_key] = {
+                        "item": item,
+                        "score": 0.0,
+                        "votes": {}
+                    }
+
+                vote_scores[item_key]["score"] += vote_value
+                vote_scores[item_key]["votes"][model_name] = rank
+
+        # 排序并返回
+        sorted_items = sorted(vote_scores.values(), key=lambda x: x["score"], reverse=True)
+        return [item_data["item"] for item_data in sorted_items]
+
+    def _contextual_fusion(self, query: str, multi_results: Dict[str, List[Any]], collection_type: str) -> List[Any]:
+        """
+        上下文感知融合算法
+        """
+        # 使用原有的RankFusion.contextual_fusion作为基础
+        all_results = []
+        for results in multi_results.values():
+            all_results.extend(results)
+
+        # 简单的上下文融合实现
+        return RankFusion.contextual_fusion(
+            query=query,
+            dense_results=all_results,
+            lexical_results=[],  # 这里不使用lexical结果
+            k=self.fusion_config.get("rrf_k", 30)
+        )
+
+    def _get_fusion_key(self, item: Any, collection_type: str) -> str:
+        """
+        获取用于融合的唯一键
+
+        Args:
+            item: 检索项目
+            collection_type: collection类型
+
+        Returns:
+            str: 唯一键
+        """
+        if collection_type == "sql" and isinstance(item, dict):
+            # 对于SQL，使用question和sql的组合作为键
+            return f"sql_{item.get('question', '')}_{item.get('sql', '')}"
         elif collection_type == "ddl":
-            results = self._client.query_points(
-                self.ddl_collection_name,
-                query=embedding,
-                limit=self.n_results_ddl,
-                search_params={
-                    'hnsw_ef': 512,  # HNSW搜索参数，越大越精确（默认16）
-                    'exact': False,  # 是否精确搜索（太慢，建议False）
-                    'quantization': None,  # 关闭量化以提高精度
-                },
-                with_payload=True
-            ).points
-
-            return [result.payload.get("ddl", "") for result in results]
-
+            # 对于DDL，使用内容的hash
+            return f"ddl_{hash(str(item))}"
         elif collection_type == "documentation":
-            results = self._client.query_points(
-                self.documentation_collection_name,
-                query=embedding,
-                limit=self.n_results_documentation,
-                search_params={
-                    'hnsw_ef': 512,  # HNSW搜索参数，越大越精确（默认16）
-                    'exact': False,  # 是否精确搜索（太慢，建议False）
-                    'quantization': None,  # 关闭量化以提高精度
-                },
-                with_payload=True
-            ).points
+            # 对于文档，使用内容的hash
+            return f"doc_{hash(str(item))}"
+        else:
+            return f"item_{hash(str(item))}"
 
-            return [result.payload.get("documentation", "") for result in results]
+    def _normalize_vector_score(self, score: float) -> float:
+        """
+        标准化向量相似度分数到[0,1]区间
 
-        return []
+        Args:
+            score: 原始分数
+
+        Returns:
+            float: 标准化后的分数
+        """
+        # Qdrant的余弦相似度通常在[-1,1]区间
+        # 转换到[0,1]区间
+        return max(0.0, min(1.0, (score + 1.0) / 2.0))
+
+    def _apply_diversity_bonus(self, final_scores: Dict[str, Dict]):
+        """
+        应用多样性奖励
+
+        Args:
+            final_scores: 最终分数字典
+        """
+        diversity_bonus = self.fusion_config.get("diversity_bonus", 0.25)
+        total_models = len(self.embedding_models)
+
+        for item_key, score_data in final_scores.items():
+            # 计算来源多样性
+            source_count = len(score_data["sources"])
+            diversity_ratio = source_count / total_models
+
+            # 应用多样性奖励
+            bonus = diversity_bonus * diversity_ratio
+            score_data["score"] *= (1.0 + bonus)
 
     # 重写添加方法以同时添加到ES
     def add_question_sql(self, question: str, sql: str, **kwargs) -> str:
+        """
+        增强版添加问题-SQL对，支持多模型存储到独立Collection
+
+        Args:
+            question: 用户问题
+            sql: 对应的SQL语句
+            **kwargs: 其他参数
+
+        Returns:
+            str: 主要的文档ID
+        """
         question_sql_json = json.dumps(
             {
                 "question": question,
@@ -1994,102 +2487,442 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
             },
             ensure_ascii=False,
         )
-        id = super().add_question_sql(question, sql, **kwargs)
 
-        # 同时索引到ES
-        self._index_to_es("sql", question_sql_json, id)
+        # 生成多模型嵌入向量
+        try:
+            embeddings = self.generate_embeddings_multi_model(question_sql_json)
+        except Exception as e:
+            logger.error(f"生成嵌入向量失败: {str(e)}")
+            raise e
 
-        return id
+        # 存储到多个独立的Collection
+        doc_ids = {}
+        primary_id = None
+
+        for model_name, embedding in embeddings.items():
+            try:
+                # 获取该模型对应的collection名称
+                collection_name = self.get_collection_name(model_name, "sql")
+
+                # 构造payload
+                payload = {
+                    "question": question,
+                    "sql": sql,
+                    "model_name": model_name,
+                    "content_type": "question_sql"
+                }
+
+                # 添加到对应的collection
+                doc_id = self._add_to_collection(
+                    collection_name=collection_name,
+                    embedding=embedding,
+                    payload=payload,
+                    **kwargs
+                )
+
+                doc_ids[model_name] = doc_id
+
+                # 使用第一个成功的ID作为主ID
+                if primary_id is None:
+                    primary_id = doc_id
+
+                logger.debug(f"问题-SQL对已添加到 {collection_name}, ID: {doc_id}")
+
+            except Exception as e:
+                logger.error(f"添加到模型 {model_name} 的collection失败: {str(e)}")
+                # 继续处理其他模型，不中断整个过程
+                continue
+
+        if not doc_ids:
+            raise Exception("所有模型的存储都失败了")
+
+        if len(doc_ids) < len(embeddings):
+            logger.warning(f"只有 {len(doc_ids)}/{len(embeddings)} 个模型成功存储")
+
+        # 同时索引到ES（保持原有逻辑）
+        self._index_to_es("sql", question_sql_json, primary_id)
+
+        logger.info(f"问题-SQL对已存储到 {len(doc_ids)} 个模型的Collection，主ID: {primary_id}")
+        return primary_id
 
     def add_ddl(self, ddl: str, **kwargs) -> str:
-        id = super().add_ddl(ddl, **kwargs)
+        """
+        增强版添加DDL，支持多模型存储到独立Collection
+
+        Args:
+            ddl: DDL语句
+            **kwargs: 其他参数
+
+        Returns:
+            str: 主要的文档ID
+        """
+        # 生成多模型嵌入向量
+        try:
+            embeddings = self.generate_embeddings_multi_model(ddl)
+        except Exception as e:
+            logger.error(f"生成DDL嵌入向量失败: {str(e)}")
+            raise e
+
+        # 存储到多个独立的Collection
+        doc_ids = {}
+        primary_id = None
+
+        for model_name, embedding in embeddings.items():
+            try:
+                # 获取该模型对应的collection名称
+                collection_name = self.get_collection_name(model_name, "ddl")
+
+                # 构造payload
+                payload = {
+                    "ddl": ddl,
+                    "model_name": model_name,
+                    "content_type": "ddl"
+                }
+
+                # 添加到对应的collection
+                doc_id = self._add_to_collection(
+                    collection_name=collection_name,
+                    embedding=embedding,
+                    payload=payload,
+                    **kwargs
+                )
+
+                doc_ids[model_name] = doc_id
+
+                # 使用第一个成功的ID作为主ID
+                if primary_id is None:
+                    primary_id = doc_id
+
+                logger.debug(f"DDL已添加到 {collection_name}, ID: {doc_id}")
+
+            except Exception as e:
+                logger.error(f"添加DDL到模型 {model_name} 的collection失败: {str(e)}")
+                continue
+
+        if not doc_ids:
+            raise Exception("所有模型的DDL存储都失败了")
+
+        if len(doc_ids) < len(embeddings):
+            logger.warning(f"只有 {len(doc_ids)}/{len(embeddings)} 个模型成功存储DDL")
 
         # 同时索引到ES
-        self._index_to_es("ddl", ddl, id)
+        self._index_to_es("ddl", ddl, primary_id)
 
-        return id
+        logger.info(f"DDL已存储到 {len(doc_ids)} 个模型的Collection，主ID: {primary_id}")
+        return primary_id
 
     def add_documentation(self, documentation: str, **kwargs) -> str:
         """
-        增强版添加文档方法，保存块间关联信息
+        增强版添加文档，支持分块和多模型存储
+
+        Args:
+            documentation: 文档内容
+            **kwargs: 其他参数
+
+        Returns:
+            str: 主要的文档ID
         """
         # 检查是否需要分块
         if len(documentation) > self.config.get("chunk_threshold", 500):
-            # 创建分块器实例（保持原有分块器）
-            chunker = DocumentChunker(
-                mechanical_terms_path=self.config.get("mechanical_terms_path", "/dictionary/MechanicalWords.txt"),
-                max_chunk_size=self.config.get("max_chunk_size", 1000),
-                overlap=self.config.get("chunk_overlap", 50),
-                doc_patterns=self.doc_patterns,  # 传递文档模式配置
-                key_markers=self.key_markers  # 传递关键标记
-            )
+            return self._add_documentation_with_chunking(documentation, **kwargs)
+        else:
+            return self._add_single_documentation(documentation, **kwargs)
 
-            # 分块
-            chunks = chunker.chunk_document(documentation)
+    def _add_single_documentation(self, documentation: str, **kwargs) -> str:
+        """添加单个文档（不分块）到多模型Collection"""
+        # 生成多模型嵌入向量
+        try:
+            embeddings = self.generate_embeddings_multi_model(documentation)
+        except Exception as e:
+            logger.error(f"生成文档嵌入向量失败: {str(e)}")
+            raise e
 
-            # 分析块之间的关系
-            chunks_relations = self._analyze_chunk_relations(chunks, documentation)
+        # 存储到多个独立的Collection
+        doc_ids = {}
+        primary_id = None
 
-            # 对每个分块进行处理
-            doc_ids = []
-            chunk_id_map = {}  # 保存块文本到ID的映射
+        for model_name, embedding in embeddings.items():
+            try:
+                # 获取该模型对应的collection名称
+                collection_name = self.get_collection_name(model_name, "documentation")
 
-            # 第一轮：添加所有块并保存ID
-            for i, chunk in enumerate(chunks):
-                # 调用父类方法添加文档
-                id = super().add_documentation(chunk, **kwargs)
-
-                # 保存ID映射
-                chunk_id_map[chunk] = id
-                doc_ids.append(id)
-
-                # 同时索引到ES，添加特殊块类型标记
-                chunk_type = self._detect_chunk_type(chunk)
-
-                # 构造ES文档，添加元数据
-                es_doc = {
-                    "document": chunk,
-                    "id": id,
-                    "chunk_type": chunk_type,
-                    "chunk_index": i,
-                    "total_chunks": len(chunks)
+                # 构造payload
+                payload = {
+                    "documentation": documentation,
+                    "model_name": model_name,
+                    "content_type": "documentation",
+                    "chunk_type": "complete_document",
+                    "chunk_index": 0,
+                    "total_chunks": 1
                 }
 
-                self._index_to_es("documentation", json.dumps(es_doc), id)
+                # 添加到对应的collection
+                doc_id = self._add_to_collection(
+                    collection_name=collection_name,
+                    embedding=embedding,
+                    payload=payload,
+                    **kwargs
+                )
 
-            # 第二轮：更新关联信息
-            for chunk, relations in chunks_relations.items():
-                if chunk in chunk_id_map:
-                    chunk_id = chunk_id_map[chunk]
+                doc_ids[model_name] = doc_id
 
-                    # 将关联ID列表转换为实际ID
-                    related_ids = [chunk_id_map[rel_chunk] for rel_chunk in relations
-                                   if rel_chunk in chunk_id_map]
+                if primary_id is None:
+                    primary_id = doc_id
 
-                    # 保存关联信息
-                    if related_ids:
-                        # 更新向量存储中的记录
-                        self._update_document_relations(chunk_id, related_ids)
+                logger.debug(f"文档已添加到 {collection_name}, ID: {doc_id}")
 
-                        # 更新ES中的记录
-                        self._update_es_relations("documentation", chunk_id, related_ids)
+            except Exception as e:
+                logger.error(f"添加文档到模型 {model_name} 的collection失败: {str(e)}")
+                continue
 
-            # 返回第一个ID
-            return doc_ids[0] if doc_ids else ""
-        else:
-            # 文档较小，不需要分块
-            id = super().add_documentation(documentation, **kwargs)
+        if not doc_ids:
+            raise Exception("所有模型的文档存储都失败了")
 
-            # 添加元数据
-            es_doc = {
-                "document": documentation,
-                "id": id,
-                "chunk_type": "complete_document",
-                "chunk_index": 0,
-                "total_chunks": 1
+        # 同时索引到ES
+        es_doc = {
+            "document": documentation,
+            "id": primary_id,
+            "chunk_type": "complete_document",
+            "chunk_index": 0,
+            "total_chunks": 1
+        }
+        self._index_to_es("documentation", json.dumps(es_doc), primary_id)
+
+        logger.info(f"文档已存储到 {len(doc_ids)} 个模型的Collection，主ID: {primary_id}")
+        return primary_id
+
+    def _add_documentation_with_chunking(self, documentation: str, **kwargs) -> str:
+        """添加需要分块的文档到多模型Collection"""
+        # 创建分块器实例
+        chunker = DocumentChunker(
+            mechanical_terms_path=self.config.get("mechanical_terms_path", "/dictionary/MechanicalWords.txt"),
+            max_chunk_size=self.config.get("max_chunk_size", 800),  # 使用更小的块大小
+            overlap=self.config.get("chunk_overlap", 100),
+            doc_patterns=self.doc_patterns,
+            key_markers=self.key_markers
+        )
+
+        # 分块
+        chunks = chunker.chunk_document(documentation)
+        logger.info(f"文档已分块为 {len(chunks)} 个部分")
+
+        # 分析块之间的关系
+        chunks_relations = self._analyze_chunk_relations(chunks, documentation)
+
+        # 存储所有分块到所有模型
+        all_doc_ids = {}  # {model_name: [chunk_ids]}
+        chunk_id_maps = {}  # {model_name: {chunk_text: chunk_id}}
+        primary_id = None
+
+        # 为每个模型生成所有块的嵌入向量
+        for model in self.embedding_models:
+            model_name = model["name"]
+            try:
+                # 批量生成该模型的所有嵌入向量
+                embeddings = self.generate_embeddings_batch([chunk for chunk in chunks], model_name)
+
+                # 存储该模型的所有块
+                model_chunk_ids = []
+                model_chunk_map = {}
+
+                for i, (chunk, embedding) in enumerate(zip(chunks, embeddings)):
+                    # 获取块类型
+                    chunk_type = self._detect_chunk_type(chunk)
+
+                    # 构造payload
+                    payload = {
+                        "documentation": chunk,
+                        "model_name": model_name,
+                        "content_type": "documentation",
+                        "chunk_type": chunk_type,
+                        "chunk_index": i,
+                        "total_chunks": len(chunks)
+                    }
+
+                    # 获取collection名称
+                    collection_name = self.get_collection_name(model_name, "documentation")
+
+                    # 添加到collection
+                    doc_id = self._add_to_collection(
+                        collection_name=collection_name,
+                        embedding=embedding,
+                        payload=payload,
+                        **kwargs
+                    )
+
+                    model_chunk_ids.append(doc_id)
+                    model_chunk_map[chunk] = doc_id
+
+                    # 设置主ID
+                    if primary_id is None:
+                        primary_id = doc_id
+
+                    # 索引到ES
+                    es_doc = {
+                        "document": chunk,
+                        "id": doc_id,
+                        "chunk_type": chunk_type,
+                        "chunk_index": i,
+                        "total_chunks": len(chunks),
+                        "model_name": model_name
+                    }
+                    self._index_to_es("documentation", json.dumps(es_doc), doc_id)
+
+                all_doc_ids[model_name] = model_chunk_ids
+                chunk_id_maps[model_name] = model_chunk_map
+
+                logger.info(f"模型 {model_name} 的 {len(chunks)} 个文档块已存储")
+
+            except Exception as e:
+                logger.error(f"模型 {model_name} 的分块存储失败: {str(e)}")
+                continue
+
+        if not all_doc_ids:
+            raise Exception("所有模型的分块文档存储都失败了")
+
+        # 更新关联信息（对所有成功的模型）
+        self._update_multi_model_chunk_relations(chunks_relations, chunk_id_maps)
+
+        logger.info(
+            f"分块文档已存储到 {len(all_doc_ids)} 个模型，总计 {sum(len(ids) for ids in all_doc_ids.values())} 个块")
+        return primary_id
+
+    def _add_to_collection(self, collection_name: str, embedding: List[float], payload: dict, **kwargs) -> str:
+        """
+        添加文档到指定的collection
+
+        Args:
+            collection_name: collection名称
+            embedding: 嵌入向量
+            payload: 文档载荷
+            **kwargs: 其他参数
+
+        Returns:
+            str: 文档ID
+        """
+        try:
+            # 生成唯一ID
+            doc_id = self._generate_unique_id()
+
+            # 添加到Qdrant
+            self._client.upsert(
+                collection_name=collection_name,
+                points=[{
+                    "id": doc_id,
+                    "vector": embedding,
+                    "payload": payload
+                }]
+            )
+
+            return doc_id
+
+        except Exception as e:
+            logger.error(f"添加到collection {collection_name} 失败: {str(e)}")
+            raise e
+
+    def _generate_unique_id(self) -> str:
+        """生成唯一的文档ID"""
+        import uuid
+        return str(uuid.uuid4())
+
+    def _update_multi_model_chunk_relations(self, chunks_relations: dict, chunk_id_maps: dict):
+        """
+        更新多模型的块关联信息
+
+        Args:
+            chunks_relations: 块关系映射 {chunk_text: [related_chunk_texts]}
+            chunk_id_maps: 每个模型的块ID映射 {model_name: {chunk_text: chunk_id}}
+        """
+        for model_name, chunk_id_map in chunk_id_maps.items():
+            try:
+                collection_name = self.get_collection_name(model_name, "documentation")
+
+                for chunk, relations in chunks_relations.items():
+                    if chunk in chunk_id_map:
+                        chunk_id = chunk_id_map[chunk]
+
+                        # 获取相关块的ID列表
+                        related_ids = [chunk_id_map[rel_chunk]
+                                       for rel_chunk in relations
+                                       if rel_chunk in chunk_id_map]
+
+                        if related_ids:
+                            # 更新该模型collection中的关联信息
+                            self._update_collection_relations(collection_name, chunk_id, related_ids)
+
+                logger.debug(f"模型 {model_name} 的块关联信息已更新")
+
+            except Exception as e:
+                logger.error(f"更新模型 {model_name} 的块关联信息失败: {str(e)}")
+
+    def _update_collection_relations(self, collection_name: str, doc_id: str, related_ids: List[str]):
+        """更新collection中的关联信息"""
+        try:
+            # 获取现有点信息
+            point = self._client.get_points(
+                collection_name=collection_name,
+                ids=[doc_id]
+            ).points[0]
+
+            # 更新payload
+            payload = point.payload or {}
+            payload["related_chunks"] = related_ids
+
+            # 更新点
+            self._client.update_points(
+                collection_name=collection_name,
+                points=[{"id": doc_id, "payload": payload}]
+            )
+
+        except Exception as e:
+            logger.error(f"更新collection {collection_name} 中ID {doc_id} 的关联信息失败: {str(e)}")
+
+    def get_storage_stats(self) -> Dict[str, Any]:
+        """
+        获取多模型存储统计信息
+
+        Returns:
+            Dict: 存储统计信息
+        """
+        stats = {
+            "models": {},
+            "total_collections": 0,
+            "collection_names": []
+        }
+
+        for model_name in self.get_active_models():
+            model_stats = {
+                "collections": {},
+                "total_documents": 0
             }
-            self._index_to_es("documentation", json.dumps(es_doc), id)
-            return id
+
+            for collection_type in ["sql", "ddl", "documentation"]:
+                collection_name = self.get_collection_name(model_name, collection_type)
+                try:
+                    # 获取collection信息
+                    collection_info = self._client.get_collection(collection_name)
+                    count = collection_info.points_count
+
+                    model_stats["collections"][collection_type] = {
+                        "name": collection_name,
+                        "count": count
+                    }
+                    model_stats["total_documents"] += count
+
+                    stats["collection_names"].append(collection_name)
+
+                except Exception as e:
+                    logger.warning(f"获取collection {collection_name} 信息失败: {str(e)}")
+                    model_stats["collections"][collection_type] = {
+                        "name": collection_name,
+                        "count": 0,
+                        "error": str(e)
+                    }
+
+            stats["models"][model_name] = model_stats
+            stats["total_collections"] += len(model_stats["collections"])
+
+        return stats
 
     def _analyze_chunk_relations(self, chunks, full_document):
         """
@@ -2333,294 +3166,156 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
     # 重写搜索方法以使用增强的融合算法
     def get_similar_question_sql(self, question: str, **kwargs) -> list:
         """
-        Enhanced retrieval of similar question-SQL pairs with integrated reranking
+        增强版SQL示例检索，使用多模型融合
 
         Args:
-            question: The user's question
-            **kwargs: Additional options including:
-              - rerank: Whether to use reranking (default: True)
-              - rerank_top_k: Number of candidates to rerank (default: 20)
-              - fusion_method: Fusion method to use (default: self.fusion_method)
+            question: 用户问题
+            **kwargs: 其他参数
 
         Returns:
-            List of question-SQL pairs sorted by relevance
+            list: 融合后的SQL示例列表
         """
         try:
-            # Extract options from kwargs with defaults
-            use_rerank = kwargs.get('rerank', True)
-            rerank_top_k = kwargs.get('rerank_top_k', 20)
-            fusion_method = kwargs.get('fusion_method', self.fusion_method)
-
-            # Start with enhanced question preprocessing
+            # 预处理问题
             enhanced_question = self.preprocess_field_names(question)
 
-            # 1. Vector search (using original question for semantic relevance)
+            # 多模型向量检索
             vector_start = time.time()
             dense_results = self._get_vector_results(question, "sql")
             vector_time = time.time() - vector_start
 
-            # 2. BM25 search (using enhanced question for better lexical matching)
+            # BM25检索（保持原有逻辑）
             bm25_start = time.time()
             bm25_results = self._search_es("sql", enhanced_question, size=self.n_results_sql)
             bm25_time = time.time() - bm25_start
 
-            # Log retrieval statistics
-            logger.debug(f"SQL retrieval - Vector: {len(dense_results)} results in {vector_time:.3f}s, "
-                         f"BM25: {len(bm25_results)} results in {bm25_time:.3f}s")
+            logger.debug(f"SQL检索 - 多模型向量: {len(dense_results)} 结果 {vector_time:.3f}s, "
+                         f"BM25: {len(bm25_results)} 结果 {bm25_time:.3f}s")
 
-            # Early return if no results from either method
+            # 如果没有结果
             if not dense_results and not bm25_results:
-                logger.warning(f"No SQL results found for question: {question}")
+                logger.warning(f"未找到SQL结果: {question}")
                 return []
 
-            # 3. Apply reranking if enabled
-            if use_rerank:
-                # Combine candidates from both sources for reranking
-                seen_ids = set()
-                initial_candidates = []
+            # 重排序处理
+            use_rerank = kwargs.get('rerank', True)
+            if use_rerank and dense_results:
+                reranked = self._rerank_sql_candidates(question, dense_results[:30])  # 取前30个重排序
+                if reranked:
+                    dense_results = reranked
 
-                for result in dense_results + bm25_results:
-                    # For SQL documents which are dictionaries with 'question' and 'sql'
-                    if isinstance(result, dict):
-                        result_id = json.dumps((result.get('question', ''), result.get('sql', '')), sort_keys=True)
-                    else:
-                        result_id = str(result)
-
-                    if result_id not in seen_ids:
-                        seen_ids.add(result_id)
-                        initial_candidates.append(result)
-
-                    if len(initial_candidates) >= rerank_top_k:
-                        break
-
-                # 4. Perform direct reranking
-                reranked_results = self._rerank_sql_candidates(question, initial_candidates)
-
-                # 5. Apply final contextual fusion if needed
-                if fusion_method == "contextual" and reranked_results:
-                    final_results = RankFusion.contextual_fusion(
-                        query=question,
-                        dense_results=reranked_results,  # Use reranked results as dense results
-                        lexical_results=bm25_results,  # Keep original lexical results for diversity
-                        metadata={"vector_time": vector_time, "bm25_time": bm25_time}
-                    )
-
-                    if final_results:
-                        return final_results
-
-                # If reranking was successful, return the reranked results
-                if reranked_results:
-                    return reranked_results
-
-            # 6. Fall back to regular fusion if reranking wasn't used or failed
+            # 融合向量结果和BM25结果
             return self._fuse_results(dense_results, bm25_results, question)
 
         except Exception as e:
-            logger.error(f"Error in get_similar_question_sql: {str(e)}")
+            logger.error(f"SQL检索失败: {str(e)}")
             logger.error(traceback.format_exc())
-
-            # 修复: 确保变量已定义
-            dense_results = locals().get('dense_results', [])
-            bm25_results = locals().get('bm25_results', [])
-
-            # Return whatever results we have so far
-            return dense_results or bm25_results or []
+            return []
 
     def get_related_ddl(self, question: str, **kwargs) -> list:
         """
-        Enhanced retrieval of DDL statements with integrated reranking
-
-        Args:
-            question: The user's question
-            **kwargs: Additional options including:
-              - rerank: Whether to use reranking (default: True)
-              - rerank_top_k: Number of candidates to rerank (default: 20)
-              - fusion_method: Fusion method to use (default: self.fusion_method)
-
-        Returns:
-            List of DDL statements sorted by relevance
+        增强版DDL检索，使用多模型融合
         """
         try:
-            # Extract options from kwargs with defaults
-            use_rerank = kwargs.get('rerank', True)
-            rerank_top_k = kwargs.get('rerank_top_k', 20)
-            fusion_method = kwargs.get('fusion_method', self.fusion_method)
-
-            # Start with enhanced question preprocessing
             enhanced_question = self.preprocess_field_names(question)
 
-            # Add table name extraction for better DDL matching
+            # 添加表名增强
             table_names = self._extract_table_names(question)
             if table_names:
                 for name in table_names:
                     if name not in enhanced_question:
                         enhanced_question += f" {name}"
 
-            # 1. Vector search (using original question for semantic relevance)
+            # 多模型向量检索
             vector_start = time.time()
             dense_results = self._get_vector_results(question, "ddl")
             vector_time = time.time() - vector_start
 
-            # 2. BM25 search (using enhanced question for better lexical matching)
+            # BM25检索
             bm25_start = time.time()
             bm25_results = self._search_es("ddl", enhanced_question, size=self.n_results_ddl)
             bm25_time = time.time() - bm25_start
 
-            # Log retrieval statistics
-            logger.debug(f"DDL retrieval - Vector: {len(dense_results)} results in {vector_time:.3f}s, "
-                         f"BM25: {len(bm25_results)} results in {bm25_time:.3f}s")
+            logger.debug(f"DDL检索 - 多模型向量: {len(dense_results)} 结果 {vector_time:.3f}s, "
+                         f"BM25: {len(bm25_results)} 结果 {bm25_time:.3f}s")
 
-            # Early return if no results from either method
             if not dense_results and not bm25_results:
-                logger.warning(f"No DDL results found for question: {question}")
+                logger.warning(f"未找到DDL结果: {question}")
                 return []
 
-            # 3. Apply reranking if enabled
-            if use_rerank:
-                # Combine candidates from both sources for reranking
-                seen_ddls = set()
-                initial_candidates = []
+            # 重排序处理
+            use_rerank = kwargs.get('rerank', True)
+            if use_rerank and dense_results:
+                reranked = self._rerank_text_documents(question, dense_results[:20], "ddl")
+                if reranked:
+                    dense_results = reranked
 
-                for ddl in dense_results + bm25_results:
-                    ddl_str = str(ddl).strip()
-                    if ddl_str and ddl_str not in seen_ddls:
-                        seen_ddls.add(ddl_str)
-                        initial_candidates.append(ddl_str)
-
-                    if len(initial_candidates) >= rerank_top_k:
-                        break
-
-                # 4. Perform direct reranking
-                reranked_results = self._rerank_text_documents(question, initial_candidates, "ddl")
-
-                # 5. Apply final contextual fusion if needed
-                if fusion_method == "contextual" and reranked_results:
-                    final_results = RankFusion.contextual_fusion(
-                        query=question,
-                        dense_results=reranked_results,  # Use reranked results as dense results
-                        lexical_results=bm25_results,  # Keep original lexical results for diversity
-                        metadata={"vector_time": vector_time, "bm25_time": bm25_time}
-                    )
-
-                    if final_results:
-                        return final_results
-
-                # If reranking was successful, return the reranked results
-                if reranked_results:
-                    return reranked_results
-
-            # 6. Fall back to regular fusion if reranking wasn't used or failed
             return self._fuse_results(dense_results, bm25_results, question)
 
         except Exception as e:
-            logger.error(f"Error in get_related_ddl: {str(e)}")
-            logger.error(traceback.format_exc())
-
-            # 修复: 确保变量已定义
-            dense_results = locals().get('dense_results', [])
-            bm25_results = locals().get('bm25_results', [])
-
-            # Return whatever results we have so far
-            return dense_results or bm25_results or []
+            logger.error(f"DDL检索失败: {str(e)}")
+            return []
 
     def get_related_documentation(self, question: str, **kwargs) -> list:
         """
-        Enhanced retrieval of documentation with integrated reranking
-
-        Args:
-            question: The user's question
-            **kwargs: Additional options including:
-              - rerank: Whether to use reranking (default: True)
-              - rerank_top_k: Number of candidates to rerank (default: 20)
-              - fusion_method: Fusion method to use (default: self.fusion_method)
-
-        Returns:
-            List of documentation chunks sorted by relevance
+        增强版文档检索，使用多模型融合和关联块扩展
         """
         try:
-            # Extract options from kwargs with defaults
-            use_rerank = kwargs.get('rerank', True)
-            rerank_top_k = kwargs.get('rerank_top_k', 20)
-            fusion_method = kwargs.get('fusion_method', self.fusion_method)
-
-            # Start with enhanced question preprocessing
             enhanced_question = self.preprocess_field_names(question)
 
-            # Extract business entities and domain terms to enhance docs retrieval
+            # 添加领域术语增强
             domain_terms = self._extract_domain_terms(question)
             if domain_terms:
                 for term in domain_terms:
                     if term not in enhanced_question:
                         enhanced_question += f" {term}"
 
-            # 1. Vector search (using original question for semantic relevance)
+            # 多模型向量检索
             vector_start = time.time()
             dense_results = self._get_vector_results(question, "documentation")
             vector_time = time.time() - vector_start
 
-            # 2. BM25 search (using enhanced question for better lexical matching)
+            # BM25检索
             bm25_start = time.time()
             bm25_results = self._search_es("documentation", enhanced_question, size=self.n_results_documentation)
             bm25_time = time.time() - bm25_start
 
-            # Log retrieval statistics
-            logger.debug(f"Documentation retrieval - Vector: {len(dense_results)} results in {vector_time:.3f}s, "
-                         f"BM25: {len(bm25_results)} results in {bm25_time:.3f}s")
+            logger.debug(f"文档检索 - 多模型向量: {len(dense_results)} 结果 {vector_time:.3f}s, "
+                         f"BM25: {len(bm25_results)} 结果 {bm25_time:.3f}s")
 
-            # Early return if no results from either method
             if not dense_results and not bm25_results:
-                logger.warning(f"No documentation results found for question: {question}")
+                logger.warning(f"未找到文档结果: {question}")
                 return []
 
-            # 在返回结果前，添加关联块
+            # 扩展关联块
             expanded_results = self._expand_with_related_chunks(dense_results + bm25_results)
 
-            # 3. Apply reranking if enabled
-            if use_rerank:
-                # 使用扩展后的结果创建初始候选集
-                seen_docs = set()
-                initial_candidates = []
+            # 重排序处理
+            use_rerank = kwargs.get('rerank', True)
+            if use_rerank and expanded_results:
+                reranked = self._rerank_text_documents(question, expanded_results[:25], "documentation")
+                if reranked:
+                    return reranked
 
-                for doc in expanded_results:  # 使用expanded_results而不是原始结果
-                    doc_str = str(doc).strip()
-                    if doc_str and doc_str not in seen_docs:
-                        seen_docs.add(doc_str)
-                        initial_candidates.append(doc_str)
-
-                    if len(initial_candidates) >= rerank_top_k:
-                        break
-
-                # 4. Perform direct reranking
-                reranked_results = self._rerank_text_documents(question, initial_candidates, "documentation")
-
-                # 5. Apply final contextual fusion if needed
-                if fusion_method == "contextual" and reranked_results:
-                    final_results = RankFusion.contextual_fusion(
-                        query=question,
-                        dense_results=reranked_results,  # Use reranked results as dense results
-                        lexical_results=expanded_results,  # 使用扩展后结果替代原始bm25_results
-                        metadata={"vector_time": vector_time, "bm25_time": bm25_time}
-                    )
-
-                    if final_results:
-                        return final_results
-
-                # If reranking was successful, return the reranked results
-                if reranked_results:
-                    return reranked_results
-
-            # 6. Fall back to regular fusion if reranking wasn't used or failed
-            return self._fuse_results(dense_results, expanded_results, question)  # 使用expanded_results替代原始bm25_results
+            return self._fuse_results(dense_results, expanded_results, question)
 
         except Exception as e:
-            logger.error(f"Error in get_related_documentation: {str(e)}")
-            logger.error(traceback.format_exc())
-            # 修复: 确保变量已定义
-            dense_results = locals().get('dense_results', [])
-            bm25_results = locals().get('bm25_results', [])
+            logger.error(f"文档检索失败: {str(e)}")
+            return []
 
-            # Return whatever results we have so far
-            return dense_results or bm25_results or []
+    def get_fusion_stats(self) -> Dict[str, Any]:
+        """
+        获取融合统计信息
+
+        Returns:
+            Dict: 融合统计信息
+        """
+        return {
+            "fusion_config": self.fusion_config,
+            "active_models": self.get_active_models(),
+            "model_weights": {model["name"]: model["weight"] for model in self.embedding_models},
+            "collection_mapping": self.model_collections
+        }
 
     def _expand_with_related_chunks(self, initial_results, max_related=3, max_depth=2, max_total=15):
         """
@@ -3613,34 +4308,364 @@ class EnhancedVannaFlaskApp(VannaFlaskApp):
                 logger.error(traceback.format_exc())
                 raise e
 # 主程序
-if __name__ == "__main__":
-    # 初始化增强版Vanna - 连接到远程ChromaDB和ES
-    vn = EnhancedVanna(client=client, config={
+def create_multi_model_config():
+    """
+    创建多模型配置的示例函数
+
+    Returns:
+        Dict: 完整的多模型配置
+    """
+
+    # 基础配置
+    base_config = {
         'model': 'qwen-plus',
-        'qdrant_url': 'http://192.168.48.128:6333',  # 修改为您的Qdrant服务地址
+        'qdrant_url': 'http://192.168.48.128:6333',
+
+        # ========== 多模型嵌入服务配置 ==========
+        'multi_embedding_services': [
+            {
+                'name': 'bge_m3',
+                'service_url': 'http://192.168.48.128:8080',
+                'weight': 0.4,
+                'timeout': 30,
+                'max_retries': 3,
+                'description': 'BGE-M3多语言模型，擅长代码和通用文本'
+            },
+            {
+                'name': 'text2vec_chinese',
+                'service_url': 'http://192.168.48.128:8081',
+                'weight': 0.35,
+                'timeout': 30,
+                'max_retries': 3,
+                'description': '中文文本向量模型，擅长中文业务文档'
+            },
+            {
+                'name': 'sentence_transformers',
+                'service_url': 'http://192.168.48.128:8082',
+                'weight': 0.25,
+                'timeout': 30,
+                'max_retries': 3,
+                'description': 'Sentence-BERT模型，提供多样性补充'
+            }
+        ],
+
+        # ========== Collection名称配置 ==========
+        'sql_collection_name': 'vanna_sql',
+        'ddl_collection_name': 'vanna_ddl',
+        'documentation_collection_name': 'vanna_documentation',
+
+        # ========== 分数融合配置 ==========
+        'fusion_method': 'score_fusion',  # score_fusion, voting, contextual
+        'normalize_scores': True,
+        'diversity_bonus': 0.25,  # 多源匹配奖励25%
+        'rrf_k': 30,  # RRF参数
+
+        # ========== 检索精度优化配置 ==========
+        'n_results_sql': 30,  # SQL示例检索数量：增加到30
+        'n_results_ddl': 20,  # DDL检索数量：增加到20
+        'n_results_documentation': 35,  # 文档检索数量：增加到35
+
+        # ========== 文档分块优化配置 ==========
+        'chunk_threshold': 300,  # 更小的分块阈值：500 -> 300
+        'max_chunk_size': 800,  # 更小的块大小：1000 -> 800
+        'chunk_overlap': 100,  # 保持较大重叠
+
+        # ========== Elasticsearch配置 ==========
         'elasticsearch': {
             'hosts': ['http://192.168.48.128:9200']
         },
-        'fusion_method': 'contextual',  # 使用上下文感知融合，可选值: rrf, borda, contextual, multi_stage
-        'vector_weight': 0.6,  # 向量检索结果权重
-        'bm25_weight': 0.4  # BM25检索结果权重
-    })
 
-    # 连接到MySQL
-    vn.connect_to_mysql(
-        host=os.getenv("MYSQL_HOST", "192.168.48.128"),
-        dbname=os.getenv("MYSQL_DATABASE", "testdb"),
-        user=os.getenv("MYSQL_USER", "testuser"),
-        password=os.getenv("MYSQL_PASSWORD", "testpassword"),
-        port=int(os.getenv("MYSQL_PORT", "3306"))
+        # ========== 融合权重配置 ==========
+        'vector_weight': 0.75,  # 提高向量检索权重：0.6 -> 0.75
+        'bm25_weight': 0.25,  # 降低BM25权重：0.4 -> 0.25
+
+        # ========== 重排序配置 ==========
+        'rerank_url': 'http://192.168.48.128:8091',
+        'rerank_enabled': True,
+        'rerank_timeout': 60,
+
+        # ========== 质量控制配置 ==========
+        'enable_quality_check': True,
+        'quality_threshold': 0.6,  # 检索质量阈值
+        'max_fusion_candidates': 50,  # 融合算法最大候选数量
+
+        # ========== 性能配置 ==========
+        'enable_caching': True,
+        'cache_ttl': 3600,  # 缓存1小时
+        'batch_size': 32,
+
+        # ========== 专业术语配置 ==========
+        'mechanical_terms_path': '/dictionary/MechanicalWords.txt',
+    }
+
+    return base_config
+
+
+def create_single_model_config():
+    """
+    创建单模型配置（向后兼容）
+
+    Returns:
+        Dict: 单模型配置
+    """
+    return {
+        'model': 'qwen-plus',
+        'qdrant_url': 'http://192.168.48.128:6333',
+
+        # 单模型配置
+        'embedding_service_url': 'http://192.168.48.128:8080',
+        'embedding_timeout': 30,
+        'embedding_max_retries': 3,
+
+        'elasticsearch': {
+            'hosts': ['http://192.168.48.128:9200']
+        },
+        'fusion_method': 'contextual',
+        'vector_weight': 0.7,
+        'bm25_weight': 0.3,
+        'rerank_url': 'http://192.168.48.128:8091',
+        'rerank_enabled': True,
+    }
+
+
+def setup_logging():
+    """配置日志系统"""
+    import logging
+
+    # 配置根日志器
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.StreamHandler(),  # 控制台输出
+            logging.FileHandler('/logs/vanna_multi_model.log', encoding='utf-8')  # 文件输出
+        ]
     )
 
-    # 初始化检索服务（只创建一次）
-    retrieval_service = RetrievalService(vn, {
-        "rerank_url": "http://192.168.48.128:8091",
-        "rerank_enabled": True,
-        "max_results": 10
-    })
+    # 设置特定模块的日志级别
+    logging.getLogger("EnhancedVanna").setLevel(logging.INFO)
+    logging.getLogger("requests").setLevel(logging.WARNING)
+    logging.getLogger("urllib3").setLevel(logging.WARNING)
 
-    app = EnhancedVannaFlaskApp(vn)
-    app.run(host="0.0.0.0", port=8084)
+
+def validate_multi_model_setup(config):
+    """
+    验证多模型配置的有效性
+
+    Args:
+        config: 配置字典
+
+    Returns:
+        bool: 验证是否通过
+    """
+    logger = logging.getLogger("ConfigValidator")
+
+    # 检查必要的配置项
+    required_keys = ['qdrant_url', 'multi_embedding_services']
+    for key in required_keys:
+        if key not in config:
+            logger.error(f"缺少必要配置项: {key}")
+            return False
+
+    # 检查嵌入服务配置
+    services = config.get('multi_embedding_services', [])
+    if not services:
+        logger.error("至少需要配置一个嵌入服务")
+        return False
+
+    total_weight = sum(service.get('weight', 0) for service in services)
+    if abs(total_weight - 1.0) > 0.01:
+        logger.warning(f"模型权重总和为 {total_weight}，将自动标准化到1.0")
+
+    # 检查服务连接
+    for service in services:
+        name = service.get('name', 'unknown')
+        url = service.get('service_url')
+
+        if not url:
+            logger.error(f"服务 {name} 缺少service_url配置")
+            return False
+
+        try:
+            response = requests.get(f"{url}/health", timeout=5)
+            if response.status_code == 200:
+                logger.info(f"✓ 服务 {name} 连接正常: {url}")
+            else:
+                logger.warning(f"✗ 服务 {name} 状态异常: {response.status_code}")
+        except Exception as e:
+            logger.error(f"✗ 无法连接服务 {name}: {str(e)}")
+            return False
+
+    logger.info("多模型配置验证通过")
+    return True
+
+
+def initialize_enhanced_vanna(use_multi_model=True):
+    """
+    初始化增强版Vanna实例
+
+    Args:
+        use_multi_model: 是否使用多模型模式
+
+    Returns:
+        EnhancedVanna: 初始化后的实例
+    """
+    # 设置日志
+    setup_logging()
+    logger = logging.getLogger("VannaInitializer")
+
+    # 选择配置
+    if use_multi_model:
+        config = create_multi_model_config()
+        logger.info("使用多模型配置")
+
+        # 验证配置
+        if not validate_multi_model_setup(config):
+            logger.error("多模型配置验证失败，退出")
+            exit(1)
+    else:
+        config = create_single_model_config()
+        logger.info("使用单模型配置（向后兼容模式）")
+
+    # 初始化Vanna实例
+    try:
+        vn = EnhancedVanna(client=client, config=config)
+        logger.info("EnhancedVanna初始化成功")
+
+        # 连接MySQL
+        vn.connect_to_mysql(
+            host=os.getenv("MYSQL_HOST", "192.168.48.128"),
+            dbname=os.getenv("MYSQL_DATABASE", "testdb"),
+            user=os.getenv("MYSQL_USER", "testuser"),
+            password=os.getenv("MYSQL_PASSWORD", "testpassword"),
+            port=int(os.getenv("MYSQL_PORT", "3306"))
+        )
+        logger.info("MySQL连接成功")
+
+        # 测试嵌入向量生成
+        if use_multi_model:
+            vn.test_multi_model_embedding_quality()
+
+            # 打印统计信息
+            stats = vn.get_embedding_stats()
+            logger.info(f"活跃模型: {stats['active_models']}")
+            logger.info(f"模型权重: {stats['model_weights']}")
+
+        return vn
+
+    except Exception as e:
+        logger.error(f"EnhancedVanna初始化失败: {str(e)}")
+        logger.error(traceback.format_exc())
+        exit(1)
+
+
+def create_retrieval_service(vn):
+    """
+    创建检索服务实例
+
+    Args:
+        vn: Vanna实例
+
+    Returns:
+        RetrievalService: 检索服务实例
+    """
+    logger = logging.getLogger("RetrievalServiceCreator")
+
+    try:
+        retrieval_service = RetrievalService(vn, {
+            "rerank_url": "http://192.168.48.128:8091",
+            "rerank_enabled": True,
+            "max_results": 25,  # 增加检索结果数量
+            "rerank_timeout": 60
+        })
+
+        logger.info("检索服务初始化成功")
+        return retrieval_service
+
+    except Exception as e:
+        logger.error(f"检索服务初始化失败: {str(e)}")
+        raise e
+
+
+def print_startup_info(vn, retrieval_service):
+    """
+    打印启动信息
+
+    Args:
+        vn: Vanna实例
+        retrieval_service: 检索服务实例
+    """
+    logger = logging.getLogger("StartupInfo")
+
+    print("\n" + "=" * 80)
+    print("🚀 多模型增强版Vanna启动成功！")
+    print("=" * 80)
+
+    # 模型信息
+    if hasattr(vn, 'embedding_models') and len(vn.embedding_models) > 1:
+        print(f"📊 多模型模式: {len(vn.embedding_models)} 个嵌入模型")
+        for model in vn.embedding_models:
+            print(f"   - {model['name']}: 权重 {model['weight']:.2f}, 服务 {model['service_url']}")
+    else:
+        print("📊 单模型模式（向后兼容）")
+
+    # Collection信息
+    if hasattr(vn, 'model_collections'):
+        total_collections = sum(len(collections) for collections in vn.model_collections.values())
+        print(f"💾 独立Collection: {total_collections} 个")
+        for model_name, collections in vn.model_collections.items():
+            print(f"   - 模型 {model_name}: {list(collections.values())}")
+
+    # 融合配置
+    if hasattr(vn, 'fusion_config'):
+        print(f"🔀 融合算法: {vn.fusion_config.get('method', 'default')}")
+        print(f"🎯 多样性奖励: {vn.fusion_config.get('diversity_bonus', 0) * 100:.0f}%")
+
+    # API端点
+    print("🌐 API端点:")
+    print("   - 检索上下文: GET /api/v0/get_retrieval_context")
+    print("   - 执行SQL: POST /api/v0/execute_external_sql")
+    print("   - 上传文档: POST /api/v0/upload_documentation")
+    print("   - 上传DDL: POST /api/v0/upload_ddl")
+    print("   - 任务状态: GET /api/v0/task_status")
+
+    print("=" * 80)
+    print("📖 使用指南:")
+    print("   1. 访问 http://localhost:8084 查看Web界面")
+    print("   2. 使用API端点进行程序化访问")
+    print("   3. 查看日志文件: /logs/vanna_multi_model.log")
+    print("=" * 80 + "\n")
+
+
+# 主程序入口
+if __name__ == "__main__":
+    # 环境变量配置
+    USE_MULTI_MODEL = os.getenv("USE_MULTI_MODEL", "true").lower() == "true"
+    PORT = int(os.getenv("VANNA_PORT", "8084"))
+    HOST = os.getenv("VANNA_HOST", "0.0.0.0")
+
+    try:
+        # 1. 初始化增强版Vanna
+        vn = initialize_enhanced_vanna(use_multi_model=USE_MULTI_MODEL)
+
+        # 2. 创建检索服务
+        retrieval_service = create_retrieval_service(vn)
+
+        # 3. 创建Flask应用
+        app = EnhancedVannaFlaskApp(vn)
+
+        # 4. 打印启动信息
+        print_startup_info(vn, retrieval_service)
+
+        # 5. 启动服务
+        logger = logging.getLogger("Main")
+        logger.info(f"启动Web服务: http://{HOST}:{PORT}")
+        app.run(host=HOST, port=PORT, debug=False)
+
+    except KeyboardInterrupt:
+        print("\n👋 用户中断，正在关闭服务...")
+        exit(0)
+    except Exception as e:
+        print(f"\n❌ 启动失败: {str(e)}")
+        logging.getLogger("Main").error(traceback.format_exc())
+        exit(1)
