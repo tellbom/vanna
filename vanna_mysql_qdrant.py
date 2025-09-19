@@ -1620,7 +1620,6 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
         self.n_results_ddl = self.config.get("n_results_ddl", 15)
         self.n_results_documentation = self.config.get("n_results_documentation", 25)
 
-<<<<<<< HEAD
         # 在初始化最后添加collection检查和创建
         self._ensure_collections_exist()
 
@@ -1659,10 +1658,6 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
                     # 从可用模型列表中移除这个模型
                     self.embedding_models = [m for m in self.embedding_models if m["name"] != model_name]
 
-=======
-        logger.info("多模型EnhancedVanna初始化完成")
-
->>>>>>> origin/main
     def _get_vector_results_multi_model(self, query: str, collection_type: str, **kwargs) -> Dict[str, List[Any]]:
         """
         使用多模型进行向量检索
@@ -1705,7 +1700,6 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
                 collection_name = self.get_collection_name(model_name, collection_type)
 
                 # 执行向量搜索
-<<<<<<< HEAD
                 results = self._client.search(
                     collection_name=collection_name,
                     query_vector=query_embedding,
@@ -1713,17 +1707,6 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
                     with_payload=True,
                     score_threshold=0.0  # 替代with_score
                 )
-=======
-                results = self._client.query_points(
-                    collection_name=collection_name,
-                    query=query_embedding,
-                    limit=limit,
-                    search_params=search_params,
-                    with_payload=True,
-                    with_score=True  # 包含相似度分数
-                ).points
-
->>>>>>> origin/main
                 # 处理结果
                 processed_results = []
                 for result in results:
@@ -2850,7 +2833,6 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
             # 生成唯一ID
             doc_id = self._generate_unique_id()
 
-<<<<<<< HEAD
             # 确保payload是字典格式
             if not isinstance(payload, dict):
                 payload = {"content": str(payload)}
@@ -2868,16 +2850,6 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
             self._client.upsert(
                 collection_name=collection_name,
                 points=[point]
-=======
-            # 添加到Qdrant
-            self._client.upsert(
-                collection_name=collection_name,
-                points=[{
-                    "id": doc_id,
-                    "vector": embedding,
-                    "payload": payload
-                }]
->>>>>>> origin/main
             )
 
             return doc_id
@@ -4443,11 +4415,7 @@ def create_multi_model_config():
         'multi_embedding_services': [
             {
                 'name': 'bge_m3',
-<<<<<<< HEAD
                 'service_url': 'http://192.168.48.128:6206',
-=======
-                'service_url': 'http://192.168.48.128:8080',
->>>>>>> origin/main
                 'weight': 0.4,
                 'timeout': 30,
                 'max_retries': 3,
@@ -4455,11 +4423,7 @@ def create_multi_model_config():
             },
             {
                 'name': 'text2vec_chinese',
-<<<<<<< HEAD
                 'service_url': 'http://192.168.48.128:6006',
-=======
-                'service_url': 'http://192.168.48.128:8081',
->>>>>>> origin/main
                 'weight': 0.35,
                 'timeout': 30,
                 'max_retries': 3,
@@ -4467,11 +4431,7 @@ def create_multi_model_config():
             },
             {
                 'name': 'sentence_transformers',
-<<<<<<< HEAD
                 'service_url': 'http://192.168.48.128:6106',
-=======
-                'service_url': 'http://192.168.48.128:8082',
->>>>>>> origin/main
                 'weight': 0.25,
                 'timeout': 30,
                 'max_retries': 3,
@@ -4561,7 +4521,6 @@ def create_single_model_config():
 def setup_logging():
     """配置日志系统"""
     import logging
-<<<<<<< HEAD
     import os
 
     # 确保日志目录存在
@@ -4575,8 +4534,6 @@ def setup_logging():
             os.makedirs(log_dir, exist_ok=True)
 
     log_file = os.path.join(log_dir, 'vanna_multi_model.log')
-=======
->>>>>>> origin/main
 
     # 配置根日志器
     logging.basicConfig(
@@ -4584,11 +4541,7 @@ def setup_logging():
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[
             logging.StreamHandler(),  # 控制台输出
-<<<<<<< HEAD
             logging.FileHandler(log_file, encoding='utf-8')  # 文件输出
-=======
-            logging.FileHandler('/logs/vanna_multi_model.log', encoding='utf-8')  # 文件输出
->>>>>>> origin/main
         ]
     )
 
@@ -4803,10 +4756,7 @@ if __name__ == "__main__":
 
         # 3. 创建Flask应用
         app = EnhancedVannaFlaskApp(vn)
-<<<<<<< HEAD
         app.config['JSON_AS_ASCII'] = False  # 允许非ASCII字符
-=======
->>>>>>> origin/main
 
         # 4. 打印启动信息
         print_startup_info(vn, retrieval_service)
