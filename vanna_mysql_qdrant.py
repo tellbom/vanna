@@ -1620,8 +1620,49 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
         self.n_results_ddl = self.config.get("n_results_ddl", 15)
         self.n_results_documentation = self.config.get("n_results_documentation", 25)
 
+<<<<<<< HEAD
+        # 在初始化最后添加collection检查和创建
+        self._ensure_collections_exist()
+
         logger.info("多模型EnhancedVanna初始化完成")
 
+    def _ensure_collections_exist(self):
+        """确保所有模型的collection都存在"""
+        for model_name in self.get_active_models():
+            for collection_type in ["sql", "ddl", "documentation"]:
+                collection_name = self.get_collection_name(model_name, collection_type)
+
+                try:
+                    # 检查collection是否存在
+                    if not self._client.collection_exists(collection_name):
+                        logger.info(f"创建collection: {collection_name}")
+
+                        # 获取向量维度（需要先生成一个测试向量）
+                        test_embedding = self._generate_single_embedding("test", model_name)
+                        vector_size = len(test_embedding)
+
+                        # 创建collection
+                        from qdrant_client.models import Distance, VectorParams
+                        self._client.create_collection(
+                            collection_name=collection_name,
+                            vectors_config=VectorParams(
+                                size=vector_size,
+                                distance=Distance.COSINE
+                            )
+                        )
+                        logger.info(f"成功创建collection {collection_name}，向量维度: {vector_size}")
+                    else:
+                        logger.info(f"Collection {collection_name} 已存在")
+
+                except Exception as e:
+                    logger.error(f"处理collection {collection_name} 时出错: {str(e)}")
+                    # 从可用模型列表中移除这个模型
+                    self.embedding_models = [m for m in self.embedding_models if m["name"] != model_name]
+
+=======
+        logger.info("多模型EnhancedVanna初始化完成")
+
+>>>>>>> origin/main
     def _get_vector_results_multi_model(self, query: str, collection_type: str, **kwargs) -> Dict[str, List[Any]]:
         """
         使用多模型进行向量检索
@@ -1664,6 +1705,15 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
                 collection_name = self.get_collection_name(model_name, collection_type)
 
                 # 执行向量搜索
+<<<<<<< HEAD
+                results = self._client.search(
+                    collection_name=collection_name,
+                    query_vector=query_embedding,
+                    limit=limit,
+                    with_payload=True,
+                    score_threshold=0.0  # 替代with_score
+                )
+=======
                 results = self._client.query_points(
                     collection_name=collection_name,
                     query=query_embedding,
@@ -1673,6 +1723,7 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
                     with_score=True  # 包含相似度分数
                 ).points
 
+>>>>>>> origin/main
                 # 处理结果
                 processed_results = []
                 for result in results:
@@ -2163,14 +2214,9 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
             # 使用BM25进行全文搜索
             response = self.es_client.search(
                 index=index_name,
-                body={
-                    "query": {
-                        "match": {
-                            "document": query
-                        }
-                    },
-                    "size": size
-                }
+                query={"match": {"content": query}},
+                size=size,
+                track_total_hits=True
             )
 
             # 提取结果
@@ -2804,6 +2850,25 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
             # 生成唯一ID
             doc_id = self._generate_unique_id()
 
+<<<<<<< HEAD
+            # 确保payload是字典格式
+            if not isinstance(payload, dict):
+                payload = {"content": str(payload)}
+
+            # 构造符合Qdrant格式的点数据
+            from qdrant_client.models import PointStruct
+
+            point = PointStruct(
+                id=doc_id,
+                vector=embedding,
+                payload=payload
+            )
+
+            # 添加到Qdrant
+            self._client.upsert(
+                collection_name=collection_name,
+                points=[point]
+=======
             # 添加到Qdrant
             self._client.upsert(
                 collection_name=collection_name,
@@ -2812,6 +2877,7 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
                     "vector": embedding,
                     "payload": payload
                 }]
+>>>>>>> origin/main
             )
 
             return doc_id
@@ -3711,132 +3777,176 @@ class EnhancedVanna(Qdrant_VectorStore, OpenAI_Chat):
 
     def _rerank_sql_candidates(self, query: str, candidates: List[Any], timeout: int = 10) -> List[Any]:
         """
-        Rerank SQL candidates using the reranking service
-
-        Args:
-            query: The user's question
-            candidates: List of candidate SQL items (dicts with 'question' and 'sql')
-            timeout: Timeout for the reranking request in seconds
-
-        Returns:
-            Reranked list of candidates or empty list if reranking failed
+        Rerank SQL candidates using the reranking service (robust version)
         """
         if not candidates:
             return []
 
-        # Check if reranking is available
-        rerank_url = self.config.get("rerank_url", "http://localhost:8091")
+        # 1) 读取并规范化 URL
+        base = self.config.get("rerank_url", "http://localhost:8091")
+        # 如果没有路径，自动补齐到 /rerank
+        if base.endswith("/"):
+            rerank_url = base + "rerank"
+        else:
+            # 如果已经显式包含 /rerank 就不重复加
+            rerank_url = base if base.rsplit("/", 1)[-1] == "rerank" else base + "/rerank"
 
         try:
-            # Prepare documents for reranking
+            # 2) 组装文档
             documents = []
             original_items = []
-
-            for candidate in candidates:
-                if isinstance(candidate, dict):
-                    # Format SQL examples for reranking
-                    doc_content = f"Question: {candidate.get('question', '')}\nSQL: {candidate.get('sql', '')}"
+            for cand in candidates:
+                if isinstance(cand, dict):
+                    doc_content = f"Question: {cand.get('question', '')}\nSQL: {cand.get('sql', '')}"
                     documents.append({"content": doc_content})
-                    original_items.append(candidate)
+                    original_items.append(cand)
                 else:
-                    # Handle non-dict candidates (shouldn't happen for SQL but added for safety)
-                    documents.append({"content": str(candidate)})
-                    original_items.append(candidate)
+                    documents.append({"content": str(cand)})
+                    original_items.append(cand)
 
-            # Call reranking service
-            response = requests.post(
+            # 3) 可选：预检健康状态（避免 404/连接异常时立刻返回）
+            try:
+                health_base = base if base.endswith("/health") else (
+                    base + "/health" if not base.endswith("/rerank") else base.replace("/rerank", "/health"))
+                _ = requests.get(health_base, timeout=3)
+            except Exception:
+                pass  # 健康检查失败不阻断流程
+
+            # 4) 调用重排服务
+            resp = requests.post(
                 rerank_url,
-                json={
-                    "query": query,
-                    "documents": documents,
-                    "top_k": len(documents)  # Rerank all candidates
-                },
+                json={"query": query, "documents": documents, "top_k": len(documents)},
                 timeout=timeout
             )
 
-            if response.status_code == 200:
-                # Process reranking results
-                reranked_data = response.json()
-                reranked_results = []
-
-                # Reconstruct original items in new order with scores
-                for item in reranked_data.get("results", []):
-                    idx = item.get("index")
-                    if 0 <= idx < len(original_items):
-                        # If the original item is a dict, add the reranking score
-                        if isinstance(original_items[idx], dict):
-                            item_copy = original_items[idx].copy()
-                            item_copy["rerank_score"] = item.get("score", 0)
-                            reranked_results.append(item_copy)
-                        else:
-                            reranked_results.append(original_items[idx])
-
-                logger.debug(f"Reranked {len(reranked_results)} SQL candidates")
-                return reranked_results
-            else:
-                logger.warning(f"Reranking service returned error: {response.status_code}")
+            if resp.status_code != 200:
+                logger.warning(f"Reranking service returned {resp.status_code} at {rerank_url}")
                 return []
+
+            data = resp.json() or {}
+            results = data.get("results", [])
+
+            # 5) 兼容两种返回格式
+            reranked = []
+
+            # A) 你的老客户端预期：{"results":[{"index":i,"score":s}, ...]}
+            if results and isinstance(results[0], dict) and "index" in results[0]:
+                for item in results:
+                    idx = item.get("index")
+                    if isinstance(idx, int) and 0 <= idx < len(original_items):
+                        oi = original_items[idx]
+                        if isinstance(oi, dict):
+                            oi = {**oi, "rerank_score": item.get("score", 0)}
+                        reranked.append(oi)
+                return reranked
+
+            # B) 你的实际服务返回：排好序的文档/字典，带 rerank_score（见 rerank_service.py）
+            #    这里需要把服务返回的每个 doc 映射回原 candidates（通过 content 文本匹配）
+            if results and isinstance(results[0], dict):
+                # 先构建 content -> index 的映射
+                content_to_idx = {}
+                for i, doc in enumerate(documents):
+                    content_to_idx[doc.get("content", "")] = i
+
+                for doc in results:
+                    content = doc.get("content") or doc.get("text") or ""
+                    score = doc.get("rerank_score", doc.get("score", 0))
+                    idx = content_to_idx.get(content, None)
+                    if idx is not None:
+                        oi = original_items[idx]
+                        if isinstance(oi, dict):
+                            oi = {**oi, "rerank_score": score}
+                        reranked.append(oi)
+                return reranked
+
+            # 兜底：返回原 candidates
+            logger.debug("Rerank response shape not recognized; returning original candidates")
+            return candidates
 
         except Exception as e:
             logger.error(f"Error during SQL reranking: {str(e)}")
             return []
 
-    def _rerank_text_documents(self, query: str, documents: List[str], doc_type: str = "documentation",
-                               timeout: int = 10) -> List[str]:
+    def _rerank_text_documents(
+            self,
+            query: str,
+            documents: List[str],
+            doc_type: str = "documentation",
+            timeout: int = 10
+    ) -> List[str]:
         """
-        Rerank text documents using the reranking service
-
-        Args:
-            query: The user's question
-            documents: List of document strings to rerank
-            doc_type: Type of documents ("ddl" or "documentation")
-            timeout: Timeout for the reranking request in seconds
-
-        Returns:
-            Reranked list of documents or empty list if reranking failed
+        Rerank text documents using the reranking service (robust version)
         """
         if not documents:
             return []
 
-        # Check if reranking is available
-        rerank_url = self.config.get("rerank_url", "http://localhost:8091")
+        # 1) 读取并规范化 URL：自动补全到 /rerank
+        base = self.config.get("rerank_url", "http://localhost:8091")
+        if base.endswith("/"):
+            rerank_url = base + "rerank"
+        else:
+            rerank_url = base if base.rsplit("/", 1)[-1] == "rerank" else base + "/rerank"
 
         try:
-            # Prepare request payload
-            # For DDL documents, we might want to extract table names for the reranking query
+            # 2) DDL 查询增强（沿用你原有逻辑）
             enhanced_query = query
             if doc_type == "ddl":
                 table_names = self._extract_table_names(query)
                 if table_names:
                     enhanced_query = f"{query} table:" + " table:".join(table_names)
 
-            # Call reranking service
-            response = requests.post(
+            # 3) 组织请求体
+            req_docs = [{"content": doc} for doc in documents]
+
+            # 4) 可选健康探针（不影响主流程）
+            try:
+                health_base = base if base.endswith("/health") else (
+                    base + "/health" if not base.endswith("/rerank") else base.replace("/rerank", "/health")
+                )
+                _ = requests.get(health_base, timeout=3)
+            except Exception:
+                pass
+
+            # 5) 调用重排服务
+            resp = requests.post(
                 rerank_url,
-                json={
-                    "query": enhanced_query,
-                    "documents": [{"content": doc} for doc in documents],
-                    "top_k": len(documents)  # Rerank all documents
-                },
+                json={"query": enhanced_query, "documents": req_docs, "top_k": len(req_docs)},
                 timeout=timeout
             )
-
-            if response.status_code == 200:
-                # Process reranking results
-                reranked_data = response.json()
-                reranked_results = []
-
-                # Reconstruct original documents in new order
-                for item in reranked_data.get("results", []):
-                    idx = item.get("index")
-                    if 0 <= idx < len(documents):
-                        reranked_results.append(documents[idx])
-
-                logger.debug(f"Reranked {len(reranked_results)} {doc_type} documents")
-                return reranked_results
-            else:
-                logger.warning(f"Reranking service returned error: {response.status_code}")
+            if resp.status_code != 200:
+                logger.warning(f"Reranking service returned {resp.status_code} at {rerank_url}")
                 return []
+
+            data = resp.json() or {}
+            results = data.get("results", [])
+
+            # 6) 兼容两种返回格式
+            reranked: List[str] = []
+
+            # A) 老格式：{"results":[{"index": i, "score": s}, ...]}
+            if results and isinstance(results[0], dict) and "index" in results[0]:
+                for item in results:
+                    idx = item.get("index")
+                    if isinstance(idx, int) and 0 <= idx < len(documents):
+                        reranked.append(documents[idx])
+                logger.debug(f"Reranked {len(reranked)} {doc_type} documents (by index)")
+                return reranked
+
+            # B) 实际服务：返回排好序的文档字典（含 rerank_score/score）
+            if results and isinstance(results[0], dict):
+                # 建 content -> 原始索引 映射（用我们发送时的 content 串）
+                content_to_idx = {d.get("content", ""): i for i, d in enumerate(req_docs)}
+                for doc in results:
+                    content = doc.get("content") or doc.get("text") or ""
+                    idx = content_to_idx.get(content, None)
+                    if idx is not None:
+                        reranked.append(documents[idx])
+                logger.debug(f"Reranked {len(reranked)} {doc_type} documents (by content)")
+                return reranked
+
+            # 兜底：返回原序
+            logger.debug("Rerank response shape not recognized; returning original order")
+            return documents
 
         except Exception as e:
             logger.error(f"Error during {doc_type} reranking: {str(e)}")
@@ -3868,8 +3978,16 @@ class EnhancedVannaFlaskApp(VannaFlaskApp):
         @self.requires_auth
         def get_retrieval_context(user: any):
             try:
-                # 获取请求参数
-                question = request.args.get("question")
+                # 或者使用更安全的方法
+                question = request.args.get("question", "")
+                if question:
+                    # 尝试修复编码问题
+                    try:
+                        question = question.encode('iso-8859-1').decode('utf-8')
+                    except:
+                        print("用户问题："+ question)
+                        pass  # 如果解码失败，使用原始字符串
+
                 max_results = int(request.args.get("max_results", "10"))
                 include_prompt = request.args.get("include_prompt", "true").lower() == "true"
                 enhance_query = request.args.get("enhance_query", "true").lower() == "true"
@@ -4325,7 +4443,11 @@ def create_multi_model_config():
         'multi_embedding_services': [
             {
                 'name': 'bge_m3',
+<<<<<<< HEAD
+                'service_url': 'http://192.168.48.128:6206',
+=======
                 'service_url': 'http://192.168.48.128:8080',
+>>>>>>> origin/main
                 'weight': 0.4,
                 'timeout': 30,
                 'max_retries': 3,
@@ -4333,7 +4455,11 @@ def create_multi_model_config():
             },
             {
                 'name': 'text2vec_chinese',
+<<<<<<< HEAD
+                'service_url': 'http://192.168.48.128:6006',
+=======
                 'service_url': 'http://192.168.48.128:8081',
+>>>>>>> origin/main
                 'weight': 0.35,
                 'timeout': 30,
                 'max_retries': 3,
@@ -4341,7 +4467,11 @@ def create_multi_model_config():
             },
             {
                 'name': 'sentence_transformers',
+<<<<<<< HEAD
+                'service_url': 'http://192.168.48.128:6106',
+=======
                 'service_url': 'http://192.168.48.128:8082',
+>>>>>>> origin/main
                 'weight': 0.25,
                 'timeout': 30,
                 'max_retries': 3,
@@ -4431,6 +4561,22 @@ def create_single_model_config():
 def setup_logging():
     """配置日志系统"""
     import logging
+<<<<<<< HEAD
+    import os
+
+    # 确保日志目录存在
+    log_dir = '/logs'
+    if not os.path.exists(log_dir):
+        try:
+            os.makedirs(log_dir, exist_ok=True)
+        except PermissionError:
+            # 如果无法创建/logs，使用当前目录
+            log_dir = '/app/logs'
+            os.makedirs(log_dir, exist_ok=True)
+
+    log_file = os.path.join(log_dir, 'vanna_multi_model.log')
+=======
+>>>>>>> origin/main
 
     # 配置根日志器
     logging.basicConfig(
@@ -4438,7 +4584,11 @@ def setup_logging():
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[
             logging.StreamHandler(),  # 控制台输出
+<<<<<<< HEAD
+            logging.FileHandler(log_file, encoding='utf-8')  # 文件输出
+=======
             logging.FileHandler('/logs/vanna_multi_model.log', encoding='utf-8')  # 文件输出
+>>>>>>> origin/main
         ]
     )
 
@@ -4653,6 +4803,10 @@ if __name__ == "__main__":
 
         # 3. 创建Flask应用
         app = EnhancedVannaFlaskApp(vn)
+<<<<<<< HEAD
+        app.config['JSON_AS_ASCII'] = False  # 允许非ASCII字符
+=======
+>>>>>>> origin/main
 
         # 4. 打印启动信息
         print_startup_info(vn, retrieval_service)
